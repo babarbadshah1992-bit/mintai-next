@@ -1,26 +1,114 @@
-@import "tailwindcss";
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: linear-gradient(135deg, #fdf8f5 0%, #f0f7f0 100%);
+  color: #1a2e1a;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height: 1.5;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Header */
+.site-header {
+  background: white;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+  border-bottom: 1px solid rgba(46,158,79,0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.header-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 1.5rem;
+  background: linear-gradient(135deg, #1e6e3a, #2e9e4f);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.logo-icon {
+  font-size: 2rem;
+  -webkit-text-fill-color: initial;
+}
+.main-nav {
+  display: flex;
+  gap: 24px;
+}
+.main-nav a {
+  text-decoration: none;
+  color: #1a2e1a;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.main-nav a:hover {
+  color: #2e9e4f;
+}
+
+/* Main content */
+.site-main {
+  min-height: calc(100vh - 140px);
+  padding: 40px 0;
+}
+
+/* Footer */
+.site-footer {
+  background: white;
+  border-top: 1px solid rgba(46,158,79,0.1);
+  padding: 32px 0;
+  margin-top: 40px;
+}
+.footer-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.footer-info p:first-child {
+  color: #2e9e4f;
+  font-weight: 500;
+}
+.footer-links {
+  display: flex;
+  gap: 20px;
+}
+.footer-links a {
+  text-decoration: none;
+  color: #666;
+  font-size: 0.9rem;
+}
+.footer-links a:hover {
+  color: #2e9e4f;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header-inner {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .main-nav {
+    gap: 20px;
+  }
+  .footer-inner {
+    flex-direction: column;
+    text-align: center;
+  }
 }
