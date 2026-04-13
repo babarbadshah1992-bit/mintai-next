@@ -8,20 +8,20 @@ import CameraMic from "../components/CameraMic"
 
 export default function Home() {
   const [input, setInput] = useState("")
-  const [messages, setMessages] = useState<{ role: string; content: string }[]>([])
+  const [messages, setMessages] = useState([])
   const [loading, setLoading] = useState(false)
-  const [blogs, setBlogs] = useState<any[]>([])
-  const [relatedProducts, setRelatedProducts] = useState<any[]>([])
-  const [relatedBlogs, setRelatedBlogs] = useState<any[]>([])
+  const [blogs, setBlogs] = useState([])
+  const [relatedProducts, setRelatedProducts] = useState([])
+  const [relatedBlogs, setRelatedBlogs] = useState([])
   const [showFeedbackPopup, setShowFeedbackPopup] = useState(false)
 
-  const messagesEndRef = useRef<HTMLDivElement>(null)
-  const messageContainerRef = useRef<HTMLDivElement>(null)
-  const lastAiMessageRef = useRef<HTMLDivElement>(null)
+  const messagesEndRef = useRef(null)
+  const messageContainerRef = useRef(null)
+  const lastAiMessageRef = useRef(null)
   const prevMessagesLength = useRef(0)
   const isFirstRender = useRef(true)
 
-  // Fetch latest blogs for home page
+  // Fetch latest blogs
   useEffect(() => {
     const fetchBlogs = async () => {
       const { data } = await supabase
@@ -34,7 +34,7 @@ export default function Home() {
     fetchBlogs()
   }, [])
 
-  // Auto-scroll logic
+  // Auto-scroll
   useEffect(() => {
     if (messages.length === 0) return
     const lastMessage = messages[messages.length - 1]
@@ -62,22 +62,19 @@ export default function Home() {
     prevMessagesLength.current = messages.length
   }, [messages])
 
-  // Extract keywords from user query (Hindi + English)
-  const extractKeywords = (text: string): string[] => {
+  const extractKeywords = (text) => {
     const stopWords = ["hai", "hain", "ka", "ki", "ke", "ko", "se", "mein", "par", "aur", "toh", "kya", "kaise", "kahan", "ye", "vo", "tha", "the", "raha", "rahi"]
     return text.toLowerCase().split(/[\s,?!.]+/).filter(w => w.length > 2 && !stopWords.includes(w))
   }
 
-  // Find related products based on keywords
-  const findRelatedProducts = (keywords: string[]) => {
+  const findRelatedProducts = (keywords) => {
     return PRODUCTS.filter(p => {
       const text = `${p.name} ${p.description} ${p.category || ''}`.toLowerCase()
       return keywords.some(k => text.includes(k))
     }).slice(0, 4)
   }
 
-  // Fetch related blogs from Supabase based on keywords
-  const fetchRelatedBlogs = async (keywords: string[]) => {
+  const fetchRelatedBlogs = async (keywords) => {
     if (keywords.length === 0) return []
     const { data, error } = await supabase
       .from('blogs')
@@ -88,7 +85,7 @@ export default function Home() {
     return data || []
   }
 
-  const handleScan = (barcode: string) => {
+  const handleScan = (barcode) => {
     const product = PRODUCTS.find(p => p.barcode === barcode)
     if (product) {
       window.open(product.link, '_blank')
@@ -98,7 +95,7 @@ export default function Home() {
     }
   }
 
-  const handleMicResult = (text: string) => {
+  const handleMicResult = (text) => {
     setInput(text)
     setTimeout(() => sendMessage(), 50)
   }
@@ -226,7 +223,7 @@ export default function Home() {
                 <h3>{blog.title}</h3>
                 <p>{blog.excerpt}</p>
                 <div className="tags">
-                  {blog.tags?.map((tag: string) => <span key={tag} className="tag">#{tag}</span>)}
+                  {blog.tags?.map((tag) => <span key={tag} className="tag">#{tag}</span>)}
                 </div>
               </Link>
             ))}
@@ -243,7 +240,7 @@ export default function Home() {
                 <h3>{blog.title}</h3>
                 <p>{blog.excerpt}</p>
                 <div className="tags">
-                  {blog.tags?.map((tag: string) => <span key={tag} className="tag">#{tag}</span>)}
+                  {blog.tags?.map((tag) => <span key={tag} className="tag">#{tag}</span>)}
                 </div>
               </Link>
             ))}
