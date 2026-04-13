@@ -29,37 +29,32 @@ export default function Home() {
 
   // Auto-scroll
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [messages])
+  if (messages.length === 0) return
+  const lastMessage = messages[messages.length - 1]
+  const isNewMessage = messages.length > prevMessagesLength.current
 
-  const sendMessage = async () => {
-    if (!input.trim()) return
+  // Skip scroll on first load (when messages array becomes non-empty from empty)
+  if (isFirstRender.current && messages.length > 0) {
+    isFirstRender.current = false
+    return
+  }
 
-    const userMsg = { role: "user", content: input }
-    setMessages(prev => [...prev, userMsg])
-    setInput("")
-    setLoading(true)
-
-    try {
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: input })
-      })
-      const data = await res.json()
-
-      const aiMsg = { role: "ai", content: "" }
-      setMessages(prev => [...prev, aiMsg])
-
-      const cleanText = data.answer.replace(/\s+/g, ' ').trim()
-      for (let i = 0; i <= cleanText.length; i++) {
-        await new Promise(r => setTimeout(r, 20))
-        setMessages(prev => {
-          const newMsgs = [...prev]
-          newMsgs[newMsgs.length - 1].content = cleanText.slice(0, i)
-          return newMsgs
-        })
-      }
+  if (isNewMessage) {
+    if (lastMessage.role === "user") {
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" })
+      }, 100)
+    } else if (lastMessage.role === "ai") {
+      setTimeout(() => {
+        if (lastAiMessageRef.current && messageContainerRef.current) {
+          const top = lastAiMessageRef.current.offsetTop - 20
+          messageContainerRef.current.scrollTo({ top, behavior: "smooth" })
+        }
+      }, 200)
+    }
+  }
+  prevMessagesLength.current = messages.length
+}, [messages])
       // Show feedback popup after AI answer
       setShowFeedbackPopup(true)
       setTimeout(() => setShowFeedbackPopup(false), 5000)
