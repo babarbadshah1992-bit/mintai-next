@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef } from 'react'
 import Webcam from 'react-webcam'
 import { BrowserMultiFormatReader } from '@zxing/library'
 
@@ -9,13 +9,6 @@ export default function CameraMic({ onScan, onMicResult }: { onScan: (result: st
   const [scanning, setScanning] = useState(false)
   const webcamRef = useRef<Webcam>(null)
   const codeReaderRef = useRef<BrowserMultiFormatReader | null>(null)
-
-  // Rear camera ke liye constraints
-  const videoConstraints = {
-    facingMode: { exact: "environment" }, // rear camera
-    width: { ideal: 1280 },
-    height: { ideal: 720 }
-  }
 
   const startScan = () => {
     setShowCamera(true)
@@ -43,7 +36,6 @@ export default function CameraMic({ onScan, onMicResult }: { onScan: (result: st
     setShowCamera(false)
   }
 
-  // Voice input using Web Speech API
   const startMic = () => {
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
       alert("Sorry, your browser does not support voice input.")
@@ -51,7 +43,7 @@ export default function CameraMic({ onScan, onMicResult }: { onScan: (result: st
     }
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
     const recognition = new SpeechRecognition()
-    recognition.lang = 'hi-IN' // Hindi + English
+    recognition.lang = 'hi-IN'
     recognition.interimResults = false
     recognition.maxAlternatives = 1
 
@@ -75,7 +67,7 @@ export default function CameraMic({ onScan, onMicResult }: { onScan: (result: st
           <Webcam
             ref={webcamRef}
             screenshotFormat="image/jpeg"
-            videoConstraints={videoConstraints}
+            videoConstraints={{ facingMode: "environment" }}
             width={320}
             height={240}
             style={{ borderRadius: '12px' }}

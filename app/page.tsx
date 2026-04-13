@@ -12,9 +12,13 @@ export default function Home() {
   const [loading, setLoading] = useState(false)
   const [blogs, setBlogs] = useState<any[]>([])
   const [showFeedbackPopup, setShowFeedbackPopup] = useState(false)
-  const messagesEndRef = useRef<HTMLDivElement>(null)
 
-  // Fetch latest blogs
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+  const messageContainerRef = useRef<HTMLDivElement>(null)
+  const lastAiMessageRef = useRef<HTMLDivElement>(null)
+  const prevMessagesLength = useRef(0)
+  const isFirstRender = useRef(true)
+
   useEffect(() => {
     const fetchBlogs = async () => {
       const { data } = await supabase
@@ -27,52 +31,89 @@ export default function Home() {
     fetchBlogs()
   }, [])
 
-  // Auto-scroll
   useEffect(() => {
-  if (messages.length === 0) return
-  const lastMessage = messages[messages.length - 1]
-  const isNewMessage = messages.length > prevMessagesLength.current
+    if (messages.length === 0) return
+    const lastMessage = messages[messages.length - 1]
+    const isNewMessage = messages.length > prevMessagesLength.current
 
-  // Skip scroll on first load (when messages array becomes non-empty from empty)
-  if (isFirstRender.current && messages.length > 0) {
-    isFirstRender.current = false
-    return
-  }
+    if (isFirstRender.current && messages.length > 0) {
+      isFirstRender.current = false
+      return
+    }
 
-  if (isNewMessage) {
-    if (lastMessage.role === "user") {
-      setTimeout(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" })
-      }, 100)
-    } else if (lastMessage.role === "ai") {
-      setTimeout(() => {
-        if (lastAiMessageRef.current && messageContainerRef.current) {
-          const top = lastAiMessageRef.current.offsetTop - 20
-          messageContainerRef.current.scrollTo({ top, behavior: "smooth" })
-        }
-      }, 200)
+    if (isNewMessage) {
+      if (lastMessage.role === "user") {
+        setTimeout(() => {
+          messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" })
+        }, 100)
+      } else if (lastMessage.role === "ai") {
+        setTimeout(() => {
+          if (lastAiMessageRef.current && messageContainerRef.current) {
+            const top = lastAiMessageRef.current.offsetTop - 20
+            messageContainerRef.current.scrollTo({ top, behavior: "smooth" })
+          }
+        }, 200)
+      }
+    }
+    prevMessagesLength.current = messages.length
+  }, [messages])
+
+  const handleScan = (barcode: string) => {
+    const product = PRODUCTS.find(p => p.barcode === barcode)
+    if (product) {
+      window.open(product.link, '_blank')
+    } else {
+      setInput(`Search product with barcode ${barcode}`)
+      sendMessage()
     }
   }
-  prevMessagesLength.current = messages.length
-}, [messages])
-      // Show feedback popup after AI answer
+
+  const handleMicResult = (text: string) => {
+    setInput(text)
+    sendMessage()
+  }
+
+  async function sendMessage() {
+    if (!input.trim()) return
+
+    const userMsg = { role: "user", content: input }
+    setMessages(prev => [...prev, userMsg])
+    setInput("")
+    setLoading(true)
+
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: input })
+      })
+      const data = await res.json()
+
+      const aiMsg = { role: "ai", content: "" }
+      setMessages(prev => [...prev, aiMsg])
+
+      const cleanText = data.answer.replace(/\s+/g, ' ').trim()
+      for (let i = 0; i <= cleanText.length; i++) {
+        await new Promise(r => setTimeout(r, 20))
+        setMessages(prev => {
+          const newMsgs = [...prev]
+          newMsgs[newMsgs.length - 1].content = cleanText.slice(0, i)
+          return newMsgs
+        })
+      }
       setShowFeedbackPopup(true)
       setTimeout(() => setShowFeedbackPopup(false), 5000)
     } catch (err) {
+      console.error(err)
       setMessages(prev => [...prev, { role: "ai", content: "Sorry, please try again." }])
     }
     setLoading(false)
   }
 
-  const handleImageCapture = (image: string) => {
-    setInput("I've taken a photo. Please analyze my skin/hair condition.")
-  }
-
   return (
     <div>
-      {/* Chat Container */}
       <div className="chat-container">
-        <div className="messages">
+        <div ref={messageContainerRef} className="messages">
           {messages.length === 0 && (
             <div style={{ textAlign: 'center', color: '#888', marginTop: '60px' }}>
               <div style={{ fontSize: '3rem' }}>🌺</div>
@@ -80,13 +121,20 @@ export default function Home() {
               <p style={{ color: '#2e9e4f' }}>Poochhein skincare, health, ya beauty tips...</p>
             </div>
           )}
-          {messages.map((msg, i) => (
-            <div key={i} className={`message ${msg.role === 'user' ? 'user-message' : 'ai-message'}`}>
-              <div className={`bubble ${msg.role === 'user' ? 'user-bubble' : 'ai-bubble'}`}>
-                {msg.content}
+          {messages.map((msg, i) => {
+            const isLastAi = i === messages.length - 1 && msg.role === "ai"
+            return (
+              <div
+                key={i}
+                ref={isLastAi ? lastAiMessageRef : null}
+                className={`message ${msg.role === 'user' ? 'user-message' : 'ai-message'}`}
+              >
+                <div className={`bubble ${msg.role === 'user' ? 'user-bubble' : 'ai-bubble'}`}>
+                  {msg.content}
+                </div>
               </div>
-            </div>
-          ))}
+            )
+          })}
           {loading && (
             <div className="message ai-message">
               <div className="typing">
@@ -97,9 +145,8 @@ export default function Home() {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Input Area with Camera & Mic */}
         <div className="input-area">
-          <CameraMic onCapture={handleImageCapture} />
+          <CameraMic onScan={handleScan} onMicResult={handleMicResult} />
           <input
             value={input}
             onChange={e => setInput(e.target.value)}
@@ -113,7 +160,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Latest Blogs Section */}
       {blogs.length > 0 && (
         <div style={{ marginTop: '2rem' }}>
           <h2>📰 Latest Blogs</h2>
@@ -133,7 +179,6 @@ export default function Home() {
         </div>
       )}
 
-      {/* Feedback Popup */}
       {showFeedbackPopup && (
         <div className="feedback-popup">
           <div className="feedback-popup-content">
