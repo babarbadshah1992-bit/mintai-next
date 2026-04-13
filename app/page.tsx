@@ -19,6 +19,7 @@ export default function Home() {
   const prevMessagesLength = useRef(0)
   const isFirstRender = useRef(true)
 
+  // Fetch latest blogs
   useEffect(() => {
     const fetchBlogs = async () => {
       const { data } = await supabase
@@ -31,6 +32,7 @@ export default function Home() {
     fetchBlogs()
   }, [])
 
+  // Auto-scroll logic
   useEffect(() => {
     if (messages.length === 0) return
     const lastMessage = messages[messages.length - 1]
@@ -73,6 +75,7 @@ export default function Home() {
     sendMessage()
   }
 
+  // Fixed sendMessage function
   async function sendMessage() {
     if (!input.trim()) return
 
