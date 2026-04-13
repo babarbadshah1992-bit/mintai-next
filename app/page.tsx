@@ -145,7 +145,7 @@ export default function Home() {
   }
 
   return (
-    <div>
+    <div className="animate-start">
       <div className="chat-container">
         <div ref={messageContainerRef} className="messages">
           {messages.length === 0 && (
@@ -171,8 +171,8 @@ export default function Home() {
           })}
           {loading && (
             <div className="message ai-message">
-              <div className="typing">
-                <div className="dot"></div><div className="dot"></div><div className="dot"></div>
+              <div className="ai-typing">
+                <span></span><span></span><span></span>
               </div>
             </div>
           )}

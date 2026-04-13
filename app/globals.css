@@ -263,3 +263,64 @@ body {
     padding: 0 16px;
   }
 }
+/* ===== Startup Animation ===== */
+@keyframes fadeSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-start {
+  animation: fadeSlideUp 0.8s ease-out forwards;
+}
+
+/* ===== AI Typing Animation (Loader) ===== */
+@keyframes bounce {
+  0%, 60%, 100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-12px);
+  }
+}
+
+.ai-typing {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 20px;
+  background: #f0f4f0;
+  border-radius: 30px;
+  width: fit-content;
+  margin: 10px 0;
+}
+
+.ai-typing span {
+  width: 10px;
+  height: 10px;
+  background: #2e9e4f;
+  border-radius: 50%;
+  animation: bounce 1.2s infinite ease-in-out;
+}
+
+.ai-typing span:nth-child(1) { animation-delay: 0s; }
+.ai-typing span:nth-child(2) { animation-delay: 0.2s; }
+.ai-typing span:nth-child(3) { animation-delay: 0.4s; }
+
+/* Optional: Leaf spinner for loading */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-leaf {
+  display: inline-block;
+  animation: spin 1s linear infinite;
+  font-size: 1.5rem;
+}
