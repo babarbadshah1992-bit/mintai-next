@@ -13,8 +13,9 @@ export default function Home() {
   const [blogs, setBlogs] = useState([])
   const [relatedProducts, setRelatedProducts] = useState([])
   const [relatedBlogs, setRelatedBlogs] = useState([])
-  const [showFeedbackPopup, setShowFeedbackPopup] = useState(false)
-  const [likedMessages, setLikedMessages] = useState({}) // store liked status
+  const [feedbackGiven, setFeedbackGiven] = useState({}) // track feedback per message
+  const [likedMessages, setLikedMessages] = useState({}) // heart button
+  const [copySuccess, setCopySuccess] = useState({})
 
   const messagesEndRef = useRef(null)
   const messageContainerRef = useRef(null)
@@ -103,8 +104,37 @@ export default function Home() {
 
   const handleLike = (index) => {
     setLikedMessages(prev => ({ ...prev, [index]: !prev[index] }))
-    // Optional: show a small toast
-    alert("❤️ Thanks for your love! Your positive vibes make our day.")
+  }
+
+  const handleFeedback = (index, type) => {
+    setFeedbackGiven(prev => ({ ...prev, [index]: type }))
+    alert(`Thank you for your ${type === 'up' ? '👍 positive' : '👎 honest'} feedback!`)
+  }
+
+  const handleCopy = async (index, text) => {
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopySuccess(prev => ({ ...prev, [index]: true }))
+      setTimeout(() => setCopySuccess(prev => ({ ...prev, [index]: false })), 2000)
+    } catch (err) {
+      alert("Unable to copy")
+    }
+  }
+
+  const handleShare = async (text) => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'MintAI Health Tip',
+          text: text,
+          url: window.location.href,
+        })
+      } catch (err) {
+        console.log('Share cancelled')
+      }
+    } else {
+      alert("Share not supported on this browser. You can copy the text.")
+    }
   }
 
   async function sendMessage() {
@@ -142,8 +172,6 @@ export default function Home() {
           return newMsgs
         })
       }
-      setShowFeedbackPopup(true)
-      setTimeout(() => setShowFeedbackPopup(false), 5000)
     } catch (err) {
       console.error(err)
       setMessages(prev => [...prev, { role: "ai", content: "Sorry, please try again." }])
@@ -174,22 +202,23 @@ export default function Home() {
                     {msg.content}
                   </div>
                 </div>
-                {/* Heart button only for AI messages */}
+                {/* Action buttons only for AI messages */}
                 {msg.role === "ai" && (
-                  <div style={{ display: 'flex', justifyContent: 'flex-start', marginTop: '4px', marginLeft: '50px' }}>
-                    <button
-                      onClick={() => handleLike(i)}
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        fontSize: '1.2rem',
-                        cursor: 'pointer',
-                        color: likedMessages[i] ? '#ff69b4' : '#ccc',
-                        transition: '0.2s'
-                      }}
-                    >
+                  <div style={{ display: 'flex', justifyContent: 'flex-start', gap: '12px', marginTop: '6px', marginLeft: '50px', flexWrap: 'wrap' }}>
+                    <button onClick={() => handleLike(i)} style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer', color: likedMessages[i] ? '#ff69b4' : '#ccc' }} title="Love this answer">
                       {likedMessages[i] ? '❤️' : '🤍'}
                     </button>
+                    <button onClick={() => handleCopy(i, msg.content)} style={{ background: 'none', border: 'none', fontSize: '1rem', cursor: 'pointer', color: '#666' }} title="Copy answer">
+                      📋 {copySuccess[i] ? 'Copied!' : 'Copy'}
+                    </button>
+                    <button onClick={() => handleShare(msg.content)} style={{ background: 'none', border: 'none', fontSize: '1rem', cursor: 'pointer', color: '#666' }} title="Share answer">
+                      📤 Share
+                    </button>
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                      <span style={{ fontSize: '0.8rem', color: '#888' }}>Was this helpful?</span>
+                      <button onClick={() => handleFeedback(i, 'up')} style={{ background: 'none', border: 'none', fontSize: '1.1rem', cursor: 'pointer', color: feedbackGiven[i] === 'up' ? '#2e9e4f' : '#ccc' }}>👍</button>
+                      <button onClick={() => handleFeedback(i, 'down')} style={{ background: 'none', border: 'none', fontSize: '1.1rem', cursor: 'pointer', color: feedbackGiven[i] === 'down' ? '#ff69b4' : '#ccc' }}>👎</button>
+                    </div>
                   </div>
                 )}
               </div>
@@ -220,48 +249,46 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Related Products & Blogs after AI answer */}
-      {messages.length > 0 && messages[messages.length-1]?.role === "ai" && (
-        <>
-          {relatedProducts.length > 0 && (
-            <div style={{ marginTop: '2rem' }}>
-              <h2>🛍️ Related Products</h2>
-              <div className="product-grid">
-                {relatedProducts.map(p => (
-                  <a key={p.id} href={p.link} target="_blank" rel="noopener noreferrer" className="product-card">
-                    <div className="product-image">{p.image}</div>
-                    <h3>{p.name}</h3>
-                    <div className="price">
-                      <span className="current">{p.price}</span>
-                      <span className="original">{p.originalPrice}</span>
-                      <span className="discount">{p.discount}</span>
-                    </div>
-                    <p>{p.description}</p>
-                  </a>
-                ))}
-              </div>
-            </div>
-          )}
-          {relatedBlogs.length > 0 && (
-            <div style={{ marginTop: '2rem' }}>
-              <h2>📝 Related Blogs</h2>
-              <div className="blog-grid">
-                {relatedBlogs.map(blog => (
-                  <Link key={blog.id} href={`/blog/${blog.slug}`} className="blog-card">
-                    <h3>{blog.title}</h3>
-                    <p>{blog.excerpt}</p>
-                    <div className="tags">
-                      {blog.tags?.map((tag) => <span key={tag} className="tag">#{tag}</span>)}
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          )}
-        </>
+      {/* Related Products - shown FIRST after AI answer */}
+      {messages.length > 0 && messages[messages.length-1]?.role === "ai" && relatedProducts.length > 0 && (
+        <div style={{ marginTop: '2rem' }}>
+          <h2>🛍️ Related Products</h2>
+          <div className="product-grid">
+            {relatedProducts.map(p => (
+              <a key={p.id} href={p.link} target="_blank" rel="noopener noreferrer" className="product-card">
+                <div className="product-image">{p.image}</div>
+                <h3>{p.name}</h3>
+                <div className="price">
+                  <span className="current">{p.price}</span>
+                  <span className="original">{p.originalPrice}</span>
+                  <span className="discount">{p.discount}</span>
+                </div>
+                <p>{p.description}</p>
+              </a>
+            ))}
+          </div>
+        </div>
       )}
 
-      {/* Latest Blogs always visible */}
+      {/* Related Blogs - shown SECOND after AI answer */}
+      {messages.length > 0 && messages[messages.length-1]?.role === "ai" && relatedBlogs.length > 0 && (
+        <div style={{ marginTop: '2rem' }}>
+          <h2>📝 Related Blogs</h2>
+          <div className="blog-grid">
+            {relatedBlogs.map(blog => (
+              <Link key={blog.id} href={`/blog/${blog.slug}`} className="blog-card">
+                <h3>{blog.title}</h3>
+                <p>{blog.excerpt}</p>
+                <div className="tags">
+                  {blog.tags?.map((tag) => <span key={tag} className="tag">#{tag}</span>)}
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Latest Blogs - always visible at bottom */}
       {blogs.length > 0 && (
         <div style={{ marginTop: '2rem' }}>
           <h2>📰 Latest Blogs</h2>
@@ -275,20 +302,6 @@ export default function Home() {
                 </div>
               </Link>
             ))}
-          </div>
-        </div>
-      )}
-
-      {showFeedbackPopup && (
-        <div className="feedback-popup">
-          <div className="feedback-popup-content">
-            <h3>Was this helpful?</h3>
-            <div className="stars">
-              {[1,2,3,4,5].map(s => (
-                <button key={s} onClick={() => { setShowFeedbackPopup(false); alert("Thank you!"); }}>★</button>
-              ))}
-            </div>
-            <button onClick={() => setShowFeedbackPopup(false)}>Close</button>
           </div>
         </div>
       )}
