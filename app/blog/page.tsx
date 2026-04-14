@@ -1,30 +1,22 @@
-﻿import { supabase } from "../../lib/supabase"
-import Link from "next/link"
+﻿import { supabase } from '../../../lib/supabase'
+import { notFound } from 'next/navigation'
 
-export default async function BlogPage() {
-  const { data: blogs } = await supabase
+export default async function BlogPost({ params }) {
+  const { data: blog } = await supabase
     .from('blogs')
     .select('*')
-    .order('created_at', { ascending: false })
+    .eq('slug', params.slug)
+    .single()
+
+  if (!blog) notFound()
 
   return (
-    <div>
-      <h1>📝 All Blogs</h1>
-      <div className="blog-grid">
-        {blogs && blogs.length > 0 ? (
-          blogs.map(blog => (
-            <Link key={blog.id} href={`/blog/${blog.slug}`} className="blog-card">
-              <h2>{blog.title}</h2>
-              <p>{blog.excerpt}</p>
-              <div className="tags">
-                {blog.tags?.map((tag: string) => <span key={tag} className="tag">#{tag}</span>)}
-              </div>
-            </Link>
-          ))
-        ) : (
-          <p>No blogs yet. Add some in Supabase!</p>
-        )}
+    <article>
+      <h1>{blog.title}</h1>
+      <div className="tags">
+        {blog.tags?.map(tag => <span key={tag} className="tag">#{tag}</span>)}
       </div>
-    </div>
+      <div dangerouslySetInnerHTML={{ __html: blog.content }} />
+    </article>
   )
 }
