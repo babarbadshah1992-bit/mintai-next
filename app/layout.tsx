@@ -1,5 +1,6 @@
 ﻿import './globals.css'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export const metadata = {
   title: 'MintAI - Health & Beauty Assistant',
@@ -10,12 +11,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body>
-        {/* Header */}
         <header className="header">
           <div className="container">
             <div className="header-inner">
               <Link href="/" className="logo">
-                <span className="logo-icon">🌿</span>
+                <Image src="/logo.png" alt="MintAI Logo" width={32} height={32} className="logo-image" />
                 <span className="logo-text">MintAI</span>
               </Link>
               <nav className="nav">
@@ -27,16 +27,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </div>
           </div>
         </header>
-
-        {/* Main Content */}
-        <main className="main">{children}</main>
-
-        {/* Footer */}
+        <main className="main">
+          <div className="container">{children}</div>
+        </main>
         <footer className="footer">
           <div className="container">
             <div className="footer-inner">
               <div className="footer-brand">
-                <span className="footer-logo">🌿 MintAI</span>
+                <div className="footer-logo">
+                  <Image src="/logo.png" alt="MintAI Logo" width={24} height={24} className="logo-image" />
+                  <span>MintAI</span>
+                </div>
                 <p>Your AI health & beauty assistant</p>
               </div>
               <div className="footer-links">
