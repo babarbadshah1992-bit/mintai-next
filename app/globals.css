@@ -102,15 +102,15 @@ body {
 }
 .footer-bottom p:first-child { color: #2e9e4f; margin-bottom: 6px; }
 
-/* Main animation */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(15px); }
+/* Page transition */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
 }
 .main {
   min-height: 70vh;
   padding: 40px 0;
-  animation: fadeUp 0.4s ease-out;
+  animation: fadeInUp 0.4s ease-out;
 }
 
 /* Chat container */
@@ -227,7 +227,35 @@ body {
 }
 .icon-btn:active { transform: scale(0.97); }
 
-/* Product & Blog grids */
+/* Action buttons (Love, Copy, Share, Feedback) */
+.action-buttons {
+  display: flex;
+  gap: 16px;
+  margin-top: 8px;
+  margin-left: 56px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.action-btn {
+  background: none;
+  border: none;
+  font-size: 0.9rem;
+  cursor: pointer;
+  color: #666;
+  transition: 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.action-btn:hover { color: #2e9e4f; }
+.feedback-group {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-left: auto;
+}
+
+/* Product grid */
 .product-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -252,6 +280,7 @@ body {
 .original { text-decoration: line-through; color: #999; }
 .discount { background: #ff69b4; color: white; padding: 2px 8px; border-radius: 30px; font-size: 0.7rem; font-weight: 600; }
 
+/* Blog grid */
 .blog-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -272,33 +301,6 @@ body {
 .blog-card p { color: #555; margin-bottom: 16px; line-height: 1.5; }
 .tags { display: flex; gap: 8px; flex-wrap: wrap; }
 .tag { background: #e8f5e9; color: #2e9e4f; padding: 4px 12px; border-radius: 30px; font-size: 0.7rem; font-weight: 500; }
-
-/* Feedback buttons row */
-.action-buttons {
-  display: flex;
-  gap: 16px;
-  margin-top: 8px;
-  margin-left: 56px;
-  flex-wrap: wrap;
-}
-.action-btn {
-  background: none;
-  border: none;
-  font-size: 1rem;
-  cursor: pointer;
-  color: #666;
-  transition: 0.2s;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-.action-btn:hover { color: #2e9e4f; }
-.feedback-group {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  margin-left: auto;
-}
 
 /* Responsive */
 @media (max-width: 768px) {

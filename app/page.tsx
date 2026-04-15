@@ -32,7 +32,7 @@ export default function Home() {
     fetchBlogs()
   }, [])
 
-  // Auto-scroll
+  // Auto-scroll logic
   useEffect(() => {
     if (!messages.length) return
     const last = messages[messages.length - 1]
@@ -179,49 +179,60 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Products FIRST after AI answer */}
-      {lastAiIndex !== -1 && relatedProducts.length > 0 && (
-        <div>
-          <h2>🛍️ Related Products</h2>
-          <div className="product-grid">
-            {relatedProducts.map(p => (
-              <a key={p.id} href={p.link} target="_blank" rel="noopener noreferrer" className="product-card">
-                <div className="product-image">{p.image}</div>
-                <h3>{p.name}</h3>
-                <div className="price"><span className="current">{p.price}</span><span className="original">{p.originalPrice}</span><span className="discount">{p.discount}</span></div>
-                <p>{p.description}</p>
-              </a>
-            ))}
-          </div>
-        </div>
-      )}
+      {/* Products FIRST, then Related Blogs */}
+      {lastAiIndex !== -1 && (
+        <>
+          {relatedProducts.length > 0 && (
+            <div style={{ marginTop: '2rem' }}>
+              <h2>🛍️ Related Products</h2>
+              <div className="product-grid">
+                {relatedProducts.map(p => (
+                  <a key={p.id} href={p.link} target="_blank" rel="noopener noreferrer" className="product-card">
+                    <div className="product-image">{p.image}</div>
+                    <h3>{p.name}</h3>
+                    <div className="price">
+                      <span className="current">{p.price}</span>
+                      <span className="original">{p.originalPrice}</span>
+                      <span className="discount">{p.discount}</span>
+                    </div>
+                    <p>{p.description}</p>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
 
-      {/* Blogs SECOND after AI answer */}
-      {lastAiIndex !== -1 && relatedBlogs.length > 0 && (
-        <div>
-          <h2>📝 Related Blogs</h2>
-          <div className="blog-grid">
-            {relatedBlogs.map(blog => (
-              <Link key={blog.id} href={`/blog/${blog.slug}`} className="blog-card">
-                <h3>{blog.title}</h3>
-                <p>{blog.excerpt}</p>
-                <div className="tags">{blog.tags?.map(t => <span key={t} className="tag">#{t}</span>)}</div>
-              </Link>
-            ))}
-          </div>
-        </div>
+          {relatedBlogs.length > 0 && (
+            <div style={{ marginTop: '2rem' }}>
+              <h2>📝 Related Blogs</h2>
+              <div className="blog-grid">
+                {relatedBlogs.map(blog => (
+                  <Link key={blog.id} href={`/blog/${blog.slug}`} className="blog-card">
+                    <h3>{blog.title}</h3>
+                    <p>{blog.excerpt}</p>
+                    <div className="tags">
+                      {blog.tags?.map(tag => <span key={tag} className="tag">#{tag}</span>)}
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+        </>
       )}
 
       {/* Latest Blogs always visible */}
       {blogs.length > 0 && (
-        <div>
+        <div style={{ marginTop: '2rem' }}>
           <h2>📰 Latest Blogs</h2>
           <div className="blog-grid">
             {blogs.map(blog => (
               <Link key={blog.id} href={`/blog/${blog.slug}`} className="blog-card">
                 <h3>{blog.title}</h3>
                 <p>{blog.excerpt}</p>
-                <div className="tags">{blog.tags?.map(t => <span key={t} className="tag">#{t}</span>)}</div>
+                <div className="tags">
+                  {blog.tags?.map(tag => <span key={tag} className="tag">#{tag}</span>)}
+                </div>
               </Link>
             ))}
           </div>
