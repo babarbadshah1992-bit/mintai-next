@@ -4,16 +4,24 @@ import { useState, useRef } from 'react'
 import Webcam from 'react-webcam'
 import { BrowserMultiFormatReader } from '@zxing/library'
 
-export default function CameraMic({ onScan, onMicResult }) {
+// TypeScript ke liye window interface extend karo
+declare global {
+  interface Window {
+    SpeechRecognition: any;
+    webkitSpeechRecognition: any;
+  }
+}
+
+export default function CameraMic({ onScan, onMicResult }: { onScan: (barcode: string) => void; onMicResult: (text: string) => void }) {
   const [showCamera, setShowCamera] = useState(false)
-  const webcamRef = useRef(null)
-  const readerRef = useRef(null)
+  const webcamRef = useRef<Webcam>(null)
+  const readerRef = useRef<BrowserMultiFormatReader | null>(null)
 
   const startScan = () => {
     setShowCamera(true)
     const reader = new BrowserMultiFormatReader()
     readerRef.current = reader
-    reader.decodeFromVideoDevice(null, webcamRef.current?.video, (result, err) => {
+    reader.decodeFromVideoDevice(null, webcamRef.current?.video as HTMLVideoElement, (result, err) => {
       if (result) {
         reader.reset()
         setShowCamera(false)
@@ -29,24 +37,49 @@ export default function CameraMic({ onScan, onMicResult }) {
 
   const startMic = () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
-    if (!SpeechRecognition) return alert("Voice not supported")
+    if (!SpeechRecognition) {
+      alert("Your browser does not support voice input.")
+      return
+    }
     const recognition = new SpeechRecognition()
     recognition.lang = 'hi-IN'
-    recognition.onresult = (e) => onMicResult(e.results[0][0].transcript)
-    recognition.onerror = () => alert("Mic error. Allow permission.")
+    recognition.interimResults = false
+    recognition.onresult = (event: any) => {
+      const text = event.results[0][0].transcript
+      onMicResult(text)
+    }
+    recognition.onerror = (event: any) => {
+      alert("Mic error: " + event.error + ". Please allow microphone access.")
+    }
     recognition.start()
   }
 
   return (
-    <div style={{ display: 'flex', gap: '12px' }}>
-      <button onClick={startScan} className="icon-btn">📷</button>
-      <button onClick={startMic} className="icon-btn">🎤</button>
+    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+      <button onClick={startScan} className="icon-btn" title="Scan product barcode">📷</button>
+      <button onClick={startMic} className="icon-btn" title="Voice input (Hindi/English)">🎤</button>
       {showCamera && (
-        <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', background: 'white', padding: 20, borderRadius: 28, zIndex: 1000, boxShadow: '0 0 0 1000px rgba(0,0,0,0.5)', width: '90%', maxWidth: 360 }}>
-          <Webcam ref={webcamRef} videoConstraints={{ facingMode: "environment" }} width="100%" style={{ borderRadius: 16 }} />
-          <button onClick={stopScan} style={{ marginTop: 12, padding: '8px 24px', background: '#2e9e4f', color: 'white', border: 'none', borderRadius: 40 }}>Cancel</button>
+        <div className="camera-modal">
+          <Webcam ref={webcamRef} screenshotFormat="image/jpeg" videoConstraints={{ facingMode: "environment" }} width="100%" style={{ borderRadius: '16px' }} />
+          <button onClick={stopScan} style={{ marginTop: '12px', padding: '8px 24px', background: '#2e9e4f', color: 'white', border: 'none', borderRadius: '40px', cursor: 'pointer' }}>Cancel</button>
         </div>
       )}
+      <style jsx>{`
+        .camera-modal {
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          background: white;
+          padding: 20px;
+          border-radius: 28px;
+          z-index: 1000;
+          box-shadow: 0 0 0 1000px rgba(0,0,0,0.5);
+          width: 90%;
+          max-width: 360px;
+          text-align: center;
+        }
+      `}</style>
     </div>
   )
 }
