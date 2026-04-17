@@ -23,7 +23,6 @@ export default function Home() {
   const prevLen = useRef(0)
   const isFirst = useRef(true)
 
-  // Fetch latest blogs for homepage
   useEffect(() => {
     const fetchBlogs = async () => {
       const { data } = await supabase.from('blogs').select('*').order('created_at', { ascending: false }).limit(3)
@@ -32,7 +31,6 @@ export default function Home() {
     fetchBlogs()
   }, [])
 
-  // Auto-scroll logic
   useEffect(() => {
     if (!messages.length) return
     const last = messages[messages.length - 1]
@@ -130,7 +128,6 @@ export default function Home() {
     setLoading(false)
   }
 
-  // 👇 YAHAN YE LINE ADD KARO (products & blogs order ke liye)
   const lastAiIndex = messages.length && messages[messages.length-1]?.role === "ai" ? messages.length-1 : -1
 
   return (
@@ -180,9 +177,8 @@ export default function Home() {
         </div>
       </div>
 
-      {/* PRODUCTS FIRST, THEN RELATED BLOGS */}
       {lastAiIndex !== -1 && (
-        <>
+        <div>
           {relatedProducts.length > 0 && (
             <div style={{ marginTop: '2rem' }}>
               <h2>🛍️ Related Products</h2>
@@ -202,7 +198,6 @@ export default function Home() {
               </div>
             </div>
           )}
-
           {relatedBlogs.length > 0 && (
             <div style={{ marginTop: '2rem' }}>
               <h2>📝 Related Blogs</h2>
@@ -219,10 +214,9 @@ export default function Home() {
               </div>
             </div>
           )}
-        </>
+        </div>
       )}
 
-      {/* Latest Blogs always visible */}
       {blogs.length > 0 && (
         <div style={{ marginTop: '2rem' }}>
           <h2>📰 Latest Blogs</h2>

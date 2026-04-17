@@ -1,4 +1,6 @@
-﻿import './globals.css'
+﻿"use client"
+
+import './globals.css'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
