@@ -130,6 +130,7 @@ export default function Home() {
     setLoading(false)
   }
 
+  // 👇 YAHAN YE LINE ADD KARO (products & blogs order ke liye)
   const lastAiIndex = messages.length && messages[messages.length-1]?.role === "ai" ? messages.length-1 : -1
 
   return (
@@ -179,46 +180,65 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ===== PRODUCTS FIRST, THEN BLOGS ===== */}
-{lastAiIndex !== -1 && (
-  <>
-    {/* Products first */}
-    {relatedProducts.length > 0 && (
-      <div style={{ marginTop: '2rem' }}>
-        <h2>🛍️ Related Products</h2>
-        <div className="product-grid">
-          {relatedProducts.map(p => (
-            <a key={p.id} href={p.link} target="_blank" rel="noopener noreferrer" className="product-card">
-              <div className="product-image">{p.image}</div>
-              <h3>{p.name}</h3>
-              <div className="price">
-                <span className="current">{p.price}</span>
-                <span className="original">{p.originalPrice}</span>
-                <span className="discount">{p.discount}</span>
+      {/* PRODUCTS FIRST, THEN RELATED BLOGS */}
+      {lastAiIndex !== -1 && (
+        <>
+          {relatedProducts.length > 0 && (
+            <div style={{ marginTop: '2rem' }}>
+              <h2>🛍️ Related Products</h2>
+              <div className="product-grid">
+                {relatedProducts.map(p => (
+                  <a key={p.id} href={p.link} target="_blank" rel="noopener noreferrer" className="product-card">
+                    <div className="product-image">{p.image}</div>
+                    <h3>{p.name}</h3>
+                    <div className="price">
+                      <span className="current">{p.price}</span>
+                      <span className="original">{p.originalPrice}</span>
+                      <span className="discount">{p.discount}</span>
+                    </div>
+                    <p>{p.description}</p>
+                  </a>
+                ))}
               </div>
-              <p>{p.description}</p>
-            </a>
-          ))}
-        </div>
-      </div>
-    )}
+            </div>
+          )}
 
-    {/* Blogs second */}
-    {relatedBlogs.length > 0 && (
-      <div style={{ marginTop: '2rem' }}>
-        <h2>📝 Related Blogs</h2>
-        <div className="blog-grid">
-          {relatedBlogs.map(blog => (
-            <Link key={blog.id} href={`/blog/${blog.slug}`} className="blog-card">
-              <h3>{blog.title}</h3>
-              <p>{blog.excerpt}</p>
-              <div className="tags">
-                {blog.tags?.map(tag => <span key={tag} className="tag">#{tag}</span>)}
+          {relatedBlogs.length > 0 && (
+            <div style={{ marginTop: '2rem' }}>
+              <h2>📝 Related Blogs</h2>
+              <div className="blog-grid">
+                {relatedBlogs.map(blog => (
+                  <Link key={blog.id} href={`/blog/${blog.slug}`} className="blog-card">
+                    <h3>{blog.title}</h3>
+                    <p>{blog.excerpt}</p>
+                    <div className="tags">
+                      {blog.tags?.map(tag => <span key={tag} className="tag">#{tag}</span>)}
+                    </div>
+                  </Link>
+                ))}
               </div>
-            </Link>
-          ))}
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Latest Blogs always visible */}
+      {blogs.length > 0 && (
+        <div style={{ marginTop: '2rem' }}>
+          <h2>📰 Latest Blogs</h2>
+          <div className="blog-grid">
+            {blogs.map(blog => (
+              <Link key={blog.id} href={`/blog/${blog.slug}`} className="blog-card">
+                <h3>{blog.title}</h3>
+                <p>{blog.excerpt}</p>
+                <div className="tags">
+                  {blog.tags?.map(tag => <span key={tag} className="tag">#{tag}</span>)}
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
-      </div>
-    )}
-  </>
-)}
+      )}
+    </div>
+  )
+}
