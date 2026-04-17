@@ -1,9 +1,29 @@
 ﻿import './globals.css'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
 export const metadata = {
   title: 'MintAI - Health & Beauty Assistant',
   description: 'AI-powered health and beauty recommendations',
+}
+
+function TransitionEffect({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname()
+  const [showLeaf, setShowLeaf] = useState(false)
+
+  useEffect(() => {
+    setShowLeaf(true)
+    const timer = setTimeout(() => setShowLeaf(false), 2000)
+    return () => clearTimeout(timer)
+  }, [pathname])
+
+  return (
+    <>
+      {children}
+      {showLeaf && <div className="page-transition-leaf">🌿✨</div>}
+    </>
+  )
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -27,7 +47,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </div>
         </header>
         <main className="main">
-          <div className="container">{children}</div>
+          <div className="container">
+            <TransitionEffect>{children}</TransitionEffect>
+          </div>
         </main>
         <footer className="footer">
           <div className="container">

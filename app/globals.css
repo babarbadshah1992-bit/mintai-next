@@ -49,3 +49,36 @@ body { font-family: system-ui, -apple-system, sans-serif; background: linear-gra
 .tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
 .tag { background: #e8f5e9; color: #2e9e4f; padding: 4px 12px; border-radius: 30px; font-size: 0.7rem; }
 @media (max-width: 768px) { .header-inner { flex-direction: column; align-items: center; } .nav { justify-content: center; } .product-grid, .blog-grid { grid-template-columns: 1fr; } .action-buttons { margin-left: 0; } .icon-btn, .input-area button { width: 44px; height: 44px; } }
+/* Page transition - fade in up */
+@keyframes pageEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.main {
+  animation: pageEnter 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
+}
+
+/* Health & beauty subtle floating leaf */
+@keyframes floatLeaf {
+  0% { transform: translate(0, 0) rotate(0deg); opacity: 0; }
+  10% { opacity: 0.2; }
+  50% { opacity: 0.4; transform: translate(20px, -15px) rotate(10deg); }
+  100% { opacity: 0; transform: translate(40px, -30px) rotate(20deg); }
+}
+
+.page-transition-leaf {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  font-size: 2rem;
+  pointer-events: none;
+  z-index: 999;
+  animation: floatLeaf 2s ease-out forwards;
+}
