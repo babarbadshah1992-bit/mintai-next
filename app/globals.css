@@ -1,78 +1,11 @@
-﻿/* Paste the complete CSS from the previous message (the long one) – I'll give a shorter but complete version here */
-* { margin:0; padding:0; box-sizing:border-box; }
-body { font-family: system-ui, -apple-system, sans-serif; background: linear-gradient(135deg, #fdf8f5 0%, #f0f7f0 100%); color: #1a2e1a; }
-.container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
-.header { background: rgba(255,255,255,0.96); backdrop-filter: blur(8px); border-bottom: 1px solid rgba(46,158,79,0.15); position: sticky; top:0; z-index:100; }
-.header-inner { display: flex; justify-content: space-between; align-items: baseline; padding: 16px 0; flex-wrap: wrap; gap: 16px; }
-.logo h1 { font-size: 1.8rem; background: linear-gradient(135deg, #1e6e3a, #2e9e4f); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.logo p { font-size: 0.75rem; color: #2e9e4f; }
-.nav { display: flex; gap: 28px; }
-.nav a { text-decoration: none; color: #1a2e1a; font-weight: 500; }
-.nav a:hover { color: #2e9e4f; }
-.footer { background: white; border-top: 1px solid rgba(46,158,79,0.1); margin-top: 60px; padding: 40px 0 24px; text-align: center; }
-@keyframes fadeInUp { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform: translateY(0); } }
-.main { animation: fadeInUp 0.4s ease-out; }
-.chat-container { background: white; border-radius: 28px; border: 1px solid rgba(46,158,79,0.1); overflow: hidden; margin-bottom: 32px; }
-.messages { height: 460px; overflow-y: auto; padding: 24px; }
-.message { display: flex; margin-bottom: 20px; }
-.user-message { justify-content: flex-end; }
-.ai-message { justify-content: flex-start; }
-.bubble { max-width: 80%; padding: 12px 18px; border-radius: 24px; font-size: 0.95rem; }
-.user-bubble { background: linear-gradient(135deg, #2e9e4f, #1e6e3a); color: white; border-radius: 24px 24px 5px 24px; }
-.ai-bubble { background: #f8faf8; border: 1px solid rgba(46,158,79,0.1); border-radius: 24px 24px 24px 5px; }
-.typing { display: flex; gap: 6px; padding: 12px 18px; background: #f8faf8; border-radius: 30px; width: fit-content; }
-.typing span { width: 8px; height: 8px; background: #2e9e4f; border-radius: 50%; animation: bounce 1.2s infinite; }
-.typing span:nth-child(2) { animation-delay: 0.2s; }
-.typing span:nth-child(3) { animation-delay: 0.4s; }
-@keyframes bounce { 0%,60%,100% { transform: translateY(0); } 30% { transform: translateY(-10px); } }
-.input-area { display: flex; gap: 12px; padding: 16px 20px; border-top: 1px solid rgba(46,158,79,0.1); align-items: center; }
-.input-area input { flex:1; padding: 14px 20px; border-radius: 40px; border: 2px solid #e8f0e8; font-size: 1rem; }
-.input-area input:focus { border-color: #2e9e4f; outline: none; }
-.input-area button { width: 52px; height: 52px; border-radius: 50%; border: none; background: linear-gradient(135deg, #2e9e4f, #1e6e3a); color: white; font-size: 1.3rem; cursor: pointer; }
-.icon-btn { background: white; border: 1.5px solid rgba(46,158,79,0.3); border-radius: 50%; width: 52px; height: 52px; font-size: 1.4rem; cursor: pointer; transition: all 0.2s; color: #2e9e4f; }
-.icon-btn:hover { background: #f0f9f0; border-color: #2e9e4f; transform: scale(1.03); }
-.action-buttons { display: flex; gap: 16px; margin-top: 8px; margin-left: 56px; flex-wrap: wrap; align-items: center; }
-.action-btn { background: none; border: none; font-size: 0.9rem; cursor: pointer; color: #666; display: inline-flex; align-items: center; gap: 4px; }
-.action-btn:hover { color: #2e9e4f; }
-.feedback-group { display: flex; gap: 12px; align-items: center; margin-left: auto; }
-.product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 24px; margin: 32px 0; }
-.product-card { background: white; border-radius: 24px; padding: 20px; text-decoration: none; color: inherit; border: 1px solid rgba(46,158,79,0.1); text-align: center; transition: 0.2s; }
-.product-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.05); }
-.product-image { font-size: 2.8rem; margin-bottom: 12px; }
-.price { display: flex; justify-content: center; gap: 10px; margin: 12px 0; }
-.current { font-weight: 700; color: #2e9e4f; font-size: 1.2rem; }
-.original { text-decoration: line-through; color: #999; }
-.discount { background: #ff69b4; color: white; padding: 2px 8px; border-radius: 30px; font-size: 0.7rem; }
-.blog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 28px; margin: 32px 0; }
-.blog-card { background: white; border-radius: 24px; padding: 24px; text-decoration: none; color: inherit; border: 1px solid rgba(46,158,79,0.1); }
-.blog-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.05); }
-.tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
-.tag { background: #e8f5e9; color: #2e9e4f; padding: 4px 12px; border-radius: 30px; font-size: 0.7rem; }
-@media (max-width: 768px) { .header-inner { flex-direction: column; align-items: center; } .nav { justify-content: center; } .product-grid, .blog-grid { grid-template-columns: 1fr; } .action-buttons { margin-left: 0; } .icon-btn, .input-area button { width: 44px; height: 44px; } }
-/* Page transition - fade in up */
-@keyframes pageEnter {
-  0% {
-    opacity: 0;
-    transform: translateY(15px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+﻿/* Page transition */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
 }
-
 .main {
-  animation: pageEnter 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
+  animation: fadeInUp 0.4s ease-out;
 }
-
-/* Health & beauty subtle floating leaf */
-@keyframes floatLeaf {
-  0% { transform: translate(0, 0) rotate(0deg); opacity: 0; }
-  10% { opacity: 0.2; }
-  50% { opacity: 0.4; transform: translate(20px, -15px) rotate(10deg); }
-  100% { opacity: 0; transform: translate(40px, -30px) rotate(20deg); }
-}
-
 .page-transition-leaf {
   position: fixed;
   bottom: 20px;
@@ -81,4 +14,10 @@ body { font-family: system-ui, -apple-system, sans-serif; background: linear-gra
   pointer-events: none;
   z-index: 999;
   animation: floatLeaf 2s ease-out forwards;
+}
+@keyframes floatLeaf {
+  0% { transform: translate(0,0) rotate(0deg); opacity:0; }
+  10% { opacity:0.2; }
+  50% { opacity:0.4; transform: translate(20px,-15px) rotate(10deg); }
+  100% { opacity:0; transform: translate(40px,-30px) rotate(20deg); }
 }

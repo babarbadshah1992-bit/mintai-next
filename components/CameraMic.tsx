@@ -4,7 +4,6 @@ import { useState, useRef } from 'react'
 import Webcam from 'react-webcam'
 import { BrowserMultiFormatReader } from '@zxing/library'
 
-// TypeScript ke liye window interface extend karo
 declare global {
   interface Window {
     SpeechRecognition: any;
@@ -38,7 +37,7 @@ export default function CameraMic({ onScan, onMicResult }: { onScan: (barcode: s
   const startMic = () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
     if (!SpeechRecognition) {
-      alert("Your browser does not support voice input.")
+      alert("Browser does not support voice input.")
       return
     }
     const recognition = new SpeechRecognition()

@@ -1,14 +1,11 @@
 ﻿import './globals.css'
 import Link from 'next/link'
-import { Metadata } from 'next'
+import TransitionEffect from './TransitionEffect'
 
-export const metadata: Metadata = {
+export const metadata = {
   title: 'MintAI - Health & Beauty Assistant',
   description: 'AI-powered health and beauty recommendations',
 }
-
-// Client component for transition effect
-import TransitionEffect from './TransitionEffect'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

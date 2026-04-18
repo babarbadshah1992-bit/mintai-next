@@ -177,6 +177,7 @@ export default function Home() {
         </div>
       </div>
 
+      {/* PRODUCTS FIRST, THEN RELATED BLOGS */}
       {lastAiIndex !== -1 && (
         <div>
           {relatedProducts.length > 0 && (
