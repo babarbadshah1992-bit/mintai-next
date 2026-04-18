@@ -39,7 +39,7 @@
 .main {
   animation: fadeIn 0.3s ease-out;
 }
-/* Send button hover effect */
+/* Send button hover */
 .input-area button {
   transition: all 0.25s ease;
 }
@@ -49,7 +49,7 @@
   box-shadow: 0 6px 14px rgba(46,158,79,0.3);
 }
 
-/* Page transition fade */
+/* Page fade transition */
 @keyframes pageFadeIn {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
@@ -58,14 +58,14 @@
   animation: pageFadeIn 0.3s ease-out;
 }
 
-/* Floating leaf for transition */
+/* Floating leaf */
 .page-transition-leaf {
   position: fixed;
   bottom: 20px;
   right: 20px;
   font-size: 2rem;
   pointer-events: none;
-  z-index: 999;
+  z-index: 9999;
   animation: floatLeaf 2s ease-out forwards;
 }
 @keyframes floatLeaf {
