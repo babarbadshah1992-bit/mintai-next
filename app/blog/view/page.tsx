@@ -1,11 +1,12 @@
-﻿"use client"
+"use client"
 
+import { Suspense } from 'react'
 import { useEffect, useState } from 'react'
-import { supabase } from '../../../lib/supabase'
+import { supabase } from '../../../../lib/supabase'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 
-export default function ViewBlog() {
+function BlogContent() {
   const searchParams = useSearchParams()
   const slug = searchParams.get('slug')
   const [blog, setBlog] = useState<any>(null)
@@ -22,8 +23,7 @@ export default function ViewBlog() {
           setBlog(data)
           setLoading(false)
         })
-        .catch((err) => {
-          console.error(err)
+        .catch(() => {
           setLoading(false)
         })
     } else {
@@ -45,5 +45,13 @@ export default function ViewBlog() {
       <div dangerouslySetInnerHTML={{ __html: blog.content || '' }} />
       <Link href="/blog" style={{ display: 'inline-block', marginTop: '2rem', color: '#2e9e4f' }}>← Back to all blogs</Link>
     </article>
+  )
+}
+
+export default function ViewBlog() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <BlogContent />
+    </Suspense>
   )
 }
