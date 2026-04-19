@@ -14,7 +14,6 @@ export default async function BlogPost({ params }: { params: { slug: string } })
     notFound()
   }
 
-  // Ensure tags is an array
   const tagsArray = Array.isArray(blog.tags) ? blog.tags : []
 
   return (
