@@ -3,13 +3,15 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../../../lib/supabase'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 
 export default function ViewBlog() {
+  const searchParams = useSearchParams()
+  const slug = searchParams.get('slug')
   const [blog, setBlog] = useState<any>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const slug = window.location.search.split('slug=')[1]
     if (slug) {
       supabase
         .from('blogs')
@@ -23,7 +25,7 @@ export default function ViewBlog() {
     } else {
       setLoading(false)
     }
-  }, [])
+  }, [slug])
 
   if (loading) return <div>Loading...</div>
   if (!blog) return <div>Blog not found</div>
@@ -37,7 +39,7 @@ export default function ViewBlog() {
         ))}
       </div>
       <div dangerouslySetInnerHTML={{ __html: blog.content || '' }} />
-      <Link href="/blog">← Back to all blogs</Link>
+      <Link href="/blog" style={{ display: 'inline-block', marginTop: '2rem', color: '#2e9e4f' }}>← Back to all blogs</Link>
     </article>
   )
 }
