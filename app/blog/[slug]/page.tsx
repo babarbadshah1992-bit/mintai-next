@@ -3,24 +3,19 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 
 export default async function BlogPost({ params }: { params: { slug: string } }) {
-  const { data: blog, error } = await supabase
+  const { data: blog } = await supabase
     .from('blogs')
     .select('*')
     .eq('slug', params.slug)
     .single()
 
-  if (error || !blog) {
-    console.error('Blog fetch error:', error)
-    notFound()
-  }
-
-  const tagsArray = Array.isArray(blog.tags) ? blog.tags : []
+  if (!blog) notFound()
 
   return (
     <article>
       <h1>{blog.title}</h1>
       <div className="tags" style={{ margin: '1rem 0' }}>
-        {tagsArray.map((tag: string) => (
+        {(blog.tags || []).map((tag: string) => (
           <span key={tag} className="tag">#{tag}</span>
         ))}
       </div>
