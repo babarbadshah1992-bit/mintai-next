@@ -1,41 +1,43 @@
-﻿import { supabase } from '../../lib/supabase'
+﻿"use client"
+
+import { useEffect, useState } from 'react'
+import { supabase } from '../../../lib/supabase'
 import Link from 'next/link'
 
-export default async function BlogPage() {
-  const { data: blogs, error } = await supabase
-    .from('blogs')
-    .select('*')
-    .order('created_at', { ascending: false })
+export default function ViewBlog() {
+  const [blog, setBlog] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
 
-  if (error) {
-    console.error('Error fetching blogs:', error)
-    return <div>Error loading blogs</div>
-  }
+  useEffect(() => {
+    const slug = window.location.search.split('slug=')[1]
+    if (slug) {
+      supabase
+        .from('blogs')
+        .select('*')
+        .eq('slug', slug)
+        .single()
+        .then(({ data }) => {
+          setBlog(data)
+          setLoading(false)
+        })
+    } else {
+      setLoading(false)
+    }
+  }, [])
+
+  if (loading) return <div>Loading...</div>
+  if (!blog) return <div>Blog not found</div>
 
   return (
-    <div>
-      <h1>📝 All Blogs</h1>
-      <div className="blog-grid">
-        {blogs && blogs.length > 0 ? (
-          blogs.map(blog => {
-            // Ensure tags is an array
-            const tagsArray = Array.isArray(blog.tags) ? blog.tags : []
-            return (
-              <Link key={blog.id} href={`/blog/${blog.slug}`} className="blog-card">
-                <h2>{blog.title}</h2>
-                <p>{blog.excerpt}</p>
-                <div className="tags">
-                  {tagsArray.map((tag: string) => (
-                    <span key={tag} className="tag">#{tag}</span>
-                  ))}
-                </div>
-              </Link>
-            )
-          })
-        ) : (
-          <p>No blogs yet. Add some in Supabase!</p>
-        )}
+    <article>
+      <h1>{blog.title}</h1>
+      <div className="tags" style={{ margin: '1rem 0' }}>
+        {(blog.tags || []).map((tag: string) => (
+          <span key={tag} className="tag">#{tag}</span>
+        ))}
       </div>
-    </div>
+      <div dangerouslySetInnerHTML={{ __html: blog.content || '' }} />
+      <Link href="/blog">← Back to all blogs</Link>
+    </article>
   )
 }
