@@ -2,14 +2,27 @@ import { supabase } from '../../../lib/supabase'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 
+// Build time pe saare slugs generate karo
+export async function generateStaticParams() {
+  const { data: blogs } = await supabase
+    .from('blogs')
+    .select('slug')
+
+  return blogs?.map((blog) => ({
+    slug: blog.slug,
+  })) || []
+}
+
 export default async function BlogPost({ params }: { params: { slug: string } }) {
-  const { data: blog } = await supabase
+  const { data: blog, error } = await supabase
     .from('blogs')
     .select('*')
     .eq('slug', params.slug)
     .single()
 
-  if (!blog) notFound()
+  if (error || !blog) {
+    notFound()
+  }
 
   return (
     <article>
