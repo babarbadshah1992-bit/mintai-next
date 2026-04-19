@@ -72,7 +72,7 @@ export default function Home() {
         }
       }
     }
-    return [...new Set(expanded)]
+    return Array.from(new Set(expanded))
   }
 
   // Find related products – if none, return random 4
