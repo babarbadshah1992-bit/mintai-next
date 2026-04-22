@@ -1,30 +1,28 @@
-import React from "react";
+import { supabase } from '../../../lib/supabase'
+import { notFound } from 'next/navigation'
+import Link from 'next/link'
 
-type Blog = {
-  title: string;
-  description: string;
-  slug: string;
-};
+export default async function BlogPost({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
+  
+  const { data: blog } = await supabase
+    .from('blogs')
+    .select('*')
+    .eq('slug', slug)
+    .single()
 
-async function getBlogs(): Promise<Blog[]> {
-  const res = await fetch("http://localhost:3000/api/blogs", {
-    cache: "no-store",
-  });
-
-  return res.json();
-}
-
-export default async function BlogDetail({ params }: any) {
-  const blogs = await getBlogs();
-
-  const blog = blogs.find((b) => b.slug === params.slug);
-
-  if (!blog) return <p>Blog not found</p>;
+  if (!blog) notFound()
 
   return (
-    <div style={{ padding: "20px" }}>
+    <article>
       <h1>{blog.title}</h1>
-      <p>{blog.description}</p>
-    </div>
-  );
+      <div className="tags" style={{ margin: '1rem 0' }}>
+        {(blog.tags || []).map((tag: string) => (
+          <span key={tag} className="tag">#{tag}</span>
+        ))}
+      </div>
+      <div dangerouslySetInnerHTML={{ __html: blog.content || '' }} />
+      <Link href="/blog" style={{ display: 'inline-block', marginTop: '2rem', color: '#2e9e4f' }}>← Back to all blogs</Link>
+    </article>
+  )
 }

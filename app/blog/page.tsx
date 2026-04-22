@@ -1,28 +1,32 @@
 import { supabase } from '../../../lib/supabase'
-import { notFound } from 'next/navigation'
 import Link from 'next/link'
 
-export default async function BlogPost({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params
-  
-  const { data: blog } = await supabase
+export default async function BlogPage() {
+  const { data: blogs } = await supabase
     .from('blogs')
     .select('*')
-    .eq('slug', slug)
-    .single()
-
-  if (!blog) notFound()
+    .order('created_at', { ascending: false })
 
   return (
-    <article>
-      <h1>{blog.title}</h1>
-      <div className="tags" style={{ margin: '1rem 0' }}>
-        {(blog.tags || []).map((tag: string) => (
-          <span key={tag} className="tag">#{tag}</span>
-        ))}
+    <div>
+      <h1>📝 All Blogs</h1>
+      <div className="blog-grid">
+        {blogs && blogs.length > 0 ? (
+          blogs.map((blog) => (
+            <Link key={blog.id} href={`/blog/${blog.slug}`} className="blog-card">
+              <h2>{blog.title}</h2>
+              <p>{blog.excerpt}</p>
+              <div className="tags">
+                {(blog.tags || []).map((tag: string) => (
+                  <span key={tag} className="tag">#{tag}</span>
+                ))}
+              </div>
+            </Link>
+          ))
+        ) : (
+          <p>No blogs yet. Add some in Supabase!</p>
+        )}
       </div>
-      <div dangerouslySetInnerHTML={{ __html: blog.content || '' }} />
-      <Link href="/blog" style={{ display: 'inline-block', marginTop: '2rem', color: '#2e9e4f' }}>← Back to all blogs</Link>
-    </article>
+    </div>
   )
 }
