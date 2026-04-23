@@ -1,4 +1,4 @@
-﻿import { PRODUCTS } from "../lib/products"
+﻿import { PRODUCTS } from "../../lib/products"
 
 export default function StorePage() {
   return (
