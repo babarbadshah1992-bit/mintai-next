@@ -1,11 +1,17 @@
-import { supabase } from '../../lib/supabase'
+import { supabase } from '../../../lib/supabase'
 import Link from 'next/link'
 
 export default async function BlogPage() {
-  const { data: blogs } = await supabase
+  const { data: blogs, error } = await supabase
     .from('blogs')
     .select('*')
     .order('created_at', { ascending: false })
+
+  if (error) {
+    console.error('Error fetching blogs:', error)
+  }
+
+  console.log('Blogs fetched:', blogs)
 
   return (
     <div>
