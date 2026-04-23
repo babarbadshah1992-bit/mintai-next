@@ -5,6 +5,7 @@ import { supabase } from "../lib/supabase"
 import { PRODUCTS } from "../lib/products"
 import Link from "next/link"
 import CameraMic from "../components/CameraMic"
+import CameraModal from "../components/CameraModal"
 
 export default function Home() {
   const [input, setInput] = useState("")
@@ -16,12 +17,19 @@ export default function Home() {
   const [liked, setLiked] = useState({})
   const [copyMsg, setCopyMsg] = useState({})
   const [feedbackGiven, setFeedbackGiven] = useState({})
+  const [showCameraModal, setShowCameraModal] = useState(false)
 
   const messagesEndRef = useRef(null)
   const containerRef = useRef(null)
   const lastAiRef = useRef(null)
   const prevLen = useRef(0)
   const isFirst = useRef(true)
+
+  // Handle camera result
+  const handleCameraResult = (result: string) => {
+    setInput(result)
+    setTimeout(() => sendMessage(), 50)
+  }
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -51,46 +59,16 @@ export default function Home() {
     prevLen.current = messages.length
   }, [messages])
 
-  // Improved keyword extraction with synonyms
   const extractKeywords = (text) => {
     const stop = ["hai","hain","ka","ki","ke","ko","se","mein","par","aur","toh","kya","kaise","kahan","ye","vo","tha","the","raha","rahi"]
-    let words = text.toLowerCase().split(/[\s,?!.]+/).filter(w => w.length > 2 && !stop.includes(w))
-    // Add synonyms
-    const synonyms = {
-      sardi: ["cold", "cough", "flu", "throat", "fever"],
-      sar: ["headache", "pain", "dil", "stress"],
-      skin: ["glow", "beauty", "face", "acne", "pimple"],
-      hair: ["bald", "fall", "oil", "shampoo"],
-      bp: ["bloodpressure", "pressure", "highbp"]
-    }
-    let expanded = [...words]
-    for (let w of words) {
-      for (let [key, values] of Object.entries(synonyms)) {
-        if (w === key || values.includes(w)) {
-          expanded.push(key)
-          expanded.push(...values)
-        }
-      }
-    }
-    return Array.from(new Set(expanded))
+    return text.toLowerCase().split(/[\s,?!.]+/).filter(w => w.length > 2 && !stop.includes(w))
   }
 
-  // Find related products – if none, return random 4
   const findRelatedProducts = (keywords) => {
-    let matched = PRODUCTS.filter(p => {
+    return PRODUCTS.filter(p => {
       const txt = `${p.name} ${p.description} ${p.category || ''}`.toLowerCase()
       return keywords.some(k => txt.includes(k))
-    })
-    if (matched.length === 0) {
-      // Random products fallback
-      const shuffled = [...PRODUCTS]
-      for (let i = shuffled.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
-      }
-      matched = shuffled.slice(0, 4)
-    }
-    return matched.slice(0, 4)
+    }).slice(0, 4)
   }
 
   const fetchRelatedBlogs = async (keywords) => {
@@ -162,10 +140,10 @@ export default function Home() {
 
   return (
     <div>
-      <div className="chat-container glass-card">
+      <div className="chat-container">
         <div ref={containerRef} className="messages">
           {!messages.length && (
-            <div style={{ textAlign: 'center', marginTop: '60px', color: '#555' }}>
+            <div style={{ textAlign: 'center', marginTop: '60px', color: '#888' }}>
               <div style={{ fontSize: '3rem' }}>💚🌿</div>
               <p style={{ fontSize: '1.2rem' }}>How can I help you today?</p>
               <p style={{ color: '#2e9e4f' }}>Ask about skincare, health, beauty, or natural remedies...</p>
@@ -202,20 +180,20 @@ export default function Home() {
         </div>
         <div className="input-area">
           <CameraMic onScan={handleScan} onMicResult={handleMic} />
+          <button onClick={() => setShowCameraModal(true)} className="icon-btn" title="AI Camera Scan">🔍</button>
           <input value={input} onChange={e => setInput(e.target.value)} onKeyPress={e => e.key === 'Enter' && sendMessage()} placeholder="Apna sawaal poochhein..." disabled={loading} />
           <button onClick={sendMessage} disabled={loading || !input.trim()}>➤</button>
         </div>
       </div>
 
-      {/* PRODUCTS FIRST */}
       {lastAiIndex !== -1 && (
         <div>
           {relatedProducts.length > 0 && (
             <div style={{ marginTop: '2rem' }}>
-              <h2 className="section-title">🛍️ Related Products</h2>
+              <h2>🛍️ Related Products</h2>
               <div className="product-grid">
                 {relatedProducts.map(p => (
-                  <a key={p.id} href={p.link} target="_blank" rel="noopener noreferrer" className="product-card glass-card">
+                  <a key={p.id} href={p.link} target="_blank" rel="noopener noreferrer" className="product-card">
                     <div className="product-image">{p.image}</div>
                     <h3>{p.name}</h3>
                     <div className="price">
@@ -231,10 +209,10 @@ export default function Home() {
           )}
           {relatedBlogs.length > 0 && (
             <div style={{ marginTop: '2rem' }}>
-              <h2 className="section-title">📝 Related Blogs</h2>
+              <h2>📝 Related Blogs</h2>
               <div className="blog-grid">
                 {relatedBlogs.map(blog => (
-                  <Link key={blog.id} href={`/blog/${blog.slug}`} className="blog-card glass-card">
+                  <Link key={blog.id} href={`/blog/${blog.slug}`} className="blog-card">
                     <h3>{blog.title}</h3>
                     <p>{blog.excerpt}</p>
                     <div className="tags">
@@ -250,10 +228,10 @@ export default function Home() {
 
       {blogs.length > 0 && (
         <div style={{ marginTop: '2rem' }}>
-          <h2 className="section-title">📰 Latest Blogs</h2>
+          <h2>📰 Latest Blogs</h2>
           <div className="blog-grid">
             {blogs.map(blog => (
-              <Link key={blog.id} href={`/blog/${blog.slug}`} className="blog-card glass-card">
+              <Link key={blog.id} href={`/blog/${blog.slug}`} className="blog-card">
                 <h3>{blog.title}</h3>
                 <p>{blog.excerpt}</p>
                 <div className="tags">
@@ -264,6 +242,8 @@ export default function Home() {
           </div>
         </div>
       )}
+
+      {showCameraModal && <CameraModal onClose={() => setShowCameraModal(false)} onResult={handleCameraResult} />}
     </div>
   )
 }
