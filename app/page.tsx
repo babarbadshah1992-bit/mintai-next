@@ -48,31 +48,26 @@ export default function Home() {
     setTimeout(() => sendMessage(), 50)
   }
 
+  // File upload handler
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-  const file = e.target.files?.[0]
-  if (!file) return
-  
-  const reader = new FileReader()
-  reader.onload = async (event) => {
-    const imageData = event.target?.result
-    setInput("📸 Analyzing image...")
-    
-    try {
-      const res = await fetch('/api/analyze-image', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: imageData, type: 'skin' })
-      })
-      const data = await res.json()
-      setInput(data.analysis || "Could not analyze image. Please try again.")
-      setTimeout(() => sendMessage(), 100)
-    } catch (err) {
-      setInput("Sorry, analysis failed. Please try again.")
+    const file = e.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onload = async (event) => {
+        const imageData = event.target?.result
+        const res = await fetch('/api/analyze-image', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ image: imageData, type: 'skin' })
+        })
+        const data = await res.json()
+        setInput(data.analysis || "Analysis complete. Ask me anything about this image.")
+        setTimeout(() => sendMessage(), 100)
+      }
+      reader.readAsDataURL(file)
     }
+    setShowPlusMenu(false)
   }
-  reader.readAsDataURL(file)
-  setShowPlusMenu(false)
-}
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -178,10 +173,10 @@ export default function Home() {
 
   return (
     <div>
-      <div className="chat-container">
+      <div className="chat-container glass-card">
         <div ref={containerRef} className="messages">
           {!messages.length && (
-            <div style={{ textAlign: 'center', marginTop: '60px', color: '#888' }}>
+            <div style={{ textAlign: 'center', marginTop: '60px', color: '#555' }}>
               <div style={{ fontSize: '3rem' }}>💚🌿</div>
               <p style={{ fontSize: '1.2rem' }}>How can I help you today?</p>
               <p style={{ color: '#2e9e4f' }}>Ask about skincare, health, beauty, or natural remedies...</p>
@@ -200,7 +195,7 @@ export default function Home() {
                     <button className="action-btn" onClick={() => handleCopy(idx, msg.content)}>📋 {copyMsg[idx] ? 'Copied!' : 'Copy'}</button>
                     <button className="action-btn" onClick={() => handleShare(msg.content)}>📤 Share</button>
                     <div className="feedback-group">
-                      <span style={{ fontSize: '0.8rem', color: '#888' }}>Helpful?</span>
+                      <span style={{ fontSize: '0.75rem', color: '#888' }}>Helpful?</span>
                       <button className="action-btn" onClick={() => handleFeedback(idx, 'up')} style={{ color: feedbackGiven[idx] === 'up' ? '#2e9e4f' : '#ccc' }}>👍</button>
                       <button className="action-btn" onClick={() => handleFeedback(idx, 'down')} style={{ color: feedbackGiven[idx] === 'down' ? '#ff69b4' : '#ccc' }}>👎</button>
                     </div>
@@ -223,15 +218,15 @@ export default function Home() {
             <div className="plus-menu">
               <button className="plus-btn" onClick={() => setShowPlusMenu(!showPlusMenu)}>+</button>
               {showPlusMenu && (
-  <div className="plus-popup">
-    <label className="popup-item">
-      📷 Upload Photo
-      <input type="file" accept="image/*" onChange={handleFileUpload} style={{ display: 'none' }} />
-    </label>
-    <button className="popup-item" onClick={() => { setShowCameraModal(true); setShowPlusMenu(false); }}>📸 Open Camera</button>
-    <button className="popup-item" onClick={handleMicClick}>🎤 Voice Message</button>
-  </div>
-)}
+                <div className="plus-popup">
+                  <label className="popup-item">
+                    📷 Upload Photo
+                    <input type="file" accept="image/*" onChange={handleFileUpload} style={{ display: 'none' }} />
+                  </label>
+                  <button className="popup-item" onClick={() => { setShowCameraModal(true); setShowPlusMenu(false); }}>📸 Open Camera</button>
+                  <button className="popup-item" onClick={handleMicClick}>🎤 Voice Message</button>
+                </div>
+              )}
             </div>
             <input
               value={input}
@@ -253,7 +248,7 @@ export default function Home() {
               <h2>🛍️ Related Products</h2>
               <div className="product-grid">
                 {relatedProducts.map(p => (
-                  <a key={p.id} href={p.link} target="_blank" rel="noopener noreferrer" className="product-card">
+                  <a key={p.id} href={p.link} target="_blank" rel="noopener noreferrer" className="product-card glass-card">
                     <div className="product-image">{p.image}</div>
                     <h3>{p.name}</h3>
                     <div className="price">
@@ -272,7 +267,7 @@ export default function Home() {
               <h2>📝 Related Blogs</h2>
               <div className="blog-grid">
                 {relatedBlogs.map(blog => (
-                  <Link key={blog.id} href={`/blog/${blog.slug}`} className="blog-card">
+                  <Link key={blog.id} href={`/blog/${blog.slug}`} className="blog-card glass-card">
                     <h3>{blog.title}</h3>
                     <p>{blog.excerpt}</p>
                     <div className="tags">
@@ -291,7 +286,7 @@ export default function Home() {
           <h2>📰 Latest Blogs</h2>
           <div className="blog-grid">
             {blogs.map(blog => (
-              <Link key={blog.id} href={`/blog/${blog.slug}`} className="blog-card">
+              <Link key={blog.id} href={`/blog/${blog.slug}`} className="blog-card glass-card">
                 <h3>{blog.title}</h3>
                 <p>{blog.excerpt}</p>
                 <div className="tags">
