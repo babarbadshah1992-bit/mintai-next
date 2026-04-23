@@ -11,8 +11,6 @@ export default async function BlogPage() {
     console.error('Error fetching blogs:', error)
   }
 
-  console.log('Blogs fetched:', blogs)
-
   return (
     <div>
       <h1>📝 All Blogs</h1>
