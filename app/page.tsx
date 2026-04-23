@@ -48,27 +48,31 @@ export default function Home() {
     setTimeout(() => sendMessage(), 50)
   }
 
-  // File upload handler
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onload = async (event) => {
-        const imageData = event.target?.result
-        // Send to AI analysis
-        const res = await fetch('/api/analyze-image', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ image: imageData, type: 'skin' })
-        })
-        const data = await res.json()
-        setInput(data.analysis)
-        setTimeout(() => sendMessage(), 50)
-      }
-      reader.readAsDataURL(file)
+  const file = e.target.files?.[0]
+  if (!file) return
+  
+  const reader = new FileReader()
+  reader.onload = async (event) => {
+    const imageData = event.target?.result
+    setInput("📸 Analyzing image...")
+    
+    try {
+      const res = await fetch('/api/analyze-image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: imageData, type: 'skin' })
+      })
+      const data = await res.json()
+      setInput(data.analysis || "Could not analyze image. Please try again.")
+      setTimeout(() => sendMessage(), 100)
+    } catch (err) {
+      setInput("Sorry, analysis failed. Please try again.")
     }
-    setShowPlusMenu(false)
   }
+  reader.readAsDataURL(file)
+  setShowPlusMenu(false)
+}
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -219,15 +223,15 @@ export default function Home() {
             <div className="plus-menu">
               <button className="plus-btn" onClick={() => setShowPlusMenu(!showPlusMenu)}>+</button>
               {showPlusMenu && (
-                <div className="plus-popup">
-                  <label className="popup-item">
-                    📷 Upload Photo
-                    <input type="file" accept="image/*" onChange={handleFileUpload} style={{ display: 'none' }} />
-                  </label>
-                  <button className="popup-item" onClick={() => { setShowCameraModal(true); setShowPlusMenu(false); }}>📸 Open Camera</button>
-                  <button className="popup-item" onClick={handleMicClick}>🎤 Voice Message</button>
-                </div>
-              )}
+  <div className="plus-popup">
+    <label className="popup-item">
+      📷 Upload Photo
+      <input type="file" accept="image/*" onChange={handleFileUpload} style={{ display: 'none' }} />
+    </label>
+    <button className="popup-item" onClick={() => { setShowCameraModal(true); setShowPlusMenu(false); }}>📸 Open Camera</button>
+    <button className="popup-item" onClick={handleMicClick}>🎤 Voice Message</button>
+  </div>
+)}
             </div>
             <input
               value={input}
