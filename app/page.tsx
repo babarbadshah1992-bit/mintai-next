@@ -4,7 +4,6 @@ import { useState, useRef, useEffect } from "react"
 import { supabase } from "../lib/supabase"
 import { PRODUCTS } from "../lib/products"
 import Link from "next/link"
-import CameraMic from "../components/CameraMic"
 import CameraModal from "../components/CameraModal"
 
 export default function Home() {
@@ -17,6 +16,7 @@ export default function Home() {
   const [liked, setLiked] = useState({})
   const [copyMsg, setCopyMsg] = useState({})
   const [feedbackGiven, setFeedbackGiven] = useState({})
+  const [showPlusMenu, setShowPlusMenu] = useState(false)
   const [showCameraModal, setShowCameraModal] = useState(false)
 
   const messagesEndRef = useRef(null)
@@ -25,10 +25,49 @@ export default function Home() {
   const prevLen = useRef(0)
   const isFirst = useRef(true)
 
-  // Handle camera result
+  // Voice input handler
+  const handleMicClick = () => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
+    if (!SpeechRecognition) {
+      alert("Voice input not supported in this browser")
+      return
+    }
+    const recognition = new SpeechRecognition()
+    recognition.lang = 'hi-IN'
+    recognition.onresult = (event) => {
+      setInput(event.results[0][0].transcript)
+    }
+    recognition.onerror = () => alert("Mic error. Please allow microphone access.")
+    recognition.start()
+    setShowPlusMenu(false)
+  }
+
+  // Camera result handler
   const handleCameraResult = (result: string) => {
     setInput(result)
     setTimeout(() => sendMessage(), 50)
+  }
+
+  // File upload handler
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onload = async (event) => {
+        const imageData = event.target?.result
+        // Send to AI analysis
+        const res = await fetch('/api/analyze-image', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ image: imageData, type: 'skin' })
+        })
+        const data = await res.json()
+        setInput(data.analysis)
+        setTimeout(() => sendMessage(), 50)
+      }
+      reader.readAsDataURL(file)
+    }
+    setShowPlusMenu(false)
   }
 
   useEffect(() => {
@@ -81,11 +120,6 @@ export default function Home() {
     const prod = PRODUCTS.find(p => p.barcode === barcode)
     if (prod) window.open(prod.link, '_blank')
     else { setInput(`Barcode: ${barcode}`); sendMessage() }
-  }
-
-  const handleMic = (text) => {
-    setInput(text)
-    setTimeout(() => sendMessage(), 50)
   }
 
   const handleLike = (idx) => setLiked(prev => ({ ...prev, [idx]: !prev[idx] }))
@@ -178,11 +212,33 @@ export default function Home() {
           )}
           <div ref={messagesEndRef} />
         </div>
+
+        {/* Professional Input Area */}
         <div className="input-area">
-          <CameraMic onScan={handleScan} onMicResult={handleMic} />
-          <button onClick={() => setShowCameraModal(true)} className="icon-btn" title="AI Camera Scan">🔍</button>
-          <input value={input} onChange={e => setInput(e.target.value)} onKeyPress={e => e.key === 'Enter' && sendMessage()} placeholder="Apna sawaal poochhein..." disabled={loading} />
-          <button onClick={sendMessage} disabled={loading || !input.trim()}>➤</button>
+          <div className="input-wrapper">
+            <div className="plus-menu">
+              <button className="plus-btn" onClick={() => setShowPlusMenu(!showPlusMenu)}>+</button>
+              {showPlusMenu && (
+                <div className="plus-popup">
+                  <label className="popup-item">
+                    📷 Upload Photo
+                    <input type="file" accept="image/*" onChange={handleFileUpload} style={{ display: 'none' }} />
+                  </label>
+                  <button className="popup-item" onClick={() => { setShowCameraModal(true); setShowPlusMenu(false); }}>📸 Open Camera</button>
+                  <button className="popup-item" onClick={handleMicClick}>🎤 Voice Message</button>
+                </div>
+              )}
+            </div>
+            <input
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              onKeyPress={e => e.key === 'Enter' && sendMessage()}
+              placeholder="Ask MintAI..."
+              disabled={loading}
+              className="chat-input"
+            />
+            <button onClick={sendMessage} disabled={loading || !input.trim()} className="send-btn">➤</button>
+          </div>
         </div>
       </div>
 
