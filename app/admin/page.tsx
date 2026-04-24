@@ -9,11 +9,14 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(false)
   const [publishing, setPublishing] = useState(false)
   const [message, setMessage] = useState('')
+  const [editMode, setEditMode] = useState(false)
 
+  // Generate blog using AI
   const generateBlog = async () => {
     if (!topic.trim()) return
     setLoading(true)
     setMessage('')
+    setEditMode(false)
     
     try {
       const res = await fetch('/api/generate-blog', {
@@ -38,6 +41,21 @@ export default function AdminPage() {
     setLoading(false)
   }
 
+  // Handle manual edits
+  const handleContentEdit = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setGeneratedBlog(prev => ({ ...prev, content: e.target.value }))
+  }
+  const handleTitleEdit = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setGeneratedBlog(prev => ({ ...prev, title: e.target.value }))
+  }
+  const handleExcerptEdit = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setGeneratedBlog(prev => ({ ...prev, excerpt: e.target.value }))
+  }
+  const handleTagsEdit = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setGeneratedBlog(prev => ({ ...prev, tags: e.target.value.split(',').map(t => t.trim()) }))
+  }
+
+  // Publish to Supabase
   const publishBlog = async () => {
     if (!generatedBlog) return
     setPublishing(true)
@@ -58,13 +76,17 @@ export default function AdminPage() {
       setMessage('✓ Blog published successfully!')
       setGeneratedBlog(null)
       setTopic('')
+      setEditMode(false)
     }
     setPublishing(false)
   }
 
+  // Word count helper
+  const wordCount = (text: string) => text ? text.split(/\s+/).filter(w => w.length > 0).length : 0
+
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '40px 20px' }}>
-      <h1 style={{ marginBottom: '20px' }}>✍️ Admin - Blog Generator</h1>
+    <div style={{ maxWidth: '900px', margin: '0 auto', padding: '40px 20px' }}>
+      <h1 style={{ marginBottom: '20px' }}>✍️ Admin - Blog Generator (Plus)</h1>
       
       <div style={{ marginBottom: '30px' }}>
         <input
@@ -106,29 +128,67 @@ export default function AdminPage() {
 
       {generatedBlog && (
         <div style={{ border: '1px solid #ddd', padding: '20px', borderRadius: '12px', background: '#f9f9f9' }}>
-          <h2>Preview</h2>
-          <h3>{generatedBlog.title}</h3>
-          <p><strong>Slug:</strong> {generatedBlog.slug}</p>
-          <p><strong>Excerpt:</strong> {generatedBlog.excerpt}</p>
-          <div dangerouslySetInnerHTML={{ __html: generatedBlog.content }} />
-          <p><strong>Tags:</strong> {generatedBlog.tags.join(', ')}</p>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+            <h2>📄 Preview & Edit</h2>
+            <button onClick={() => setEditMode(!editMode)} style={{ background: '#ff69b4', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '20px', cursor: 'pointer' }}>
+              {editMode ? 'Preview Mode' : 'Edit Mode'}
+            </button>
+          </div>
+
+          {editMode ? (
+            <div>
+              <div style={{ marginBottom: '15px' }}>
+                <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '5px' }}>Title:</label>
+                <input type="text" value={generatedBlog.title} onChange={handleTitleEdit} style={{ width: '100%', padding: '8px', borderRadius: '8px', border: '1px solid #ccc' }} />
+              </div>
+              <div style={{ marginBottom: '15px' }}>
+                <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '5px' }}>Excerpt:</label>
+                <input type="text" value={generatedBlog.excerpt} onChange={handleExcerptEdit} style={{ width: '100%', padding: '8px', borderRadius: '8px', border: '1px solid #ccc' }} />
+              </div>
+              <div style={{ marginBottom: '15px' }}>
+                <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '5px' }}>Tags (comma separated):</label>
+                <input type="text" value={generatedBlog.tags?.join(', ') || ''} onChange={handleTagsEdit} style={{ width: '100%', padding: '8px', borderRadius: '8px', border: '1px solid #ccc' }} />
+              </div>
+              <div style={{ marginBottom: '15px' }}>
+                <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '5px' }}>Content (HTML):</label>
+                <textarea
+                  value={generatedBlog.content}
+                  onChange={handleContentEdit}
+                  rows={12}
+                  style={{ width: '100%', padding: '8px', borderRadius: '8px', border: '1px solid #ccc', fontFamily: 'monospace' }}
+                />
+                <div style={{ textAlign: 'right', fontSize: '12px', color: '#666', marginTop: '4px' }}>
+                  Word count: {wordCount(generatedBlog.content)} words
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div>
+              <h3>{generatedBlog.title}</h3>
+              <p><strong>Slug:</strong> {generatedBlog.slug}</p>
+              <p><strong>Excerpt:</strong> {generatedBlog.excerpt}</p>
+              <div dangerouslySetInnerHTML={{ __html: generatedBlog.content }} />
+              <p><strong>Tags:</strong> {generatedBlog.tags?.join(', ')}</p>
+            </div>
+          )}
           
-          <button
-            onClick={publishBlog}
-            disabled={publishing}
-            style={{
-              background: '#ff69b4',
-              color: 'white',
-              padding: '12px 24px',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              marginTop: '20px',
-              fontSize: '16px'
-            }}
-          >
-            {publishing ? 'Publishing...' : '📢 Publish Blog'}
-          </button>
+          <div style={{ marginTop: '20px', display: 'flex', gap: '15px' }}>
+            <button
+              onClick={publishBlog}
+              disabled={publishing}
+              style={{
+                background: '#ff69b4',
+                color: 'white',
+                padding: '12px 24px',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontSize: '16px'
+              }}
+            >
+              {publishing ? 'Publishing...' : '📢 Publish Blog'}
+            </button>
+          </div>
         </div>
       )}
     </div>
