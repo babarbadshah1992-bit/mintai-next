@@ -531,3 +531,27 @@ body {
     grid-template-columns: 1fr;
   }
 }
+/* ===== FIX: MOBILE SEND BUTTON ===== */
+@media (max-width: 480px) {
+  .input-wrapper {
+    gap: 6px;
+    padding: 4px 4px 4px 12px;
+  }
+  .plus-btn, .send-btn {
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 1rem !important;
+  }
+  .chat-input {
+    font-size: 0.85rem !important;
+    padding: 8px 0 !important;
+  }
+  .plus-popup {
+    min-width: 140px;
+    bottom: 45px;
+  }
+  .popup-item {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+  }
+}
