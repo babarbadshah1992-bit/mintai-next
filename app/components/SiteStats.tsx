@@ -1,8 +1,8 @@
 "use client"
 
 import { useEffect, useState } from 'react'
-import { supabase } from '../lib/supabase'
-import { PRODUCTS } from '../lib/products'
+import { supabase } from '../../lib/supabase'      // ← sahi path
+import { PRODUCTS } from '../../lib/products'       // ← sahi path
 
 export default function SiteStats() {
   const [visitors, setVisitors] = useState<number | null>(null)
@@ -35,7 +35,7 @@ export default function SiteStats() {
   }, [])
 
   return (
-    <div className="site-stats">
+    <div className="site-stats" style={{ display: 'flex', justifyContent: 'center', gap: '20px', margin: '10px 0', fontSize: '0.8rem' }}>
       <span>👁️ {visitors !== null ? visitors : '...'} Visitors</span>
       <span>🛍️ {productCount} Products</span>
       <span>📝 {blogCount !== null ? blogCount : '...'} Blogs</span>

@@ -1,6 +1,7 @@
 ﻿import './globals.css'
 import Link from 'next/link'
 import TransitionEffect from './TransitionEffect'
+import SiteStats from './components/SiteStats'
 
 export const metadata = {
   title: 'MintAI - Health & Beauty Assistant',
@@ -51,6 +52,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </div>
             <div className="footer-bottom">
               <p>💚 Aapki sehat, hamari zimmedari</p>
+              <SiteStats />
               <p>&copy; {new Date().getFullYear()} MintAI. All rights reserved.</p>
             </div>
           </div>
