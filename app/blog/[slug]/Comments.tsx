@@ -38,7 +38,7 @@ export default function Comments({ slug }: { slug: string }) {
       setAuthor('')
       fetchComments()
     } else {
-      alert('Error posting comment')
+      alert('Error posting comment: ' + error.message)
     }
     setSubmitting(false)
   }

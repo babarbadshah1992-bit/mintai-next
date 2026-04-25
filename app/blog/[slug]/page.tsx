@@ -1,7 +1,7 @@
 import { supabase } from '../../../lib/supabase'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import Comments from './Comments'   // ← same folder mein Comments.tsx
+import Comments from './Comments'
 
 export default async function BlogPost({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
