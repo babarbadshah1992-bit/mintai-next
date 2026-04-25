@@ -25,53 +25,15 @@ export default function Home() {
   const prevLen = useRef(0)
   const isFirst = useRef(true)
 
-  // Voice input handler
-  const handleMicClick = () => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
-    if (!SpeechRecognition) {
-      alert("Voice input not supported in this browser")
-      return
-    }
-    const recognition = new SpeechRecognition()
-    recognition.lang = 'hi-IN'
-    recognition.onresult = (event) => {
-      setInput(event.results[0][0].transcript)
-    }
-    recognition.onerror = () => alert("Mic error. Please allow microphone access.")
-    recognition.start()
-    setShowPlusMenu(false)
-  }
-
-  // Camera result handler
-  const handleCameraResult = (result: string) => {
-    setInput(result)
-    setTimeout(() => sendMessage(), 50)
-  }
-
-  // File upload handler
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onload = async (event) => {
-        const imageData = event.target?.result
-        const res = await fetch('/api/analyze-image', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ image: imageData, type: 'skin' })
-        })
-        const data = await res.json()
-        setInput(data.analysis || "Analysis complete. Ask me anything about this image.")
-        setTimeout(() => sendMessage(), 100)
-      }
-      reader.readAsDataURL(file)
-    }
-    setShowPlusMenu(false)
-  }
-
+  // Fetch latest blogs for home page
   useEffect(() => {
     const fetchBlogs = async () => {
-      const { data } = await supabase.from('blogs').select('*').order('created_at', { ascending: false }).limit(3)
+      const { data, error } = await supabase
+        .from('blogs')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(3)
+      if (error) console.error('Error fetching blogs:', error)
       if (data) setBlogs(data)
     }
     fetchBlogs()
@@ -111,7 +73,12 @@ export default function Home() {
 
   const fetchRelatedBlogs = async (keywords) => {
     if (!keywords.length) return []
-    const { data } = await supabase.from('blogs').select('id,title,slug,excerpt,tags').overlaps('tags', keywords).limit(3)
+    const { data, error } = await supabase
+      .from('blogs')
+      .select('id,title,slug,excerpt,tags')
+      .overlaps('tags', keywords)
+      .limit(3)
+    if (error) return []
     return data || []
   }
 
@@ -119,6 +86,11 @@ export default function Home() {
     const prod = PRODUCTS.find(p => p.barcode === barcode)
     if (prod) window.open(prod.link, '_blank')
     else { setInput(`Barcode: ${barcode}`); sendMessage() }
+  }
+
+  const handleMic = (text) => {
+    setInput(text)
+    setTimeout(() => sendMessage(), 50)
   }
 
   const handleLike = (idx) => setLiked(prev => ({ ...prev, [idx]: !prev[idx] }))
@@ -136,6 +108,31 @@ export default function Home() {
     alert(`Thank you for your ${type === 'up' ? 'positive' : 'honest'} feedback!`)
   }
 
+  const handleFileUpload = (e) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onload = async (event) => {
+        const imageData = event.target?.result
+        const res = await fetch('/api/analyze-image', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ image: imageData, type: 'skin' })
+        })
+        const data = await res.json()
+        setInput(data.analysis || "Analysis complete.")
+        setTimeout(() => sendMessage(), 100)
+      }
+      reader.readAsDataURL(file)
+    }
+    setShowPlusMenu(false)
+  }
+
+  const handleCameraResult = (result) => {
+    setInput(result)
+    setTimeout(() => sendMessage(), 50)
+  }
+
   async function sendMessage() {
     const q = input.trim()
     if (!q) return
@@ -144,8 +141,7 @@ export default function Home() {
     setLoading(true)
 
     const keywords = extractKeywords(q)
-    const prods = findRelatedProducts(keywords)
-    setRelatedProducts(prods)
+    setRelatedProducts(findRelatedProducts(keywords))
     const relBlogs = await fetchRelatedBlogs(keywords)
     setRelatedBlogs(relBlogs)
 
@@ -212,7 +208,6 @@ export default function Home() {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Professional Input Area */}
         <div className="input-area">
           <div className="input-wrapper">
             <div className="plus-menu">
@@ -224,7 +219,7 @@ export default function Home() {
                     <input type="file" accept="image/*" onChange={handleFileUpload} style={{ display: 'none' }} />
                   </label>
                   <button className="popup-item" onClick={() => { setShowCameraModal(true); setShowPlusMenu(false); }}>📸 Open Camera</button>
-                  <button className="popup-item" onClick={handleMicClick}>🎤 Voice Message</button>
+                  <button className="popup-item" onClick={handleMic}>🎤 Voice Message</button>
                 </div>
               )}
             </div>

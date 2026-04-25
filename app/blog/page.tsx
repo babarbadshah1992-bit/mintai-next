@@ -2,10 +2,15 @@ import { supabase } from '../../lib/supabase'
 import Link from 'next/link'
 
 export default async function BlogPage() {
-  const { data: blogs } = await supabase
+  const { data: blogs, error } = await supabase
     .from('blogs')
     .select('*')
     .order('created_at', { ascending: false })
+
+  if (error) {
+    console.error('Supabase error:', error)
+    return <div>Error loading blogs. Please check Supabase connection.</div>
+  }
 
   return (
     <div>
@@ -13,7 +18,7 @@ export default async function BlogPage() {
       <div className="blog-grid">
         {blogs && blogs.length > 0 ? (
           blogs.map((blog) => (
-            <Link key={blog.id} href={`/blog/${blog.slug}`} className="blog-card">
+            <Link key={blog.id} href={`/blog/${blog.slug}`} className="blog-card glass-card">
               <h2>{blog.title}</h2>
               <p>{blog.excerpt}</p>
               <div className="tags">
