@@ -46,6 +46,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <span>📧 mintai@support.com</span>
               </div>
             </div>
+            <div className="footer-mission" style={{ fontSize: '0.8rem', color: '#888', textAlign: 'center', margin: '0 0 1rem 0' }}>
+  🌟 Vision: Healthy India | 🎯 Mission: AI for every health query
+</div>
             <div className="footer-bottom">
               <p>💚 Aapki sehat, hamari zimmedari</p>
               <p>&copy; {new Date().getFullYear()} MintAI. All rights reserved.</p>
