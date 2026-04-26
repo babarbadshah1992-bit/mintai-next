@@ -1,45 +1,48 @@
 import { NextResponse } from 'next/server'
-import OpenAI from 'openai'
+import Groq from 'groq-sdk'
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+const groq = new Groq({
+  apiKey: process.env.GROQ_API_KEY || '',
+})
 
 export async function POST(req: Request) {
   try {
     const { image, type } = await req.json()
-    
-    const prompts = {
-      skin: "Analyze this skin image. Tell the user in simple Hinglish (Hindi+English) about: skin type (oily/dry/combination), any visible issues (acne, dark spots, pigmentation), and suggest natural remedies and products. Keep it positive and helpful. Response should be 3-4 lines in Hinglish.",
-      
-      food: "Identify the food item in this image. Tell the user in simple Hinglish: what is it, its health benefits, nutritional value, and how to eat it. Response should be 3-4 lines in Hinglish.",
-      
-      plant: "Identify the medicinal plant in this image. Tell the user in simple Hinglish: plant name in Hindi/English, its ayurvedic benefits, how to use it for common health issues (like cold, digestion, skin). Response should be 3-4 lines in Hinglish.",
-      
-      report: "Analyze this medical report image. Explain the key findings in very simple Hinglish that a common person can understand. Mention important values and what they mean. Add a disclaimer that this is not a doctor's advice. Response should be 5-6 lines in Hinglish."
+
+    if (!process.env.GROQ_API_KEY) {
+      return NextResponse.json({ error: 'Server config error' }, { status: 500 })
     }
-    
-    // Convert image to base64 for OpenAI vision
-    const base64Image = image.split(',')[1]
-    
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+
+    // Base64 image data (remove data:image prefix if present)
+    let base64Image = image
+    if (image.includes('base64,')) {
+      base64Image = image.split('base64,')[1]
+    }
+
+    const prompt = type === 'skin' ? 'Analyze this skin image. Tell in Hinglish if there are any issues like acne, dark spots, or dryness. Suggest basic remedies.' :
+                   type === 'food' ? 'Identify this food item and tell its health benefits in Hinglish.' :
+                   type === 'plant' ? 'Identify this medicinal plant and explain its benefits in Hinglish.' :
+                   'Explain this medical report in simple Hinglish for a common person.'
+
+    const completion = await groq.chat.completions.create({
       messages: [
         {
-          role: "user",
+          role: 'user',
           content: [
-            { type: "text", text: prompts[type as keyof typeof prompts] },
-            { type: "image_url", image_url: { url: image } }
+            { type: 'text', text: prompt },
+            { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${base64Image}` } }
           ]
         }
       ],
+      model: 'llava-v1.5-7b-4096-preview', // Free vision model
+      temperature: 0.7,
       max_tokens: 500,
-      temperature: 0.7
     })
-    
-    const analysis = response.choices[0].message.content
-    
+
+    const analysis = completion.choices[0]?.message?.content || 'Could not analyze image.'
     return NextResponse.json({ analysis })
   } catch (error) {
-    console.error('Analysis error:', error)
-    return NextResponse.json({ analysis: "Sorry, could not analyze the image. Please try again." })
+    console.error('Groq Vision API error:', error)
+    return NextResponse.json({ analysis: 'Image analysis failed. Please try again.' }, { status: 500 })
   }
 }
