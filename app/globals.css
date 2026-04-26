@@ -555,3 +555,18 @@ body {
     font-size: 0.8rem;
   }
 }
+/* Mobile footer center */
+@media (max-width: 768px) {
+  .footer-inner {
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+  }
+  .footer-links {
+    justify-content: center;
+  }
+  .footer-brand, .footer-social {
+    text-align: center;
+  }
+}
