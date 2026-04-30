@@ -10,11 +10,12 @@ export async function POST(req: Request) {
     const { question } = await req.json()
 
     if (!process.env.OPENAI_API_KEY) {
-      return NextResponse.json({ error: 'OpenAI API key missing' }, { status: 500 })
+      console.error('OPENAI_API_KEY is missing')
+      return NextResponse.json({ error: 'Server config error' }, { status: 500 })
     }
 
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',   // sasta aur tez
+      model: 'gpt-4o-mini',
       messages: [
         {
           role: 'system',
