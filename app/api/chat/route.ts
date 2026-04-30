@@ -1,20 +1,35 @@
 import { NextResponse } from 'next/server'
+import OpenAI from 'openai'
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+})
 
 export async function POST(req: Request) {
   try {
     const { question } = await req.json()
-    
-    // Simple mock responses for common health queries
-    const answers: Record<string, string> = {
-      sardi: "Sardi ke liye garam paani piye, adrak wali chai banaaye, tulsi ka kadha peeye, aur aaram karein. Vitamin C lena bhi achha hai.",
-      head: "Sar dard ke liye thanda paani malish karein, nariyal tel lagaaye, aaram karein aur adrak ki chai piyein.",
+
+    if (!process.env.OPENAI_API_KEY) {
+      return NextResponse.json({ error: 'OpenAI API key missing' }, { status: 500 })
     }
-    
-    let answer = answers[question.toLowerCase()] || 
-      `MintAI: ${question} ke liye natural remedies: swasth rahne ke liye paani piye, yoga karein, aur doctor se consult karein.`
-    
+
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4o-mini',   // sasta aur tez
+      messages: [
+        {
+          role: 'system',
+          content: 'You are MintAI, a helpful health and beauty assistant. Answer in Hinglish (mix of Hindi and English) with simple, natural remedies and tips. Keep it short, friendly, and practical.'
+        },
+        { role: 'user', content: question }
+      ],
+      temperature: 0.7,
+      max_tokens: 500,
+    })
+
+    const answer = completion.choices[0]?.message?.content || 'Sorry, could not generate response.'
     return NextResponse.json({ answer })
-  } catch (error) {
-    return NextResponse.json({ answer: "Kripya dubara try karein." })
+  } catch (error: any) {
+    console.error('OpenAI API error:', error)
+    return NextResponse.json({ error: error.message || 'Something went wrong' }, { status: 500 })
   }
 }
