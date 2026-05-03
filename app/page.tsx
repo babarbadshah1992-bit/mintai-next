@@ -12,7 +12,7 @@ export default function Home() {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [blogs, setBlogs] = useState([]);               // latest 3 blogs (static)
+  const [blogs, setBlogs] = useState([]);               // latest 3 blogs
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [relatedBlogs, setRelatedBlogs] = useState([]);
   const [liked, setLiked] = useState({});
@@ -238,7 +238,7 @@ export default function Home() {
 
   return (
     <div>
-      {/* Chat Container – unchanged */}
+      {/* Chat Container – same as before */}
       <div className="chat-container glass-card">
         <div ref={containerRef} className="messages">
           {!messages.length && (
@@ -319,9 +319,7 @@ export default function Home() {
                   <button className="popup-item" onClick={() => { setShowCameraModal(true); setShowPlusMenu(false); }}>
                     📸 Open Camera
                   </button>
-                  <button className="popup-item" onClick={handleMic}>
-                    🎤 Voice Message
-                  </button>
+                  <button className="popup-item" onClick={handleMic}>🎤 Voice Message</button>
                 </div>
               )}
             </div>
@@ -340,10 +338,9 @@ export default function Home() {
         </div>
       </div>
 
-      {/* 👇 AFTER AI ANSWER – Sections in required order */}
+      {/* 👇 AFTER AI ANSWER – ONLY Related Products + Related Blogs (appear only after typing) */}
       {lastAiIndex !== -1 && (
         <div>
-          {/* 1. Related Products */}
           {relatedProducts.length > 0 && (
             <div style={{ marginTop: "2rem" }}>
               <h2>🛍️ Related Products</h2>
@@ -364,7 +361,6 @@ export default function Home() {
             </div>
           )}
 
-          {/* 2. Related Blogs (matched to query) */}
           {relatedBlogs.length > 0 && (
             <div style={{ marginTop: "2rem" }}>
               <h2>📝 Related Blogs</h2>
@@ -384,7 +380,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* 3. Latest Blogs (always visible – top 3 from supabase) */}
+      {/* 👇 LATEST BLOGS – ALWAYS visible (even before any message) */}
       {blogs.length > 0 && (
         <div style={{ marginTop: "2rem" }}>
           <h2>📰 Latest Blogs</h2>
@@ -402,7 +398,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* 4. Quick Health Check Widget (bottom, always visible) */}
+      {/* 👇 QUICK HEALTH CHECK – ALWAYS visible (bottom) */}
       <div className="mt-12 mb-8 bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-green-100">
         <h2 className="text-2xl font-bold text-center mb-2">🌟 Quick Health Check</h2>
         <p className="text-center text-gray-600 mb-6">
