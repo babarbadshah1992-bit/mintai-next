@@ -18,13 +18,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <p>Powered by AI</p>
               </div>
               <nav className="nav">
-  <Link href="/">🏠Home</Link>
-  <Link href="/blog">🖋️Blog</Link>
-  <Link href="/store">🛒Store</Link>
-  <Link href="/health-score">🩷Health Score</Link>   {/* naya link */}
-  <Link href="/games">🧠Mind Gym</Link>                {/* naya link */}
+  <Link href="/">Home</Link>
+  <Link href="/blog">Blog</Link>
+  <Link href="/store">Store</Link>
+  <Link href="/wellness">Wellness</Link>
   <Link href="/about">About</Link>
-</nav>
+  </nav>
             </div>
           </div>
         </header>
@@ -44,6 +43,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <Link href="/">Home</Link>
                 <Link href="/blog">Blog</Link>
                 <Link href="/store">Store</Link>
+                <Link href="/wellness">Wellness</Link>
                 <Link href="/about">About</Link>
               </div>
               <div className="footer-social">
