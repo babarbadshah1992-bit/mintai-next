@@ -3,14 +3,9 @@ import OpenAI from 'openai';
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-// Helper to detect language mix
-function detectLanguage(text: string): 'en' | 'hi' | 'hinglish' {
+function detectLanguage(text: string): 'en' | 'hi' {
   const hindiRegex = /[\u0900-\u097F]/;
-  if (hindiRegex.test(text)) {
-    // If contains Devanagari script, treat as Hindi/Hinglish
-    return 'hinglish';
-  }
-  // Otherwise assume English
+  if (hindiRegex.test(text)) return 'hi';
   return 'en';
 }
 
@@ -18,27 +13,16 @@ export async function POST(req: Request) {
   try {
     const { question } = await req.json();
 
-    // If no API key or quota error, return a friendly fallback
     if (!process.env.OPENAI_API_KEY) {
       return NextResponse.json({ 
-        answer: "Hey! 👋 I'm MintAI. I can't answer right now (API key missing). Please try again later. Meanwhile, you can browse our health tips and blogs." 
+        answer: "Hey! 👋 I'm MintAI. API key missing. Try again later." 
       });
     }
 
     const lang = detectLanguage(question);
-    let systemPrompt = '';
-    
-    if (lang === 'en') {
-      systemPrompt = `You are MintAI, a friendly health and beauty assistant. 
-Answer in natural, conversational English – like a knowledgeable friend. 
-Keep it short, practical, and helpful. Never use fixed labels like "Dadi ka nuskha". 
-Focus on home remedies, wellness tips, and product suggestions.`;
-    } else {
-      systemPrompt = `You are MintAI, a friendly health and beauty assistant. 
-Answer in Hinglish (mix of Hindi and English) – just like a friend would talk. 
-Never use fixed labels like "Dadi ka nuskha". 
-Keep it short, practical, and warm. Focus on home remedies, wellness tips, and product suggestions.`;
-    }
+    const systemPrompt = lang === 'en'
+      ? `You are MintAI, a friendly health and beauty assistant. Answer in natural, conversational English – like a knowledgeable friend. Keep it short, practical, and helpful.`
+      : `You are MintAI, a friendly health and beauty assistant. Answer in Hinglish (mix Hindi and English) – just like a friend would talk. Keep it short, warm, and practical.`;
 
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
@@ -50,23 +34,14 @@ Keep it short, practical, and warm. Focus on home remedies, wellness tips, and p
       max_tokens: 300,
     });
 
-    let answer = completion.choices[0]?.message?.content || 
-      (lang === 'en' ? "Sorry, I couldn't think of an answer. Please try again." : "Maaf karna, kuch jawab nahi soch paaya. Phir se try karo.");
+    const answer = completion.choices[0]?.message?.content || 
+      (lang === 'en' ? "Sorry, I couldn't think of an answer." : "Maaf karna, kuch jawab nahi soch paaya.");
 
     return NextResponse.json({ answer });
   } catch (error: any) {
-    console.error('Chat API error:', error);
-    
-    // Handle OpenAI quota error specifically
-    if (error?.code === 'insufficient_quota') {
-      return NextResponse.json({ 
-        answer: "🙏 Our AI service is temporarily out of quota. We're working to restore it. In the meantime, check out our blogs and health tips – they're all free!" 
-      });
-    }
-    
-    // Generic fallback
+    console.error(error);
     return NextResponse.json({ 
-      answer: "Hey! Something went wrong. Please refresh the page and try again. 🙏" 
+      answer: "🙏 Our AI service is temporarily unavailable. Please check back later." 
     });
   }
 }

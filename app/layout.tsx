@@ -1,14 +1,18 @@
-﻿import './globals.css'
-import Link from 'next/link'
+﻿import './globals.css';
+import Link from 'next/link';
+import { Inter, Poppins } from 'next/font/google';
+
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
+const poppins = Poppins({ weight: ['400', '500', '600', '700'], subsets: ['latin'], variable: '--font-poppins' });
 
 export const metadata = {
   title: 'MintAI - Health & Beauty Assistant',
   description: 'AI-powered health and beauty recommendations',
-}
+};
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${inter.variable} ${poppins.variable}`}>
       <body>
         <header className="header">
           <div className="container">
@@ -18,20 +22,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <p>Powered by AI</p>
               </div>
               <nav className="nav">
-  <Link href="/">Home</Link>
-  <Link href="/blog">Blog</Link>
-  <Link href="/store">Store</Link>
-  <Link href="/wellness">Wellness</Link>
-  <Link href="/about">About</Link>
-  </nav>
+                <Link href="/">Home</Link>
+                <Link href="/blog">Blog</Link>
+                <Link href="/store">Store</Link>
+                <Link href="/wellness">Wellness</Link>
+                <Link href="/about">About</Link>
+              </nav>
             </div>
           </div>
         </header>
-
         <main className="main">
           <div className="container">{children}</div>
         </main>
-
         <footer className="footer">
           <div className="container">
             <div className="footer-inner">
@@ -58,5 +60,5 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </footer>
       </body>
     </html>
-  )
+  );
 }
