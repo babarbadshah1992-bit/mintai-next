@@ -11,7 +11,7 @@ export default function Home() {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [blogs, setBlogs] = useState([]);               // latest 3 blogs
+  const [blogs, setBlogs] = useState([]);
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [relatedBlogs, setRelatedBlogs] = useState([]);
   const [liked, setLiked] = useState({});
@@ -20,7 +20,7 @@ export default function Home() {
   const [showPlusMenu, setShowPlusMenu] = useState(false);
   const [showCameraModal, setShowCameraModal] = useState(false);
 
-  // Health Score Widget States
+  // Health Score States
   const [scoreAge, setScoreAge] = useState("");
   const [scoreSleep, setScoreSleep] = useState("");
   const [scoreStress, setScoreStress] = useState("");
@@ -33,7 +33,7 @@ export default function Home() {
   const prevLen = useRef(0);
   const isFirst = useRef(true);
 
-  // Fetch latest blogs (top 3 by date)
+  // Fetch latest blogs (ALWAYS visible)
   useEffect(() => {
     const fetchLatestBlogs = async () => {
       const { data } = await supabase
@@ -46,7 +46,7 @@ export default function Home() {
     fetchLatestBlogs();
   }, []);
 
-  // Auto‑scroll logic (unchanged)
+  // Auto-scroll logic
   useEffect(() => {
     if (!messages.length) return;
     const last = messages[messages.length - 1];
@@ -57,7 +57,9 @@ export default function Home() {
     }
     if (isNew) {
       if (last.role === "user") {
-        setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" }), 100);
+        setTimeout(() => {
+          messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+        }, 100);
       } else if (last.role === "ai") {
         setTimeout(() => {
           if (lastAiRef.current && containerRef.current) {
@@ -71,21 +73,19 @@ export default function Home() {
   }, [messages]);
 
   const extractKeywords = (text) => {
-    const stop = ["hai","hain","ka","ki","ke","ko","se","mein","par","aur","toh","kya","kaise","kahan","ye","vo","tha","the","raha","rahi"];
+    const stop = ["hai", "hain", "ka", "ki", "ke", "ko", "se", "mein", "par", "aur", "toh", "kya", "kaise", "kahan", "ye", "vo", "tha", "the", "raha", "rahi"];
     return text.toLowerCase().split(/[\s,?!.]+/).filter(w => w.length > 2 && !stop.includes(w));
   };
 
+  // Fetch related products from Supabase
   const findRelatedProducts = async (keywords) => {
-  // Fetch all products from Supabase
-  const { data, error } = await supabase.from("products").select("*");
-  if (error || !data) return [];
-  
-  // Filter by keywords
-  return data.filter(p => {
-    const txt = `${p.name} ${p.description} ${p.category || ''}`.toLowerCase();
-    return keywords.some(k => txt.includes(k));
-  }).slice(0, 4);
-};
+    const { data, error } = await supabase.from("products").select("*");
+    if (error || !data) return [];
+    return data.filter(p => {
+      const txt = `${p.name} ${p.description} ${p.category || ''}`.toLowerCase();
+      return keywords.some(k => txt.includes(k));
+    }).slice(0, 4);
+  };
 
   const fetchRelatedBlogs = async (keywords) => {
     if (!keywords.length) return [];
@@ -98,17 +98,17 @@ export default function Home() {
   };
 
   const handleScan = async (barcode) => {
-  const { data: prod } = await supabase
-    .from("products")
-    .select("link")
-    .eq("barcode", barcode)
-    .single();
-  if (prod) window.open(prod.link, "_blank");
-  else {
-    setInput(`Barcode: ${barcode}`);
-    sendMessage();
-  }
-};
+    const { data: prod } = await supabase
+      .from("products")
+      .select("link")
+      .eq("barcode", barcode)
+      .single();
+    if (prod) window.open(prod.link, "_blank");
+    else {
+      setInput(`Barcode: ${barcode}`);
+      sendMessage();
+    }
+  };
 
   const handleMic = (text) => {
     setInput(text);
@@ -162,7 +162,8 @@ export default function Home() {
     setInput("");
     setLoading(true);
     const keywords = extractKeywords(q);
-    setRelatedBlogs(await fetchRelatedBlogs(keywords));  // ✅
+    const products = await findRelatedProducts(keywords);
+    setRelatedProducts(products);
     const relBlogs = await fetchRelatedBlogs(keywords);
     setRelatedBlogs(relBlogs);
     try {
@@ -189,8 +190,7 @@ export default function Home() {
     setLoading(false);
   }
 
-  const lastAiIndex =
-    messages.length && messages[messages.length - 1]?.role === "ai" ? messages.length - 1 : -1;
+  const lastAiIndex = messages.length && messages[messages.length - 1]?.role === "ai" ? messages.length - 1 : -1;
 
   // Health Score handler
   const handleHealthScore = async () => {
@@ -244,7 +244,7 @@ export default function Home() {
 
   return (
     <div>
-      {/* ===== CHAT CONTAINER (unchanged) ===== */}
+      {/* Chat Container */}
       <div className="chat-container glass-card">
         <div ref={containerRef} className="messages">
           {!messages.length && (
@@ -270,13 +270,31 @@ export default function Home() {
                 </div>
                 {msg.role === "ai" && (
                   <div className="action-buttons">
-                    <button className="action-btn" onClick={() => handleLike(idx)}>{liked[idx] ? "❤️" : "🤍"} Love</button>
-                    <button className="action-btn" onClick={() => handleCopy(idx, msg.content)}>📋 {copyMsg[idx] ? "Copied!" : "Copy"}</button>
-                    <button className="action-btn" onClick={() => handleShare(msg.content)}>📤 Share</button>
+                    <button className="action-btn" onClick={() => handleLike(idx)}>
+                      {liked[idx] ? "❤️" : "🤍"} Love
+                    </button>
+                    <button className="action-btn" onClick={() => handleCopy(idx, msg.content)}>
+                      📋 {copyMsg[idx] ? "Copied!" : "Copy"}
+                    </button>
+                    <button className="action-btn" onClick={() => handleShare(msg.content)}>
+                      📤 Share
+                    </button>
                     <div className="feedback-group">
                       <span style={{ fontSize: "0.75rem", color: "#888" }}>Helpful?</span>
-                      <button className="action-btn" onClick={() => handleFeedback(idx, "up")} style={{ color: feedbackGiven[idx] === "up" ? "#2e9e4f" : "#ccc" }}>👍</button>
-                      <button className="action-btn" onClick={() => handleFeedback(idx, "down")} style={{ color: feedbackGiven[idx] === "down" ? "#ff69b4" : "#ccc" }}>👎</button>
+                      <button
+                        className="action-btn"
+                        onClick={() => handleFeedback(idx, "up")}
+                        style={{ color: feedbackGiven[idx] === "up" ? "#2e9e4f" : "#ccc" }}
+                      >
+                        👍
+                      </button>
+                      <button
+                        className="action-btn"
+                        onClick={() => handleFeedback(idx, "down")}
+                        style={{ color: feedbackGiven[idx] === "down" ? "#ff69b4" : "#ccc" }}
+                      >
+                        👎
+                      </button>
                     </div>
                   </div>
                 )}
@@ -285,12 +303,15 @@ export default function Home() {
           })}
           {loading && (
             <div className="message ai-message">
-              <div className="typing"><span></span><span></span><span></span></div>
+              <div className="typing">
+                <span></span><span></span><span></span>
+              </div>
             </div>
           )}
           <div ref={messagesEndRef} />
         </div>
 
+        {/* Input Area */}
         <div className="input-area">
           <div className="input-wrapper">
             <div className="plus-menu">
@@ -301,7 +322,9 @@ export default function Home() {
                     📷 Upload Photo
                     <input type="file" accept="image/*" onChange={handleFileUpload} style={{ display: "none" }} />
                   </label>
-                  <button className="popup-item" onClick={() => { setShowCameraModal(true); setShowPlusMenu(false); }}>📸 Open Camera</button>
+                  <button className="popup-item" onClick={() => { setShowCameraModal(true); setShowPlusMenu(false); }}>
+                    📸 Open Camera
+                  </button>
                   <button className="popup-item" onClick={handleMic}>🎤 Voice Message</button>
                 </div>
               )}
@@ -314,12 +337,14 @@ export default function Home() {
               disabled={loading}
               className="chat-input"
             />
-            <button onClick={sendMessage} disabled={loading || !input.trim()} className="send-btn">➤</button>
+            <button onClick={sendMessage} disabled={loading || !input.trim()} className="send-btn">
+              ➤
+            </button>
           </div>
         </div>
       </div>
 
-      {/* ===== SECTIONS THAT APPEAR ONLY AFTER USER TYPES ===== */}
+      {/* AFTER AI ANSWER – Temporary sections */}
       {lastAiIndex !== -1 && (
         <div>
           {relatedProducts.length > 0 && (
@@ -341,7 +366,6 @@ export default function Home() {
               </div>
             </div>
           )}
-
           {relatedBlogs.length > 0 && (
             <div style={{ marginTop: "2rem" }}>
               <h2>📝 Related Blogs</h2>
@@ -361,8 +385,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* ===== ALWAYS VISIBLE SECTIONS ===== */}
-      {/* Latest Blogs – always present */}
+      {/* ALWAYS VISIBLE: Latest Blogs */}
       {blogs.length > 0 && (
         <div style={{ marginTop: "2rem" }}>
           <h2>📰 Latest Blogs</h2>
@@ -380,7 +403,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* Quick Health Check Widget – always present */}
+      {/* ALWAYS VISIBLE: Quick Health Check */}
       <div className="mt-12 mb-8 bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-green-100">
         <h2 className="text-2xl font-bold text-center mb-2">🌟 Quick Health Check</h2>
         <p className="text-center text-gray-600 mb-6">
