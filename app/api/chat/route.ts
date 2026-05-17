@@ -1,47 +1,95 @@
 import { NextResponse } from 'next/server';
-import OpenAI from 'openai';
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+// Health tips database
+const healthResponses: Record<string, string> = {
+  hairfall:
+    "Hair fall can be reduced by using onion oil, taking biotin supplements, eating protein-rich foods, and reducing stress.",
 
-function detectLanguage(text: string): 'en' | 'hi' {
-  const hindiRegex = /[\u0900-\u097F]/;
-  if (hindiRegex.test(text)) return 'hi';
-  return 'en';
+  weightloss:
+    "For weight loss, focus on calorie deficit diet, daily walking, protein-rich meals, and proper sleep.",
+
+  acne:
+    "Wash face twice daily, avoid oily food, and drink plenty of water.",
+
+  cold:
+    "Drink ginger tea, take steam inhalation, and get proper rest.",
+
+  fever:
+    "Stay hydrated, take rest, and consult doctor if fever stays high.",
+
+  sugar:
+    "Limit sugar intake, eat more fiber, and exercise daily.",
+
+  bp:
+    "Reduce salt intake, avoid stress, and walk daily.",
+
+  sleep:
+    "Avoid screens before sleep and maintain a fixed sleep schedule.",
+
+  stomach:
+    "Avoid spicy food and eat probiotic-rich foods like curd.",
+
+  immunity:
+    "Eat vitamin C rich foods and sleep properly.",
+};
+
+// CLEAN USER MESSAGE
+function cleanText(text: string) {
+  return text
+    .toLowerCase()
+    .replace(/[^\w\s]/gi, '')
+    .trim();
 }
 
-export async function POST(req: Request) {
+export async function POST(request: Request) {
   try {
-    const { question } = await req.json();
+    const body = await request.json();
 
-    if (!process.env.OPENAI_API_KEY) {
-      return NextResponse.json({ 
-        answer: "Hey! 👋 I'm MintAI. API key missing. Try again later." 
-      });
+    const message = body?.message || '';
+
+    if (!message) {
+      return NextResponse.json(
+        {
+          error: 'Message is required',
+        },
+        {
+          status: 400,
+        }
+      );
     }
 
-    const lang = detectLanguage(question);
-    const systemPrompt = lang === 'en'
-      ? `You are MintAI, a friendly health and beauty assistant. Answer in natural, conversational English – like a knowledgeable friend. Keep it short, practical, and helpful.`
-      : `You are MintAI, a friendly health and beauty assistant. Answer in Hinglish (mix Hindi and English) – just like a friend would talk. Keep it short, warm, and practical.`;
+    const cleanMessage = cleanText(message);
 
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: question }
-      ],
-      temperature: 0.8,
-      max_tokens: 300,
+    let reply =
+      "Thank you for your question. Please consult a doctor for professional advice.";
+
+    // FIND MATCH
+    for (const [key, response] of Object.entries(
+      healthResponses
+    )) {
+      if (cleanMessage.includes(key)) {
+        reply = response;
+        break;
+      }
+    }
+
+    // SAFE STORE MESSAGE
+    reply +=
+      "\n\nExplore wellness products in our store.";
+
+    return NextResponse.json({
+      reply,
     });
+  } catch (error) {
+    console.error('Chat API Error:', error);
 
-    const answer = completion.choices[0]?.message?.content || 
-      (lang === 'en' ? "Sorry, I couldn't think of an answer." : "Maaf karna, kuch jawab nahi soch paaya.");
-
-    return NextResponse.json({ answer });
-  } catch (error: any) {
-    console.error(error);
-    return NextResponse.json({ 
-      answer: "🙏 Our AI service is temporarily unavailable. Please check back later." 
-    });
+    return NextResponse.json(
+      {
+        error: 'Internal server error',
+      },
+      {
+        status: 500,
+      }
+    );
   }
 }

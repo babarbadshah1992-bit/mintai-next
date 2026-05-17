@@ -1,26 +1,20 @@
-import { NextResponse } from "next/server";
+// app/api/blogs/route.ts
+import { NextResponse } from 'next/server';
+import { sql } from '@vercel/postgres';
 
-export async function GET() {
-  const blogs = [
-    {
-      id: 1,
-      title: "Sardi me kya khaye aur kya karein",
-      description: "Sardi se bachne ke liye kya khana chahiye aur kya nahi.",
-      slug: "sardi-guide",
-    },
-    {
-      id: 2,
-      title: "How to Lower BP Naturally",
-      description: "5 natural tarike BP control karne ke liye.",
-      slug: "bp-control",
-    },
-    {
-      id: 3,
-      title: "Sardi Khansi Ke Gharelu Upay",
-      description: "5 effective remedies sardi khansi ke liye.",
-      slug: "cough-remedies",
-    },
-  ];
-
-  return NextResponse.json(blogs);
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const limit = searchParams.get('limit') || '2';
+  
+  try {
+    const { rows } = await sql`
+      SELECT id, title, slug, tags 
+      FROM blogs 
+      ORDER BY created_at DESC 
+      LIMIT ${limit}
+    `;
+    return NextResponse.json(rows);
+  } catch (error) {
+    return NextResponse.json([], { status: 500 });
+  }
 }

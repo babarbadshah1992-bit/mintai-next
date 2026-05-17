@@ -2,61 +2,386 @@
 
 export default function AboutPage() {
   return (
-    <div className="max-w-4xl mx-auto">
-      <div className="text-center mb-12">
-        <div className="text-6xl mb-4">🌿✨</div>
-        <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-green-600 to-emerald-500 bg-clip-text text-transparent">
-          About MintAI
-        </h1>
-        <p className="text-gray-600 mt-4 text-lg">
-          Your AI-powered health & beauty companion, built for India.
-        </p>
-      </div>
+    <div
+      style={{
+        fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif",
+        background: "linear-gradient(160deg, #f0f7f2 0%, #e8f4ec 50%, #f4f9f5 100%)",
+        minHeight: "100vh",
+        position: "relative",
+        overflowX: "hidden",
+      }}
+    >
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
-        <div className="text-center p-4 bg-white/50 rounded-2xl">
-          <div className="text-3xl font-bold text-green-600">24/7</div>
-          <div className="text-sm text-gray-500">AI Support</div>
-        </div>
-        <div className="text-center p-4 bg-white/50 rounded-2xl">
-          <div className="text-3xl font-bold text-green-600">20+</div>
-          <div className="text-sm text-gray-500">Products</div>
-        </div>
-        <div className="text-center p-4 bg-white/50 rounded-2xl">
-          <div className="text-3xl font-bold text-green-600">10+</div>
-          <div className="text-sm text-gray-500">Blog Posts</div>
-        </div>
-        <div className="text-center p-4 bg-white/50 rounded-2xl">
-          <div className="text-3xl font-bold text-green-600">100%</div>
-          <div className="text-sm text-gray-500">Free</div>
-        </div>
-      </div>
+      {/* BG GLOW */}
+      <div style={{
+        position: "fixed",
+        top: "-200px",
+        right: "-200px",
+        width: "600px",
+        height: "600px",
+        background: "radial-gradient(circle, rgba(24,162,61,0.08) 0%, transparent 70%)",
+        pointerEvents: "none",
+        zIndex: "0",
+      }} />
+      <div style={{
+        position: "fixed",
+        bottom: "-200px",
+        left: "-150px",
+        width: "500px",
+        height: "500px",
+        background: "radial-gradient(circle, rgba(80,200,120,0.06) 0%, transparent 70%)",
+        pointerEvents: "none",
+        zIndex: "0",
+      }} />
 
-      <div className="grid md:grid-cols-2 gap-8 mb-12">
-        <div className="bg-white/60 backdrop-blur-sm p-6 rounded-2xl border border-green-100">
-          <div className="text-4xl mb-3">🌟</div>
-          <h2 className="text-xl font-bold mb-2">Our Vision</h2>
-          <p className="text-gray-600">Har Indian ko affordable, accessible, aur AI-powered health & beauty guidance dena. Ek sehatmand aur khubsurat Bharat ka nirmaan.</p>
-        </div>
-        <div className="bg-white/60 backdrop-blur-sm p-6 rounded-2xl border border-green-100">
-          <div className="text-4xl mb-3">🎯</div>
-          <h2 className="text-xl font-bold mb-2">Our Mission</h2>
-          <p className="text-gray-600">MintAI AI aur natural remedies ke dwara logon ko unke skin, hair aur health issues ke liye turant, behtar aur practical solutions pradaan karta hai.</p>
-        </div>
-      </div>
+      <div style={{ maxWidth: "960px", margin: "0 auto", padding: "60px 32px 80px", position: "relative", zIndex: "1" }}>
 
-      <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-8 mb-12">
-        <h2 className="text-2xl font-bold mb-4 text-center">📖 Our Story</h2>
-        <p className="text-gray-700 leading-relaxed text-center max-w-2xl mx-auto">
-          Shuruaat ek simple idea se hui – jab mere grandfather ko health tips chahiye the aur unhe koi turant jawab nahi mil paata tha. Tab maine socha, kyun na AI ki madad se ek aisa chatbot banaya jaye jo har kisi ki bhasha (Hinglish) mein sehat aur beauty ke sawaalon ke jawab de. Isi soch ne MintAI ko janam diya.
-        </p>
-      </div>
+        {/* HERO SECTION */}
+        <div style={{ textAlign: "center", marginBottom: "72px" }}>
+          <div style={{ fontSize: "64px", marginBottom: "20px", lineHeight: "1" }}>🌿✨</div>
+          <div style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "8px",
+            fontSize: "11px",
+            fontWeight: "700",
+            letterSpacing: "0.16em",
+            textTransform: "uppercase",
+            color: "#18a23d",
+            background: "rgba(24,162,61,0.09)",
+            border: "1px solid rgba(24,162,61,0.18)",
+            borderRadius: "999px",
+            padding: "6px 16px",
+            marginBottom: "24px",
+          }}>
+            🌱 AI-Powered Wellness
+          </div>
+          <h1 style={{
+            fontSize: "clamp(36px, 6vw, 64px)",
+            fontWeight: "800",
+            color: "#1a2e1e",
+            letterSpacing: "-0.03em",
+            lineHeight: "1.1",
+            marginBottom: "20px",
+          }}>
+            About <span style={{ color: "#18a23d" }}>MintAI</span>
+          </h1>
+          <div style={{
+            width: "56px",
+            height: "3px",
+            background: "linear-gradient(to right, #18a23d, #7de8a0)",
+            borderRadius: "999px",
+            margin: "0 auto 24px",
+          }} />
+          <p style={{
+            color: "#5a7060",
+            fontSize: "18px",
+            lineHeight: "1.7",
+            maxWidth: "520px",
+            margin: "0 auto",
+            fontWeight: "400",
+          }}>
+            AI-powered wellness platform helping people discover smarter natural health solutions.
+          </p>
+        </div>
 
-      <div className="text-center">
-        <h2 className="text-2xl font-bold mb-4">Ready to start your wellness journey?</h2>
-        <button onClick={() => window.location.href = '/'} className="bg-green-500 text-white px-8 py-3 rounded-full font-semibold hover:bg-green-600 transition">
-          Start Chatting 💬
-        </button>
+        {/* STATS SECTION */}
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
+          gap: "20px",
+          marginBottom: "56px",
+        }}>
+          {[
+            { icon: "🤖", value: "24/7", label: "AI Support" },
+            { icon: "🌿", value: "20+", label: "Herbal Products" },
+            { icon: "✍️", value: "10+", label: "Blog Posts" },
+            { icon: "💚", value: "100%", label: "Free Access" },
+          ].map((stat) => (
+            <div
+              key={stat.label}
+              style={{
+                textAlign: "center",
+                padding: "28px 16px",
+                background: "rgba(255,255,255,0.80)",
+                backdropFilter: "blur(20px)",
+                WebkitBackdropFilter: "blur(20px)",
+                border: "1px solid rgba(255,255,255,0.92)",
+                borderRadius: "24px",
+                boxShadow: "0 4px 24px rgba(24,80,40,0.07)",
+                transition: "transform 0.26s cubic-bezier(.22,1,.36,1), box-shadow 0.26s ease",
+                cursor: "default",
+              }}
+              onMouseEnter={e => {
+                (e.currentTarget as HTMLDivElement).style.transform = "translateY(-5px)";
+                (e.currentTarget as HTMLDivElement).style.boxShadow = "0 16px 40px rgba(24,80,40,0.12)";
+              }}
+              onMouseLeave={e => {
+                (e.currentTarget as HTMLDivElement).style.transform = "translateY(0)";
+                (e.currentTarget as HTMLDivElement).style.boxShadow = "0 4px 24px rgba(24,80,40,0.07)";
+              }}
+            >
+              <div style={{ fontSize: "32px", marginBottom: "10px" }}>{stat.icon}</div>
+              <div style={{ fontSize: "32px", fontWeight: "800", color: "#18a23d", letterSpacing: "-0.02em", lineHeight: "1" }}>{stat.value}</div>
+              <div style={{ fontSize: "13px", color: "#7a9080", marginTop: "6px", fontWeight: "600", letterSpacing: "0.04em", textTransform: "uppercase" }}>{stat.label}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* VISION + MISSION */}
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+          gap: "24px",
+          marginBottom: "56px",
+        }}>
+          <div
+            style={{
+              background: "rgba(255,255,255,0.80)",
+              backdropFilter: "blur(20px)",
+              WebkitBackdropFilter: "blur(20px)",
+              border: "1px solid rgba(255,200,50,0.22)",
+              borderRadius: "24px",
+              padding: "32px",
+              boxShadow: "0 4px 24px rgba(24,80,40,0.06)",
+              transition: "transform 0.26s cubic-bezier(.22,1,.36,1), box-shadow 0.26s ease",
+            }}
+            onMouseEnter={e => {
+              (e.currentTarget as HTMLDivElement).style.transform = "translateY(-4px)";
+              (e.currentTarget as HTMLDivElement).style.boxShadow = "0 16px 40px rgba(24,80,40,0.11)";
+            }}
+            onMouseLeave={e => {
+              (e.currentTarget as HTMLDivElement).style.transform = "translateY(0)";
+              (e.currentTarget as HTMLDivElement).style.boxShadow = "0 4px 24px rgba(24,80,40,0.06)";
+            }}
+          >
+            <div style={{
+              width: "52px",
+              height: "52px",
+              borderRadius: "16px",
+              background: "rgba(255,200,50,0.12)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: "26px",
+              marginBottom: "18px",
+            }}>🌟</div>
+            <h2 style={{ fontSize: "20px", fontWeight: "800", color: "#1a2e1e", marginBottom: "12px", letterSpacing: "-0.01em" }}>Our Vision</h2>
+            <p style={{ color: "#5a7060", lineHeight: "1.7", fontSize: "15px", fontWeight: "400" }}>
+              To make AI-powered wellness guidance affordable, accessible, and understandable for every Indian family.
+            </p>
+          </div>
+
+          <div
+            style={{
+              background: "rgba(255,255,255,0.80)",
+              backdropFilter: "blur(20px)",
+              WebkitBackdropFilter: "blur(20px)",
+              border: "1px solid rgba(24,162,61,0.18)",
+              borderRadius: "24px",
+              padding: "32px",
+              boxShadow: "0 4px 24px rgba(24,80,40,0.06)",
+              transition: "transform 0.26s cubic-bezier(.22,1,.36,1), box-shadow 0.26s ease",
+            }}
+            onMouseEnter={e => {
+              (e.currentTarget as HTMLDivElement).style.transform = "translateY(-4px)";
+              (e.currentTarget as HTMLDivElement).style.boxShadow = "0 16px 40px rgba(24,80,40,0.11)";
+            }}
+            onMouseLeave={e => {
+              (e.currentTarget as HTMLDivElement).style.transform = "translateY(0)";
+              (e.currentTarget as HTMLDivElement).style.boxShadow = "0 4px 24px rgba(24,80,40,0.06)";
+            }}
+          >
+            <div style={{
+              width: "52px",
+              height: "52px",
+              borderRadius: "16px",
+              background: "rgba(24,162,61,0.07)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: "26px",
+              marginBottom: "18px",
+            }}>🎯</div>
+            <h2 style={{ fontSize: "20px", fontWeight: "800", color: "#1a2e1e", marginBottom: "12px", letterSpacing: "-0.01em" }}>Our Mission</h2>
+            <p style={{ color: "#5a7060", lineHeight: "1.7", fontSize: "15px", fontWeight: "400" }}>
+              MintAI combines AI and natural wellness to help users discover better solutions for skin, hair, and health concerns.
+            </p>
+          </div>
+        </div>
+
+        {/* FOUNDER STORY */}
+        <div style={{
+          background: "linear-gradient(145deg, rgba(237,247,239,0.95) 0%, rgba(216,240,223,0.90) 100%)",
+          backdropFilter: "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
+          border: "1px solid rgba(24,162,61,0.14)",
+          borderRadius: "28px",
+          padding: "48px 40px",
+          marginBottom: "56px",
+          boxShadow: "0 4px 24px rgba(24,80,40,0.06)",
+          position: "relative",
+          overflow: "hidden",
+        }}>
+          <div style={{
+            position: "absolute",
+            top: "-60px",
+            right: "-60px",
+            width: "200px",
+            height: "200px",
+            background: "radial-gradient(circle, rgba(24,162,61,0.10) 0%, transparent 70%)",
+            pointerEvents: "none",
+          }} />
+          <div style={{ fontSize: "36px", marginBottom: "16px" }}>📖</div>
+          <h2 style={{
+            fontSize: "26px",
+            fontWeight: "800",
+            color: "#1a2e1e",
+            marginBottom: "18px",
+            letterSpacing: "-0.02em",
+          }}>From a Small Dream to MintAI</h2>
+          <div style={{ width: "40px", height: "2px", background: "#18a23d", borderRadius: "999px", marginBottom: "20px" }} />
+          <p style={{
+            color: "#3d5c42",
+            lineHeight: "1.8",
+            fontSize: "16px",
+            maxWidth: "580px",
+            fontWeight: "400",
+          }}>
+            MintAI wasn't built by a big company or a team of engineers. It started with one idea — helping people get simple wellness guidance in their own language.
+          </p>
+        </div>
+
+        {/* FEATURE GRID */}
+        <div style={{ marginBottom: "64px" }}>
+          <h2 style={{
+            textAlign: "center",
+            fontSize: "28px",
+            fontWeight: "800",
+            color: "#1a2e1e",
+            letterSpacing: "-0.02em",
+            marginBottom: "8px",
+          }}>What We Offer</h2>
+          <p style={{ textAlign: "center", color: "#7a9080", fontSize: "15px", marginBottom: "32px" }}>Everything you need for your wellness journey</p>
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+            gap: "20px",
+          }}>
+            {[
+              { icon: "🤖", title: "AI Health Chat", desc: "Get instant wellness answers powered by advanced AI" },
+              { icon: "🛒", title: "Herbal Store", desc: "Curated natural products for skin, hair & health" },
+              { icon: "📝", title: "Wellness Blogs", desc: "Expert-written articles on natural living" },
+              { icon: "💡", title: "Personalized Guidance", desc: "Recommendations tailored just for you" },
+            ].map((feature) => (
+              <div
+                key={feature.title}
+                style={{
+                  background: "rgba(255,255,255,0.80)",
+                  backdropFilter: "blur(20px)",
+                  WebkitBackdropFilter: "blur(20px)",
+                  border: "1px solid rgba(255,255,255,0.92)",
+                  borderRadius: "22px",
+                  padding: "28px 22px",
+                  boxShadow: "0 4px 20px rgba(24,80,40,0.06)",
+                  transition: "transform 0.26s cubic-bezier(.22,1,.36,1), box-shadow 0.26s ease",
+                  cursor: "default",
+                }}
+                onMouseEnter={e => {
+                  (e.currentTarget as HTMLDivElement).style.transform = "translateY(-5px)";
+                  (e.currentTarget as HTMLDivElement).style.boxShadow = "0 16px 40px rgba(24,80,40,0.12)";
+                }}
+                onMouseLeave={e => {
+                  (e.currentTarget as HTMLDivElement).style.transform = "translateY(0)";
+                  (e.currentTarget as HTMLDivElement).style.boxShadow = "0 4px 20px rgba(24,80,40,0.06)";
+                }}
+              >
+                <div style={{
+                  width: "48px",
+                  height: "48px",
+                  borderRadius: "14px",
+                  background: "rgba(24,162,61,0.09)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "24px",
+                  marginBottom: "16px",
+                }}>{feature.icon}</div>
+                <h3 style={{ fontSize: "16px", fontWeight: "700", color: "#1a2e1e", marginBottom: "8px" }}>{feature.title}</h3>
+                <p style={{ fontSize: "13px", color: "#7a9080", lineHeight: "1.65", fontWeight: "400" }}>{feature.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* CTA SECTION */}
+        <div style={{
+          background: "linear-gradient(135deg, #18a23d 0%, #1db84c 100%)",
+          borderRadius: "28px",
+          padding: "56px 40px",
+          textAlign: "center",
+          boxShadow: "0 20px 60px rgba(24,162,61,0.30)",
+          position: "relative",
+          overflow: "hidden",
+        }}>
+          <div style={{
+            position: "absolute",
+            top: "-80px",
+            right: "-80px",
+            width: "280px",
+            height: "280px",
+            background: "radial-gradient(circle, rgba(255,255,255,0.10) 0%, transparent 70%)",
+            pointerEvents: "none",
+          }} />
+          <div style={{
+            position: "absolute",
+            bottom: "-60px",
+            left: "-60px",
+            width: "220px",
+            height: "220px",
+            background: "radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%)",
+            pointerEvents: "none",
+          }} />
+          <div style={{ fontSize: "40px", marginBottom: "16px" }}>🚀</div>
+          <h2 style={{
+            fontSize: "clamp(24px, 4vw, 36px)",
+            fontWeight: "800",
+            color: "#ffffff",
+            marginBottom: "14px",
+            letterSpacing: "-0.02em",
+            lineHeight: "1.2",
+          }}>Start Your Wellness Journey</h2>
+          <p style={{ color: "rgba(255,255,255,0.80)", fontSize: "16px", marginBottom: "32px", lineHeight: "1.6" }}>
+            Join thousands discovering smarter natural health with AI.
+          </p>
+          <button
+            onClick={() => window.location.href = '/'}
+            style={{
+              background: "#ffffff",
+              color: "#18a23d",
+              border: "none",
+              padding: "16px 40px",
+              borderRadius: "999px",
+              fontSize: "16px",
+              fontWeight: "800",
+              cursor: "pointer",
+              boxShadow: "0 8px 28px rgba(0,0,0,0.15)",
+              transition: "transform 0.20s ease, box-shadow 0.20s ease",
+              letterSpacing: "0.01em",
+            }}
+            onMouseEnter={e => {
+              (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-2px) scale(1.04)";
+              (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 14px 36px rgba(0,0,0,0.20)";
+            }}
+            onMouseLeave={e => {
+              (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0) scale(1)";
+              (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 8px 28px rgba(0,0,0,0.15)";
+            }}
+          >
+            Try MintAI Now 💬
+          </button>
+        </div>
+
       </div>
     </div>
   );
