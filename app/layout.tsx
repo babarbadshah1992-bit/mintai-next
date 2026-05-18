@@ -27,7 +27,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${poppins.variable}`}>
+    <html
+      lang="en"
+      className={`${inter.variable} ${poppins.variable}`}
+    >
       <body
         style={{
           margin: 0,
@@ -62,12 +65,12 @@ export default function RootLayout({
           <div className="container">{children}</div>
         </main>
 
-        {/* PREMIUM FOOTER */}
+        {/* FOOTER */}
         <footer
           style={{
             position: 'relative',
-            marginTop: '60px',
-            padding: '24px 16px',
+            marginTop: '40px',
+            padding: '18px 14px',
             overflow: 'hidden',
           }}
         >
@@ -75,14 +78,14 @@ export default function RootLayout({
           <div
             style={{
               position: 'absolute',
-              top: '-120px',
-              right: '-120px',
-              width: '240px',
-              height: '240px',
+              top: '-100px',
+              right: '-100px',
+              width: '220px',
+              height: '220px',
               borderRadius: '999px',
               background:
-                'radial-gradient(circle, rgba(24,162,61,0.14) 0%, transparent 70%)',
-              filter: 'blur(30px)',
+                'radial-gradient(circle, rgba(24,162,61,0.10) 0%, transparent 70%)',
+              filter: 'blur(40px)',
               pointerEvents: 'none',
             }}
           />
@@ -90,14 +93,14 @@ export default function RootLayout({
           <div
             style={{
               position: 'absolute',
-              bottom: '-120px',
-              left: '-120px',
+              bottom: '-100px',
+              left: '-100px',
               width: '220px',
               height: '220px',
               borderRadius: '999px',
               background:
-                'radial-gradient(circle, rgba(80,200,120,0.10) 0%, transparent 70%)',
-              filter: 'blur(30px)',
+                'radial-gradient(circle, rgba(80,200,120,0.08) 0%, transparent 70%)',
+              filter: 'blur(40px)',
               pointerEvents: 'none',
             }}
           />
@@ -111,35 +114,35 @@ export default function RootLayout({
           >
             <div
               style={{
-                background: 'rgba(255,255,255,0.72)',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)',
+                background: 'rgba(255,255,255,0.70)',
+                backdropFilter: 'blur(18px)',
+                WebkitBackdropFilter: 'blur(18px)',
                 border: '1px solid rgba(255,255,255,0.8)',
-                borderRadius: '28px',
-                padding: '24px',
+                borderRadius: '24px',
+                padding: '22px 18px',
                 boxShadow:
-                  '0 10px 40px rgba(24,80,40,0.08)',
+                  '0 8px 30px rgba(24,80,40,0.06)',
               }}
             >
               {/* TOP */}
               <div
                 style={{
-                  display: 'grid',
-                  gridTemplateColumns:
-                    'repeat(auto-fit, minmax(220px, 1fr))',
-                  gap: '24px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '20px',
                   alignItems: 'center',
+                  textAlign: 'center',
                 }}
               >
-                {/* LEFT */}
+                {/* BRAND */}
                 <div>
                   <h2
                     style={{
                       margin: 0,
-                      fontSize: '32px',
+                      fontSize: 'clamp(30px, 8vw, 42px)',
                       fontWeight: 800,
                       color: '#18a23d',
-                      letterSpacing: '-0.04em',
+                      letterSpacing: '-0.05em',
                       fontFamily: 'var(--font-poppins)',
                     }}
                   >
@@ -148,24 +151,23 @@ export default function RootLayout({
 
                   <p
                     style={{
-                      marginTop: '8px',
-                      marginBottom: 0,
-                      color: '#5f6f63',
-                      fontSize: '14px',
-                      lineHeight: 1.6,
+                      margin: '8px 0 0',
+                      color: '#607164',
+                      fontSize: 'clamp(13px, 3vw, 14px)',
+                      lineHeight: 1.5,
                     }}
                   >
                     Your AI health & beauty assistant
                   </p>
                 </div>
 
-                {/* CENTER */}
+                {/* NAVIGATION */}
                 <div
                   style={{
                     display: 'flex',
                     justifyContent: 'center',
                     flexWrap: 'wrap',
-                    gap: '18px',
+                    gap: '16px',
                   }}
                 >
                   {[
@@ -182,7 +184,7 @@ export default function RootLayout({
                         color: '#445348',
                         fontWeight: 600,
                         fontSize: '14px',
-                        transition: 'all 0.2s ease',
+                        transition: '0.2s ease',
                       }}
                     >
                       {item.label}
@@ -190,28 +192,20 @@ export default function RootLayout({
                   ))}
                 </div>
 
-                {/* RIGHT */}
-                <div
+                {/* EMAIL */}
+                <a
+                  href="mailto:mintai@support.in"
                   style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'flex-end',
-                    gap: '12px',
+                    textDecoration: 'none',
+                    color: '#18a23d',
+                    fontWeight: 700,
+                    fontSize: 'clamp(13px, 3vw, 15px)',
+                    transition: '0.2s ease',
+                    wordBreak: 'break-word',
                   }}
                 >
-
-                  <a
-                    href="mailto:mintai@support.in"
-                    style={{
-                      textDecoration: 'none',
-                      color: '#18a23d',
-                      fontWeight: 700,
-                      fontSize: '14px',
-                    }}
-                  >
-                    mintai@support.in
-                  </a>
-                </div>
+                  mintai@support.in
+                </a>
               </div>
 
               {/* DIVIDER */}
@@ -219,9 +213,9 @@ export default function RootLayout({
                 style={{
                   width: '100%',
                   height: '1px',
-                  margin: '20px 0',
+                  margin: '18px 0',
                   background:
-                    'linear-gradient(to right, transparent, rgba(24,162,61,0.18), transparent)',
+                    'linear-gradient(to right, transparent, rgba(24,162,61,0.16), transparent)',
                 }}
               />
 
@@ -229,17 +223,19 @@ export default function RootLayout({
               <div
                 style={{
                   display: 'flex',
-                  justifyContent: 'space-between',
+                  flexDirection: 'column',
                   alignItems: 'center',
-                  gap: '12px',
-                  flexWrap: 'wrap',
+                  justifyContent: 'center',
+                  gap: '14px',
+                  textAlign: 'center',
                 }}
               >
                 <p
                   style={{
                     margin: 0,
-                    color: '#7b8d7f',
-                    fontSize: '13px',
+                    color: '#819284',
+                    fontSize: '12px',
+                    lineHeight: 1.6,
                   }}
                 >
                   © {new Date().getFullYear()} MintAI. All rights
@@ -248,15 +244,18 @@ export default function RootLayout({
 
                 <div
                   style={{
-                    padding: '8px 14px',
+                    padding: '10px 18px',
                     borderRadius: '999px',
                     background:
                       'rgba(24,162,61,0.08)',
                     border:
-                      '1px solid rgba(24,162,61,0.10)',
+                      '1px solid rgba(24,162,61,0.12)',
                     color: '#14892f',
                     fontSize: '13px',
                     fontWeight: 600,
+                    transition: '0.25s ease',
+                    boxShadow:
+                      '0 4px 14px rgba(24,162,61,0.08)',
                   }}
                 >
                   Built by Mohammed Babar

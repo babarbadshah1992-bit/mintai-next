@@ -517,16 +517,27 @@ export default function HomePage() {
                 placeholder="Ask MintAI about health, skin, herbs..."
                 disabled={loading}
                 style={{
-                  flex: 1, border: "none", outline: "none",
-                  background: "transparent", fontSize: "14px",
-                  color: "#1a2e1e", fontFamily: "inherit",
-                }}
+               flex: 1,
+               width: "100%",
+               minWidth: 0,
+               border: "none",
+               outline: "none",
+               background: "transparent",
+               fontSize: "16px",
+               paddingRight: "8px",
+               color: "#1a2e1e",
+              fontFamily: "inherit",
+               }}
               />
               <button
                 onClick={sendMessage}
                 disabled={loading || !input.trim()}
                 style={{
-                  width: "38px", height: "38px", borderRadius: "12px", flexShrink: 0,
+                  width: "48px",
+                  height: "48px",
+                  minWidth: "48px",
+                  borderRadius: "14px",
+                  flexShrink: 0,
                   background: loading || !input.trim()
                     ? "rgba(24,162,61,0.15)"
                     : "linear-gradient(135deg, #18a23d, #1db84c)",
