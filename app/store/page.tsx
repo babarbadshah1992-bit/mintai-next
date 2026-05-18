@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 export default function StorePage() {
   const [products, setProducts] = useState<any[]>([]);
   const [search, setSearch] = useState("");
+  const [cartItems, setCartItems] = useState<number[]>([]);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/products")
@@ -19,6 +21,22 @@ export default function StorePage() {
     product.name.toLowerCase().includes(search.toLowerCase())
   );
 
+  const handleAddToCart = (e: React.MouseEvent, productId: number, productName: string) => {
+    e.stopPropagation();
+    setCartItems((prev) => [...prev, productId]);
+    setToastMessage(`${productName} added to cart!`);
+    setTimeout(() => setToastMessage(null), 2000);
+  };
+
+  const handleBuyNow = (e: React.MouseEvent, link: string) => {
+    e.stopPropagation();
+    window.open(link, "_blank");
+  };
+
+  const handleCardClick = (link: string) => {
+    window.open(link, "_blank");
+  };
+
   return (
     <div
       style={{
@@ -30,6 +48,29 @@ export default function StorePage() {
         overflowX: "hidden",
       }}
     >
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div
+          style={{
+            position: "fixed",
+            bottom: "20px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            background: "#1a2e1e",
+            color: "white",
+            padding: "12px 24px",
+            borderRadius: "40px",
+            fontSize: "14px",
+            fontWeight: 600,
+            zIndex: 1000,
+            boxShadow: "0 8px 24px rgba(0,0,0,0.2)",
+            animation: "slideUp 0.3s ease",
+          }}
+        >
+          {toastMessage}
+        </div>
+      )}
+
       {/* BG GLOW */}
       <div
         style={{
@@ -157,6 +198,7 @@ export default function StorePage() {
         {filteredProducts.map((product) => (
           <div
             key={product.id}
+            onClick={() => handleCardClick(product.link)}
             style={{
               background: "rgba(255,255,255,0.80)",
               backdropFilter: "blur(20px)",
@@ -193,6 +235,7 @@ export default function StorePage() {
                 justifyContent: "center",
                 position: "relative",
                 overflow: "hidden",
+                pointerEvents: "none",
               }}
             >
               <div
@@ -226,7 +269,7 @@ export default function StorePage() {
             </div>
 
             {/* BADGES */}
-            <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginBottom: "12px" }}>
+            <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginBottom: "12px", pointerEvents: "none" }}>
               {product.discount && (
                 <span
                   style={{
@@ -288,6 +331,7 @@ export default function StorePage() {
                 lineHeight: 1.3,
                 letterSpacing: "-0.01em",
                 flex: 1,
+                pointerEvents: "none",
               }}
             >
               {product.name}
@@ -301,6 +345,7 @@ export default function StorePage() {
                 alignItems: "baseline",
                 flexWrap: "wrap",
                 marginBottom: "16px",
+                pointerEvents: "none",
               }}
             >
               <span
@@ -332,6 +377,7 @@ export default function StorePage() {
                 height: "1px",
                 background: "linear-gradient(to right, rgba(24,162,61,0.14), transparent)",
                 marginBottom: "16px",
+                pointerEvents: "none",
               }}
             />
 
@@ -344,6 +390,7 @@ export default function StorePage() {
               }}
             >
               <button
+                onClick={(e) => handleAddToCart(e, product.id, product.name)}
                 style={{
                   width: "100%",
                   border: "1.5px solid rgba(24,162,61,0.22)",
@@ -355,11 +402,13 @@ export default function StorePage() {
                   cursor: "pointer",
                   fontSize: "clamp(13px, 3.5vw, 14px)",
                   fontFamily: "inherit",
-                  transition: "background 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease",
+                  transition: "all 0.18s ease",
+                  position: "relative",
+                  zIndex: 2,
                 }}
                 onMouseEnter={(e) => {
                   (e.currentTarget as HTMLButtonElement).style.background = "#d8f0df";
-                  (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-1px)";
+                  (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-2px)";
                   (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 12px rgba(24,162,61,0.12)";
                 }}
                 onMouseLeave={(e) => {
@@ -367,58 +416,76 @@ export default function StorePage() {
                   (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)";
                   (e.currentTarget as HTMLButtonElement).style.boxShadow = "none";
                 }}
+                onTouchStart={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.transform = "scale(0.98)";
+                }}
+                onTouchEnd={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.transform = "scale(1)";
+                }}
               >
                 Add to Cart
               </button>
 
-              <a
-                href={product.link}
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                onClick={(e) => handleBuyNow(e, product.link)}
                 style={{
                   width: "100%",
-                  textDecoration: "none",
+                  border: "none",
+                  padding: "12px",
+                  borderRadius: "14px",
+                  background: "linear-gradient(135deg, #18a23d 0%, #1db84c 100%)",
+                  color: "white",
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  fontSize: "clamp(13px, 3.5vw, 14px)",
+                  fontFamily: "inherit",
+                  boxShadow: "0 4px 14px rgba(24,162,61,0.28)",
+                  transition: "all 0.18s ease",
+                  position: "relative",
+                  zIndex: 2,
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.background =
+                    "linear-gradient(135deg, #14892f 0%, #18a23d 100%)";
+                  (e.currentTarget as HTMLButtonElement).style.transform =
+                    "translateY(-2px)";
+                  (e.currentTarget as HTMLButtonElement).style.boxShadow =
+                    "0 8px 22px rgba(24,162,61,0.38)";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.background =
+                    "linear-gradient(135deg, #18a23d 0%, #1db84c 100%)";
+                  (e.currentTarget as HTMLButtonElement).style.transform =
+                    "translateY(0)";
+                  (e.currentTarget as HTMLButtonElement).style.boxShadow =
+                    "0 4px 14px rgba(24,162,61,0.28)";
+                }}
+                onTouchStart={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.transform = "scale(0.98)";
+                }}
+                onTouchEnd={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.transform = "scale(1)";
                 }}
               >
-                <button
-                  style={{
-                    width: "100%",
-                    border: "none",
-                    padding: "12px",
-                    borderRadius: "14px",
-                    background: "linear-gradient(135deg, #18a23d 0%, #1db84c 100%)",
-                    color: "white",
-                    fontWeight: 700,
-                    cursor: "pointer",
-                    fontSize: "clamp(13px, 3.5vw, 14px)",
-                    fontFamily: "inherit",
-                    boxShadow: "0 4px 14px rgba(24,162,61,0.28)",
-                    transition: "background 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease",
-                  }}
-                  onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLButtonElement).style.background =
-                      "linear-gradient(135deg, #14892f 0%, #18a23d 100%)";
-                    (e.currentTarget as HTMLButtonElement).style.transform =
-                      "translateY(-1px)";
-                    (e.currentTarget as HTMLButtonElement).style.boxShadow =
-                      "0 8px 22px rgba(24,162,61,0.38)";
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLButtonElement).style.background =
-                      "linear-gradient(135deg, #18a23d 0%, #1db84c 100%)";
-                    (e.currentTarget as HTMLButtonElement).style.transform =
-                      "translateY(0)";
-                    (e.currentTarget as HTMLButtonElement).style.boxShadow =
-                      "0 4px 14px rgba(24,162,61,0.28)";
-                  }}
-                >
-                  Buy Now
-                </button>
-              </a>
+                Buy Now
+              </button>
             </div>
           </div>
         ))}
       </div>
+
+      <style jsx>{`
+        @keyframes slideUp {
+          from {
+            opacity: 0;
+            transform: translateX(-50%) translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+          }
+        }
+      `}</style>
     </div>
   );
 }
