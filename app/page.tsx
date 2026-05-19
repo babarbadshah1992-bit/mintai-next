@@ -588,11 +588,20 @@ setRelatedProducts(
                         (e.currentTarget as HTMLDivElement).style.boxShadow = "0 4px 20px rgba(24,80,40,0.07)";
                       }}
                     >
-                      <img
-                        src={p.image}
-                        alt={p.name}
-                        style={{ width: "100%", height: "140px", objectFit: "cover", borderRadius: "14px" }}
-                      />
+                      <div
+  style={{
+    width: "100%",
+    height: "140px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: "60px",
+    background: "#f5f5f5",
+    borderRadius: "14px"
+  }}
+>
+  {p.image}
+</div>
                       <h3 style={{ fontSize: "15px", fontWeight: 700, color: "#1a2e1e", lineHeight: 1.3 }}>{p.name}</h3>
                       <div style={{ display: "flex", gap: "8px", alignItems: "baseline", flexWrap: "wrap" }}>
                         <span style={{ fontSize: "18px", fontWeight: 800, color: "#18a23d" }}>₹{p.price}</span>

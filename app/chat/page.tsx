@@ -83,7 +83,7 @@ export default function ChatPage() {
         .limit(4);
 
       setRelatedProducts(products || []);
-
+      console.log(products);
       // BLOGS
       const { data: blogs } = await supabase
         .from('blogs')
@@ -235,13 +235,12 @@ export default function ChatPage() {
                   key={product.id}
                   className="bg-white rounded-2xl shadow overflow-hidden"
                 >
-                  <Image
-                    src={product.image || '/placeholder.jpg'}
-                    alt={product.name}
-                    width={300}
-                    height={200}
-                    className="w-full h-48 object-cover"
-                  />
+                  <div
+  className="w-full h-48 flex items-center justify-center bg-gray-100"
+  style={{ fontSize: "70px" }}
+>
+  Image: {JSON.stringify(product.image)}
+</div>
 
                   <div className="p-4">
                     <h3 className="font-bold">
