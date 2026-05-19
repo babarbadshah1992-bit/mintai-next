@@ -73,6 +73,7 @@ export default function HomePage() {
   const [feedbackGiven, setFeedbackGiven] = useState<Record<number, 'up' | 'down' | null>>({});
   const [showPlusMenu, setShowPlusMenu] = useState(false);
   const [showCameraModal, setShowCameraModal] = useState(false);
+  const [allProducts, setAllProducts] = useState<any[]>([]);
   
   // Refs
   const containerRef = useRef<HTMLDivElement>(null);
@@ -113,45 +114,14 @@ export default function HomePage() {
       },
     ]);
   }, []);
-
-  // Send message to AI
-  const allProducts = [
-  {
-    id: '1',
-    name: 'Tulsi Ginger Kadha',
-    price: 299,
-    originalPrice: 499,
-    discount: '40% OFF',
-    description: 'Cold & cough immunity support',
-    image: '/products/kadha.png',
-    link: '/store',
-    keywords: ['sardi', 'cold', 'cough', 'fever'],
-  },
-
-  {
-    id: '2',
-    name: 'Ayurvedic Pain Relief Oil',
-    price: 349,
-    originalPrice: 599,
-    discount: '30% OFF',
-    description: 'Natural pain relief support',
-    image: '/products/pain-oil.png',
-    link: '/store',
-    keywords: ['pain', 'body pain', 'joint pain'],
-  },
-
-  {
-    id: '3',
-    name: 'Neem Face Wash',
-    price: 249,
-    originalPrice: 399,
-    discount: '20% OFF',
-    description: 'Natural skincare cleanser',
-    image: '/products/facewash.png',
-    link: '/store',
-    keywords: ['face', 'skin', 'pimple', 'acne', 'face wash'],
-  },
-];
+  useEffect(() => {
+  fetch("/api/products")
+    .then((res) => res.json())
+    .then((data) => {
+      setAllProducts(data || []);
+    })
+    .catch((err) => console.error(err));
+}, []);
   const sendMessage = async () => {
     if (!input.trim() || loading) return;
     
