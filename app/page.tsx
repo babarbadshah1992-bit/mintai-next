@@ -115,6 +115,43 @@ export default function HomePage() {
   }, []);
 
   // Send message to AI
+  const allProducts = [
+  {
+    id: '1',
+    name: 'Tulsi Ginger Kadha',
+    price: 299,
+    originalPrice: 499,
+    discount: '40% OFF',
+    description: 'Cold & cough immunity support',
+    image: '/products/kadha.png',
+    link: '/store',
+    keywords: ['sardi', 'cold', 'cough', 'fever'],
+  },
+
+  {
+    id: '2',
+    name: 'Ayurvedic Pain Relief Oil',
+    price: 349,
+    originalPrice: 599,
+    discount: '30% OFF',
+    description: 'Natural pain relief support',
+    image: '/products/pain-oil.png',
+    link: '/store',
+    keywords: ['pain', 'body pain', 'joint pain'],
+  },
+
+  {
+    id: '3',
+    name: 'Neem Face Wash',
+    price: 249,
+    originalPrice: 399,
+    discount: '20% OFF',
+    description: 'Natural skincare cleanser',
+    image: '/products/facewash.png',
+    link: '/store',
+    keywords: ['face', 'skin', 'pimple', 'acne', 'face wash'],
+  },
+];
   const sendMessage = async () => {
     if (!input.trim() || loading) return;
     
@@ -132,18 +169,16 @@ export default function HomePage() {
       setLoading(false);
       setLastAiIndex(messages.length + 1);
       
-      setRelatedProducts([
-        {
-          id: 'p1',
-          name: 'Organic Ashwagandha Capsules',
-          price: 599,
-          originalPrice: 999,
-          discount: '40% OFF',
-          description: 'Stress relief and vitality booster',
-          image: 'https://via.placeholder.com/200x140?text=Product',
-          link: 'https://amazon.in',
-        },
-      ]);
+      const query = input.toLowerCase();
+
+const matchedProducts = allProducts.filter((product) =>
+  product.keywords?.some((keyword) =>
+    query.toLowerCase().includes(keyword.toLowerCase())
+  )
+);
+
+// Agar match na mile to random product mat dikhao
+setRelatedProducts(matchedProducts.length > 0 ? matchedProducts : []);
       setRelatedBlogs([
         {
           id: 'b1',
