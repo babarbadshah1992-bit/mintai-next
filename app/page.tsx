@@ -142,13 +142,15 @@ export default function HomePage() {
       const query = input.toLowerCase();
 
 const matchedProducts = allProducts.filter((product) =>
-  product.keywords?.some((keyword) =>
-    query.toLowerCase().includes(keyword.toLowerCase())
-  )
+  product.name?.toLowerCase().includes(query.toLowerCase())
 );
 
 // Agar match na mile to random product mat dikhao
-setRelatedProducts(matchedProducts.length > 0 ? matchedProducts : []);
+setRelatedProducts(
+  matchedProducts.length > 0
+    ? matchedProducts
+    : allProducts.slice(0, 4)
+);
       setRelatedBlogs([
         {
           id: 'b1',
