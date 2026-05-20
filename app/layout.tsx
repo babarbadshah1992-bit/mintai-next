@@ -258,13 +258,22 @@ export default function RootLayout({
                       '0 4px 14px rgba(24,162,61,0.08)',
                   }}
                 >
+                  <div
+  style={{
+    fontSize: '12px',
+    color: '#777',
+    textAlign: 'center',
+    lineHeight: 1.6,
+    padding: '0 20px'
+  }}
+>
+  ⚠️ MintAI provides AI-powered wellness estimates and general health information only.
+  Results are not medical diagnoses, treatments, or professional medical advice.
+  Always consult a qualified healthcare professional for medical concerns.
+</div>
 
-                 ⚠️ Disclaimer:
-                 MintAI provides AI-powered wellness estimates and general health information only.
-                 Results are not medical diagnoses, treatments, or professional medical advice.
-                 Always consult a qualified healthcare professional for medical concerns.
-
-
+<p style={{ textAlign: 'center', marginTop: '10px' }}>
+</p>
                 </div>
               </div>
             </div>
