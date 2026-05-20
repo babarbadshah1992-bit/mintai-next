@@ -301,7 +301,7 @@ export default function ChatPage() {
                     </p>
 
                     <Link
-                      href={`/blogs/${blog.id}`}
+                      href={`/blog/${blog.id}`}
                       className="text-green-600 font-semibold"
                     >
                       Read More →
