@@ -17,6 +17,7 @@ interface Product {
   image: string;
   category: string;
   description?: string;
+  link?:string;
 }
 
 interface Blog {
@@ -236,7 +237,7 @@ export default function ChatPage() {
                   className="bg-white rounded-2xl shadow overflow-hidden"
                 >
                   <div
-  className="w-full h-48 flex items-center justify-center bg-gray-100"
+  className="w-full h-36 flex items-center justify-center bg-gray-100"
   style={{ fontSize: "70px" }}
 >
   Image: {JSON.stringify(product.image)}
@@ -250,6 +251,18 @@ export default function ChatPage() {
                     <p className="text-green-600 font-bold">
                       ₹{product.price}
                     </p>
+                    <p className="text-gray-500 text-sm mt-2">
+  {product.description}
+</p>
+
+<a
+  href={product.link || "#"}
+  target="_blank"
+  rel="noopener noreferrer"
+  className="block mt-4 bg-green-600 text-white text-center py-2 rounded-lg"
+>
+  Buy Now →
+</a>
                   </div>
                 </div>
               ))}

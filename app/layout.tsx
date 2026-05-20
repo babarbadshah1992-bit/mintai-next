@@ -258,7 +258,13 @@ export default function RootLayout({
                       '0 4px 14px rgba(24,162,61,0.08)',
                   }}
                 >
-                  Built by Mohammed Babar
+
+                 ⚠️ Disclaimer:
+                 MintAI provides AI-powered wellness estimates and general health information only.
+                 Results are not medical diagnoses, treatments, or professional medical advice.
+                 Always consult a qualified healthcare professional for medical concerns.
+
+
                 </div>
               </div>
             </div>
