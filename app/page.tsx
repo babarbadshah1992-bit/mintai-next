@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import { supabase } from '@/lib/supabase';
 
 // Types
 interface Message {
@@ -18,6 +19,7 @@ interface Product {
   description: string;
   image: string;
   link: string;
+  keywords?: string[];
 }
 
 interface Blog {
@@ -98,22 +100,23 @@ export default function HomePage() {
   // Fetch blogs on mount
   useEffect(() => {
     setBlogs([
-      {
-        id: '1',
-        title: '10 Natural Remedies for Glowing Skin',
-        excerpt: 'Discover ancient herbs that transform your skin naturally...',
-        slug: 'natural-remedies-glowing-skin',
-        tags: ['skincare', 'natural', 'ayurveda'],
-      },
-      {
-        id: '2',
-        title: 'The Science of Sleep: Why It Matters',
-        excerpt: 'Understanding how quality sleep affects your overall health...',
-        slug: 'science-of-sleep',
-        tags: ['sleep', 'wellness', 'health'],
-      },
+     {
+  id: '1',
+  title: '10 Natural Remedies for Glowing Skin',
+  excerpt: 'Discover ancient herbs that transform your skin naturally...',
+  slug: 'neem-benefits',
+  tags: ['skincare', 'natural', 'ayurveda'],
+},
+{
+  id: '2',
+  title: 'The Science of Sleep: Why It Matters',
+  excerpt: 'Understanding how quality sleep affects your overall health...',
+  slug: 'bp-home-remedies',
+  tags: ['sleep', 'wellness', 'health'],
+},
     ]);
   }, []);
+  
   useEffect(() => {
   fetch("/api/products")
     .then((res) => res.json())
@@ -122,6 +125,8 @@ export default function HomePage() {
     })
     .catch((err) => console.error(err));
 }, []);
+
+  // FIXED: Send message with blog search from Supabase
   const sendMessage = async () => {
     if (!input.trim() || loading) return;
     
@@ -130,6 +135,41 @@ export default function HomePage() {
     setInput('');
     setLoading(true);
     
+    // Search blogs from Supabase based on user query
+    const query = input.toLowerCase();
+    
+    // Fetch blogs from Supabase that match the query
+    let matchedBlogs: Blog[] = [];
+    try {
+      const { data: supabaseBlogs, error } = await supabase
+        .from('blogs')
+        .select('*')
+        .ilike('title', `%${query}%`);
+      
+      if (!error && supabaseBlogs && supabaseBlogs.length > 0) {
+        matchedBlogs = supabaseBlogs.map((blog: any) => ({
+          id: blog.id.toString(),
+          title: blog.title,
+          excerpt: blog.excerpt,
+          slug: blog.slug,
+          tags: blog.tags || []
+        }));
+      }
+    } catch (err) {
+      console.error("Blog fetch error:", err);
+    }
+    
+    // Match products
+    const matchedProducts = allProducts.filter((product) =>
+      product.keywords?.some((keyword: string) =>
+        query.includes(keyword.toLowerCase())
+      )
+    );
+    
+    setRelatedProducts(matchedProducts.length > 0 ? matchedProducts : []);
+    setRelatedBlogs(matchedBlogs);
+    setLastAiIndex(messages.length + 1);
+    
     setTimeout(() => {
       const aiResponse: Message = { 
         role: 'ai', 
@@ -137,31 +177,7 @@ export default function HomePage() {
       };
       setMessages(prev => [...prev, aiResponse]);
       setLoading(false);
-      setLastAiIndex(messages.length + 1);
-      
-      const query = input.toLowerCase();
-
-const matchedProducts = allProducts.filter((product) =>
-  product.keywords?.some((keyword: string) =>
-    query.includes(keyword.toLowerCase())
-  )
-);
-
-setRelatedProducts(
-  matchedProducts.length > 0
-    ? matchedProducts
-    : []
-);
-      setRelatedBlogs([
-        {
-          id: 'b1',
-          title: 'Benefits of Ashwagandha',
-          excerpt: 'Learn how this ancient herb can transform your wellness...',
-          slug: 'ashwagandha-benefits',
-          tags: ['herbs', 'wellness'],
-        },
-      ]);
-    }, 1000);
+    }, 500);
   };
   
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -271,7 +287,7 @@ setRelatedProducts(
         position: "relative",
         overflowX: "hidden",
       }}
-      >
+    >
       {/* BG GLOWS */}
       <div style={{
         position: "fixed", top: "-200px", right: "-200px",
@@ -286,28 +302,20 @@ setRelatedProducts(
         pointerEvents: "none", zIndex: 0,
       }} />
 
-      <div
-  style={{
-    maxWidth: "960px",
-    margin: "0 auto",
-    padding: "40px 20px",
-  }}
-> </div>
-
+      <div style={{ maxWidth: "960px", margin: "0 auto", padding: "40px 20px" }}>
         {/* ── CHAT SECTION ── */}
         <div 
-        style={{
-          background: "rgba(255,255,255,0.82)",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
-          border: "1px solid rgba(255,255,255,0.92)",
-          borderRadius: "28px",
-          boxShadow: "0 8px 40px rgba(24,80,40,0.10)",
-          overflow: "hidden",
-          marginBottom: "36px",
-        }}
+          style={{
+            background: "rgba(255,255,255,0.82)",
+            backdropFilter: "blur(20px)",
+            WebkitBackdropFilter: "blur(20px)",
+            border: "1px solid rgba(255,255,255,0.92)",
+            borderRadius: "28px",
+            boxShadow: "0 8px 40px rgba(24,80,40,0.10)",
+            overflow: "hidden",
+            marginBottom: "36px",
+          }}
         >
-
           {/* Chat header */}
           <div style={{
             padding: "20px 28px",
@@ -448,7 +456,7 @@ setRelatedProducts(
               </div>
             )}
             <div ref={messagesEndRef} />
-          </div> {/* Closing messages div */}
+          </div>
 
           {/* Input area */}
           <div style={{
@@ -464,7 +472,6 @@ setRelatedProducts(
               padding: "8px 8px 8px 14px",
               boxShadow: "0 2px 12px rgba(24,80,40,0.07)",
             }}>
-
               {/* Plus menu */}
               <div style={{ position: "relative", flexShrink: 0 }}>
                 <button
@@ -525,17 +532,17 @@ setRelatedProducts(
                 placeholder="Ask MintAI about health, skin, herbs..."
                 disabled={loading}
                 style={{
-               flex: 1,
-               width: "100%",
-               minWidth: 0,
-               border: "none",
-               outline: "none",
-               background: "transparent",
-               fontSize: "16px",
-               paddingRight: "8px",
-               color: "#1a2e1e",
-              fontFamily: "inherit",
-               }}
+                  flex: 1,
+                  width: "100%",
+                  minWidth: 0,
+                  border: "none",
+                  outline: "none",
+                  background: "transparent",
+                  fontSize: "16px",
+                  paddingRight: "8px",
+                  color: "#1a2e1e",
+                  fontFamily: "inherit",
+                }}
               />
               <button
                 onClick={sendMessage}
@@ -549,18 +556,22 @@ setRelatedProducts(
                   background: loading || !input.trim()
                     ? "rgba(24,162,61,0.15)"
                     : "linear-gradient(135deg, #18a23d, #1db84c)",
-                  border: "none", cursor: loading || !input.trim() ? "not-allowed" : "pointer",
+                  border: "none",
+                  cursor: loading || !input.trim() ? "not-allowed" : "pointer",
                   color: loading || !input.trim() ? "#aaa" : "#fff",
-                  fontSize: "16px", display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: "16px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
                   boxShadow: loading || !input.trim() ? "none" : "0 4px 12px rgba(24,162,61,0.30)",
                   transition: "all 0.20s ease",
                 }}
               >➤</button>
             </div>
           </div>
-        </div> {/* Closing chat section */}
+        </div>
 
-        {/* ── RELATED PRODUCTS + BLOGS ── */}
+        {/* RELATED PRODUCTS + BLOGS */}
         {lastAiIndex !== -1 && (
           <div>
             {relatedProducts.length > 0 && (
@@ -573,10 +584,15 @@ setRelatedProducts(
                     <div
                       key={p.id}
                       style={{
-                        background: "rgba(255,255,255,0.82)", backdropFilter: "blur(16px)",
-                        border: "1px solid rgba(255,255,255,0.92)", borderRadius: "22px",
-                        padding: "20px", boxShadow: "0 4px 20px rgba(24,80,40,0.07)",
-                        display: "flex", flexDirection: "column", gap: "10px",
+                        background: "rgba(255,255,255,0.82)",
+                        backdropFilter: "blur(16px)",
+                        border: "1px solid rgba(255,255,255,0.92)",
+                        borderRadius: "22px",
+                        padding: "20px",
+                        boxShadow: "0 4px 20px rgba(24,80,40,0.07)",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "10px",
                         transition: "transform 0.24s cubic-bezier(.22,1,.36,1), box-shadow 0.24s ease",
                       }}
                       onMouseEnter={e => {
@@ -588,20 +604,17 @@ setRelatedProducts(
                         (e.currentTarget as HTMLDivElement).style.boxShadow = "0 4px 20px rgba(24,80,40,0.07)";
                       }}
                     >
-                      <div
-  style={{
-    width: "100%",
-    height: "140px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    fontSize: "60px",
-    background: "#f5f5f5",
-    borderRadius: "14px"
-  }}
->
-  {p.image}
-</div>
+                     {p.image && p.image.startsWith('http') ? (
+  <img
+    src={p.image}
+    alt={p.name}
+    style={{ width: "100%", height: "140px", objectFit: "cover", borderRadius: "14px" }}
+  />
+) : (
+  <div style={{ width: "100%", height: "140px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "60px", background: "#f0f7f2", borderRadius: "14px" }}>
+    {p.image || "🌿"}
+  </div>
+)}
                       <h3 style={{ fontSize: "15px", fontWeight: 700, color: "#1a2e1e", lineHeight: 1.3 }}>{p.name}</h3>
                       <div style={{ display: "flex", gap: "8px", alignItems: "baseline", flexWrap: "wrap" }}>
                         <span style={{ fontSize: "18px", fontWeight: 800, color: "#18a23d" }}>₹{p.price}</span>
@@ -634,6 +647,7 @@ setRelatedProducts(
               </div>
             )}
 
+            {/* RELATED BLOGS SECTION - FIXED */}
             {relatedBlogs.length > 0 && (
               <div style={{ marginBottom: "36px" }}>
                 <h2 style={{ fontSize: "20px", fontWeight: 800, color: "#1a2e1e", marginBottom: "18px", letterSpacing: "-0.01em" }}>
@@ -645,10 +659,14 @@ setRelatedProducts(
                       key={blog.id}
                       href={`/blog/${blog.slug}`}
                       style={{
-                        background: "rgba(255,255,255,0.82)", backdropFilter: "blur(16px)",
-                        border: "1px solid rgba(255,255,255,0.92)", borderRadius: "22px",
-                        padding: "22px", textDecoration: "none",
-                        boxShadow: "0 4px 20px rgba(24,80,40,0.07)", display: "block",
+                        background: "rgba(255,255,255,0.82)",
+                        backdropFilter: "blur(16px)",
+                        border: "1px solid rgba(255,255,255,0.92)",
+                        borderRadius: "22px",
+                        padding: "22px",
+                        textDecoration: "none",
+                        boxShadow: "0 4px 20px rgba(24,80,40,0.07)",
+                        display: "block",
                         transition: "transform 0.24s cubic-bezier(.22,1,.36,1), box-shadow 0.24s ease",
                       }}
                       onMouseEnter={e => {
@@ -679,7 +697,7 @@ setRelatedProducts(
           </div>
         )}
 
-        {/* ── LATEST BLOGS ── */}
+        {/* LATEST BLOGS */}
         {blogs.length > 0 && (
           <div style={{ marginBottom: "40px" }}>
             <h2 style={{ fontSize: "20px", fontWeight: 800, color: "#1a2e1e", marginBottom: "18px", letterSpacing: "-0.01em" }}>
@@ -691,10 +709,14 @@ setRelatedProducts(
                   key={blog.id}
                   href={`/blog/${blog.slug}`}
                   style={{
-                    background: "rgba(255,255,255,0.82)", backdropFilter: "blur(16px)",
-                    border: "1px solid rgba(255,255,255,0.92)", borderRadius: "22px",
-                    padding: "22px", textDecoration: "none",
-                    boxShadow: "0 4px 20px rgba(24,80,40,0.07)", display: "block",
+                    background: "rgba(255,255,255,0.82)",
+                    backdropFilter: "blur(16px)",
+                    border: "1px solid rgba(255,255,255,0.92)",
+                    borderRadius: "22px",
+                    padding: "22px",
+                    textDecoration: "none",
+                    boxShadow: "0 4px 20px rgba(24,80,40,0.07)",
+                    display: "block",
                     transition: "transform 0.24s cubic-bezier(.22,1,.36,1), box-shadow 0.24s ease",
                   }}
                   onMouseEnter={e => {
@@ -723,7 +745,7 @@ setRelatedProducts(
           </div>
         )}
 
-        {/* ── QUICK HEALTH CHECK ── */}
+        {/* QUICK HEALTH CHECK */}
         <div style={{
           background: "rgba(255,255,255,0.82)",
           backdropFilter: "blur(20px)",
@@ -753,174 +775,172 @@ setRelatedProducts(
           </div>
 
           <div style={{ maxWidth: "800px", margin: "0 auto" }}>
-  <div
-    style={{
-      display: "grid",
-      gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-      gap: "16px",
-      marginBottom: "24px",
-    }}
-  >
-    <input
-      type="number"
-      placeholder="Your Age"
-      value={scoreAge}
-      onChange={(e) => setScoreAge(e.target.value)}
-      style={{
-        padding: "14px",
-        borderRadius: "14px",
-        border: "1px solid rgba(24,162,61,0.15)",
-        outline: "none",
-        fontSize: "14px",
-      }}
-    />
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+                gap: "16px",
+                marginBottom: "24px",
+              }}
+            >
+              <input
+                type="number"
+                placeholder="Your Age"
+                value={scoreAge}
+                onChange={(e) => setScoreAge(e.target.value)}
+                style={{
+                  padding: "14px",
+                  borderRadius: "14px",
+                  border: "1px solid rgba(24,162,61,0.15)",
+                  outline: "none",
+                  fontSize: "14px",
+                }}
+              />
 
-    <select
-      value={scoreSleep}
-      onChange={(e) => setScoreSleep(e.target.value)}
-      style={{
-        padding: "14px",
-        borderRadius: "14px",
-        border: "1px solid rgba(24,162,61,0.15)",
-        outline: "none",
-        fontSize: "14px",
-      }}
-    >
-      <option value="">Sleep Hours</option>
-      <option value="<5">Less than 5</option>
-      <option value="5-6">5-6 Hours</option>
-      <option value="7-8">7-8 Hours</option>
-      <option value=">8">8+ Hours</option>
-    </select>
+              <select
+                value={scoreSleep}
+                onChange={(e) => setScoreSleep(e.target.value)}
+                style={{
+                  padding: "14px",
+                  borderRadius: "14px",
+                  border: "1px solid rgba(24,162,61,0.15)",
+                  outline: "none",
+                  fontSize: "14px",
+                }}
+              >
+                <option value="">Sleep Hours</option>
+                <option value="<5">Less than 5</option>
+                <option value="5-6">5-6 Hours</option>
+                <option value="7-8">7-8 Hours</option>
+                <option value=">8">8+ Hours</option>
+              </select>
 
-    <select
-      value={scoreStress}
-      onChange={(e) => setScoreStress(e.target.value)}
-      style={{
-        padding: "14px",
-        borderRadius: "14px",
-        border: "1px solid rgba(24,162,61,0.15)",
-        outline: "none",
-        fontSize: "14px",
-      }}
-    >
-      <option value="">Stress Level</option>
-      <option value="Low">Low</option>
-      <option value="Medium">Medium</option>
-      <option value="High">High</option>
-    </select>
-  </div>
+              <select
+                value={scoreStress}
+                onChange={(e) => setScoreStress(e.target.value)}
+                style={{
+                  padding: "14px",
+                  borderRadius: "14px",
+                  border: "1px solid rgba(24,162,61,0.15)",
+                  outline: "none",
+                  fontSize: "14px",
+                }}
+              >
+                <option value="">Stress Level</option>
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+              </select>
+            </div>
 
-  <button
-    onClick={handleHealthScore}
-    disabled={scoreLoading}
-    style={{
-      width: "100%",
-      padding: "14px",
-      borderRadius: "16px",
-      border: "none",
-      cursor: "pointer",
-      background: "linear-gradient(135deg,#18a23d,#1db84c)",
-      color: "#fff",
-      fontWeight: 700,
-      fontSize: "15px",
-      marginBottom: "24px",
-    }}
-  >
-    {scoreLoading ? "Calculating..." : "Check My Health Score"}
-  </button>
+            <button
+              onClick={handleHealthScore}
+              disabled={scoreLoading}
+              style={{
+                width: "100%",
+                padding: "14px",
+                borderRadius: "16px",
+                border: "none",
+                cursor: "pointer",
+                background: "linear-gradient(135deg,#18a23d,#1db84c)",
+                color: "#fff",
+                fontWeight: 700,
+                fontSize: "15px",
+                marginBottom: "24px",
+              }}
+            >
+              {scoreLoading ? "Calculating..." : "Check My Health Score"}
+            </button>
 
-  {scoreResult && (
-    <div
-      style={{
-        background: "rgba(24,162,61,0.06)",
-        border: "1px solid rgba(24,162,61,0.12)",
-        borderRadius: "20px",
-        padding: "24px",
-        textAlign: "center",
-      }}
-    >
-      <h3
-        style={{
-          fontSize: "42px",
-          marginBottom: "10px",
-          color: getScoreColor(scoreResult.score),
-        }}
-      >
-        {scoreResult.score}/100
-      </h3>
+            {scoreResult && (
+              <div
+                style={{
+                  background: "rgba(24,162,61,0.06)",
+                  border: "1px solid rgba(24,162,61,0.12)",
+                  borderRadius: "20px",
+                  padding: "24px",
+                  textAlign: "center",
+                }}
+              >
+                <h3
+                  style={{
+                    fontSize: "42px",
+                    marginBottom: "10px",
+                    color: getScoreColor(scoreResult.score),
+                  }}
+                >
+                  {scoreResult.score}/100
+                </h3>
 
-      <p
-        style={{
-          fontSize: "18px",
-          fontWeight: 700,
-          marginBottom: "10px",
-          color: "#1a2e1e",
-        }}
-      >
-        {getScoreLabel(scoreResult.score)}
-      </p>
+                <p
+                  style={{
+                    fontSize: "18px",
+                    fontWeight: 700,
+                    marginBottom: "10px",
+                    color: "#1a2e1e",
+                  }}
+                >
+                  {getScoreLabel(scoreResult.score)}
+                </p>
 
-      <p
-        style={{
-          fontSize: "14px",
-          color: "#5a7060",
-          lineHeight: 1.6,
-          marginBottom: "18px",
-        }}
-      >
-        {scoreResult.recommendation}
-      </p>
+                <p
+                  style={{
+                    fontSize: "14px",
+                    color: "#5a7060",
+                    lineHeight: 1.6,
+                    marginBottom: "18px",
+                  }}
+                >
+                  {scoreResult.recommendation}
+                </p>
 
-      <div
-        style={{
-          display: "flex",
-          gap: "12px",
-          justifyContent: "center",
-          flexWrap: "wrap",
-        }}
-      >
-        <button
-          onClick={shareScoreOnWhatsApp}
-          style={{
-            padding: "10px 18px",
-            borderRadius: "12px",
-            border: "none",
-            cursor: "pointer",
-            background: "#25D366",
-            color: "#fff",
-            fontWeight: 700,
-          }}
-        >
-          WhatsApp Share
-        </button>
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "12px",
+                    justifyContent: "center",
+                    flexWrap: "wrap",
+                  }}
+                >
+                  <button
+                    onClick={shareScoreOnWhatsApp}
+                    style={{
+                      padding: "10px 18px",
+                      borderRadius: "12px",
+                      border: "none",
+                      cursor: "pointer",
+                      background: "#25D366",
+                      color: "#fff",
+                      fontWeight: 700,
+                    }}
+                  >
+                    WhatsApp Share
+                  </button>
 
-        <button
-          onClick={downloadScorePDF}
-          style={{
-            padding: "10px 18px",
-            borderRadius: "12px",
-            border: "none",
-            cursor: "pointer",
-            background: "#111",
-            color: "#fff",
-            fontWeight: 700,
-          }}
-        >
-          Download PDF
-        </button>
+                  <button
+                    onClick={downloadScorePDF}
+                    style={{
+                      padding: "10px 18px",
+                      borderRadius: "12px",
+                      border: "none",
+                      cursor: "pointer",
+                      background: "#111",
+                      color: "#fff",
+                      fontWeight: 700,
+                    }}
+                  >
+                    Download PDF
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
-    </div>
-  )}
-</div>
 
-{showCameraModal && (
-  <CameraModal
-    onClose={() => setShowCameraModal(false)}
-    onResult={handleCameraResult}
-  />
-)}
-</div>
-</div>
-);
+      {showCameraModal && (
+        <CameraModal onClose={() => setShowCameraModal(false)} onResult={handleCameraResult} />
+      )}
+    </div>
+  );
 }
