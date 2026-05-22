@@ -61,50 +61,52 @@ export default function ChatPage() {
     return text.trim().toLowerCase();
   }
 
-  async function searchContent(query: string) {
+async function searchContent(query: string) {
     console.log("🔍 SEARCHING:", query);
     
     const safeQuery = query.trim().toLowerCase();
-    if (!safeQuery) return;
+    if (!safeQuery) return;   // ✅ FIXED: ! lagao
 
     try {
-        // PRODUCTS (working)
+        // PRODUCTS
         const { data: products } = await supabase
             .from('products')
             .select('*')
             .or(`name.ilike.%${safeQuery}%,category.ilike.%${safeQuery}%`)
             .limit(4);
-        setRelatedProducts(products || []);
 
-        // BLOGS (FIXED - no category column)
-        // Search in title only
-        let { data: blogs, error } = await supabase
+        setRelatedProducts(products || []);
+        console.log("🛍️ PRODUCTS:", products?.length);
+
+        // BLOGS - FIXED
+        const { data: blogs, error } = await supabase   // ✅ Fixed: ek select
             .from('blogs')
             .select('*')
             .ilike('title', `%${safeQuery}%`);
-        
-        // If no results, search in tags
-        if (!blogs || blogs.length === 0) {
-            const { data: tagBlogs } = await supabase
-                .from('blogs')
-                .select('*')
-                .contains('tags', [safeQuery]);
-            blogs = tagBlogs;
-        }
-        
-        console.log("📚 BLOGS FOUND:", blogs?.length);
-        console.log("📚 BLOG TITLES:", blogs?.map(b => b.title));
-        
-        setRelatedBlogs(blogs || []);
 
-        // HEALTH TIP
-        const tip = safeQuery.includes('sardi') 
-            ? '🤧 Sardi ke liye: Adrak wali chai, bhatti ki bhap, aur aaram karein.'
-            : '💚 Stay healthy!';
-        setQuickHealthTip(tip);
+        console.log("📚 BLOGS ERROR:", error);
+        console.log("📚 BLOGS FOUND:", blogs);
+        console.log("📚 BLOGS COUNT:", blogs?.length);
+
+        if (blogs && blogs.length > 0) {
+            setRelatedBlogs(blogs);
+            console.log("✅ RELATED BLOGS SET");
+        } else {
+            setRelatedBlogs([]);
+            console.log("❌ NO BLOGS FOUND");
+        }
+
+        // HEALTH TIPS
+        const tips: Record<string, string> = {
+            diabetes: '🩸 Diabetes: Karela juice, methi seeds, and low sugar diet help control blood sugar.',
+            sardi: '🤧 Sardi ke liye: Adrak wali chai, bhatti ki bhap, aur aaram karein.',
+        };
+        
+        const matched = Object.keys(tips).find(key => safeQuery.includes(key));
+        setQuickHealthTip(matched ? tips[matched] : '💚 Stay healthy!');
         
     } catch (error) {
-        console.log("ERROR:", error);
+        console.log("❌ SEARCH ERROR:", error);
     }
 }
 
