@@ -190,8 +190,8 @@ export default function StorePage() {
           position: "relative",
           zIndex: 1,
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-          gap: "20px",
+          gridTemplateColumns:"repeat(2, 1fr)",
+          gap: "12px",
           alignItems: "stretch",
         }}
       >
@@ -205,7 +205,7 @@ export default function StorePage() {
               WebkitBackdropFilter: "blur(20px)",
               border: "1px solid rgba(255,255,255,0.92)",
               borderRadius: "24px",
-              padding: "20px",
+              padding: "10px",
               boxShadow: "0 4px 24px rgba(24,80,40,0.07), 0 1px 3px rgba(24,80,40,0.04)",
               display: "flex",
               flexDirection: "column",
@@ -229,7 +229,7 @@ export default function StorePage() {
                 borderRadius: "18px",
                 textAlign: "center",
                 marginBottom: "20px",
-                height: "180px",
+                height: "120px",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -248,8 +248,8 @@ export default function StorePage() {
               />
               <div
                 style={{
-                  width: "100px",
-                  height: "100px",
+                  width: "70px",
+                  height: "70px",
                   margin: "auto",
                   borderRadius: "999px",
                   background: "rgba(255,255,255,0.45)",
