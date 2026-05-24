@@ -69,7 +69,7 @@ export default async function BlogPage() {
   }
 
   const featuredBlog = blogs && blogs.length > 0 ? blogs[0] : null
-  const remainingBlogs = blogs && blogs.length > 1 ? blogs.slice(1) : []
+const remainingBlogs = blogs && blogs.length > 1 ? blogs.slice(1) : []
 
   return (
     <div style={{

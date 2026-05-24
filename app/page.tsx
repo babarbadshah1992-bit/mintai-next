@@ -97,31 +97,20 @@ export default function HomePage() {
   const [scoreLoading, setScoreLoading] = useState(false);
   const [scoreResult, setScoreResult] = useState<ScoreResult | null>(null);
 
-  // Fetch blogs on mount
-  useEffect(() => {
-    setBlogs([
-     {
-  id: '1',
-  title: '10 Natural Remedies for Glowing Skin',
-  excerpt: 'Discover ancient herbs that transform your skin naturally...',
-  slug: 'neem-benefits',
-  tags: ['skincare', 'natural', 'ayurveda'],
-},
-{
-  id: '2',
-  title: 'The Science of Sleep: Why It Matters',
-  excerpt: 'Understanding how quality sleep affects your overall health...',
-  slug: 'bp-home-remedies',
-  tags: ['sleep', 'wellness', 'health'],
-},
-    ]);
-  }, []);
   
   useEffect(() => {
   fetch("/api/products")
     .then((res) => res.json())
     .then((data) => {
       setAllProducts(data || []);
+    })
+    .catch((err) => console.error(err));
+}, []);
+useEffect(() => {
+  fetch("/api/blogs")
+    .then((res) => res.json())
+    .then((data) => {
+      setBlogs(data || []);
     })
     .catch((err) => console.error(err));
 }, []);

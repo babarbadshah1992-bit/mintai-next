@@ -1,19 +1,31 @@
 // app/api/blogs/route.ts
 import { NextResponse } from 'next/server';
-import { sql } from '@vercel/postgres';
+import { createClient } from "@supabase/supabase-js";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const limit = searchParams.get('limit') || '2';
   
   try {
-    const { rows } = await sql`
-      SELECT id, title, slug, tags 
-      FROM blogs 
-      ORDER BY created_at DESC 
-      LIMIT ${limit}
-    `;
-    return NextResponse.json(rows);
+   const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
+
+const { data, error } = await supabase
+  .from("blogs")
+  .select("*")
+  .order("created_at", { ascending: false })
+  .limit(4);
+
+if (error) {
+  return NextResponse.json(
+    { error: error.message },
+    { status: 500 }
+  );
+}
+
+return NextResponse.json(data || []);
   } catch (error) {
     return NextResponse.json([], { status: 500 });
   }
