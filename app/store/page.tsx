@@ -190,7 +190,7 @@ export default function StorePage() {
           position: "relative",
           zIndex: 1,
           display: "grid",
-         gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+         gridTemplateColumns: "repeat(2, minmax(160px, 1fr))",
 gap: "10px",
 justifyContent: "center",
 alignItems: "stretch",
@@ -211,8 +211,9 @@ alignItems: "stretch",
               display: "flex",
               flexDirection: "column",
               transition: "transform 0.28s cubic-bezier(.22,1,.36,1), box-shadow 0.28s cubic-bezier(.22,1,.36,1)",
-              cursor: "pointer",
-              height: "100%",
+             cursor: "pointer",
+             width: "100%",
+             height: "100%",
             }}
             onMouseEnter={(e) => {
               (e.currentTarget as HTMLDivElement).style.transform = "translateY(-6px) scale(1.012)";
