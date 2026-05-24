@@ -191,7 +191,7 @@ export default function StorePage() {
           zIndex: 1,
           display: "grid",
           gridTemplateColumns:"repeat(2, 1fr)",
-          gap: "12px",
+          gap: "8px",
           alignItems: "stretch",
         }}
       >
@@ -204,8 +204,8 @@ export default function StorePage() {
               backdropFilter: "blur(20px)",
               WebkitBackdropFilter: "blur(20px)",
               border: "1px solid rgba(255,255,255,0.92)",
-              borderRadius: "24px",
-              padding: "10px",
+              borderRadius: "18px",
+              padding: "12px",
               boxShadow: "0 4px 24px rgba(24,80,40,0.07), 0 1px 3px rgba(24,80,40,0.04)",
               display: "flex",
               flexDirection: "column",
