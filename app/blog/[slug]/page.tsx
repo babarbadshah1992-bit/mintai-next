@@ -316,12 +316,12 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
   }}
 >
   <Link href="/blog" className="back-link">
-    ← Back to all blogs
+    ← Back
   </Link>
 
   {nextBlog && (
     <Link href={`/blog/${nextBlog.slug}`} className="next-link">
-      Next Blog →
+      Next →
     </Link>
   )}
 </div>
