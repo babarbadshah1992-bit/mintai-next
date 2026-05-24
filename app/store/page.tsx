@@ -190,9 +190,10 @@ export default function StorePage() {
           position: "relative",
           zIndex: 1,
           display: "grid",
-          gridTemplateColumns:"repeat(2, 1fr)",
-          gap: "8px",
-          alignItems: "stretch",
+         gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+gap: "10px",
+justifyContent: "center",
+alignItems: "stretch",
         }}
       >
         {filteredProducts.map((product) => (
