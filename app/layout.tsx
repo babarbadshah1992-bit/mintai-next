@@ -13,7 +13,9 @@ const poppins = Poppins({
   variable: '--font-poppins',
 });
 
-export const metadata = {
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
   metadataBase: new URL("https://mintai.in"),
 
   title: "MintAI - Health & Beauty Assistant",
@@ -28,7 +30,6 @@ export const metadata = {
     icon: "data:image/svg+xml,...",
   },
 };
-
 export default function RootLayout({
   children,
 }: {
