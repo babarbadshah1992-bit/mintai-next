@@ -14,10 +14,18 @@ const poppins = Poppins({
 });
 
 export const metadata = {
-  title: 'MintAI - Health & Beauty Assistant',
-  description: 'AI-powered health and beauty recommendations',
+  metadataBase: new URL("https://mintai.in"),
+
+  title: "MintAI - Health & Beauty Assistant",
+
+  description: "AI-powered health and beauty recommendations",
+
+  alternates: {
+    canonical: "/",
+  },
+
   icons: {
-    icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🌿</text></svg>',
+    icon: "data:image/svg+xml,...",
   },
 };
 
