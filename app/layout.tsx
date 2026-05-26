@@ -213,7 +213,7 @@ export default function RootLayout({
                     wordBreak: 'break-word',
                   }}
                 >
-                  mintai@support.in
+                  support@mintai.in
                 </a>
               </div>
 
