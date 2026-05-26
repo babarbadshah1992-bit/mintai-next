@@ -176,14 +176,16 @@ export default function RootLayout({
                     display: 'flex',
                     justifyContent: 'center',
                     flexWrap: 'wrap',
-                    gap: '16px',
+                    gap: '10px',
                   }}
                 >
                   {[
-                    { label: 'Home', href: '/' },
-                    { label: 'Blog', href: '/blog' },
-                    { label: 'Store', href: '/store' },
-                    { label: 'About', href: '/about' },
+                   
+                 { label: 'Privacy Policy', href: '/privacy-policy' },
+                 { label: 'Affiliate Disclosure', href: '/affiliate-disclosure' },
+                 { label: 'Contact Us', href: '/contact' },
+                 { label: 'Terms & Conditions', href: '/terms' },
+
                   ].map((item) => (
                     <Link
                       key={item.label}
@@ -213,7 +215,6 @@ export default function RootLayout({
                     wordBreak: 'break-word',
                   }}
                 >
-                  support@mintai.in
                 </a>
               </div>
 
