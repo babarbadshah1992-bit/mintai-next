@@ -741,14 +741,14 @@ useEffect(() => {
           WebkitBackdropFilter: "blur(20px)",
           border: "1px solid rgba(255,255,255,0.92)",
           borderRadius: "28px",
-          padding: "36px 32px",
+          padding: "28px 20px",
           boxShadow: "0 8px 40px rgba(24,80,40,0.10)",
           position: "relative",
           overflow: "hidden",
         }}>
           <div style={{
             position: "absolute", top: "-60px", right: "-60px",
-            width: "220px", height: "220px",
+            width: "160px", height: "160px",
             background: "radial-gradient(circle, rgba(24,162,61,0.08) 0%, transparent 70%)",
             pointerEvents: "none",
           }} />
@@ -763,7 +763,13 @@ useEffect(() => {
             </p>
           </div>
 
-          <div style={{ maxWidth: "800px", margin: "0 auto" }}>
+          <div
+          style={{
+         maxWidth: "100%",
+         margin: "0 auto",
+         boxSizing: "border-box",
+       }}
+      >
             <div
               style={{
                 display: "grid",

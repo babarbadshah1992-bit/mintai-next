@@ -227,11 +227,11 @@ alignItems: "stretch",
             {/* IMAGE */}
             <div
               style={{
-                background: "linear-gradient(145deg, #edf7ef 0%, #d8f0df 100%)",
+                background: "#ffffff",
                 borderRadius: "18px",
                 textAlign: "center",
                 marginBottom: "20px",
-                height: "120px",
+                height: "220px",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -271,7 +271,7 @@ alignItems: "stretch",
                 alt={product.name}
                 style={{
                 width: "100%",
-                height: "120px",
+                height: "220px",
                 objectFit: "contain",
                 borderRadius: "12px"
               }}
