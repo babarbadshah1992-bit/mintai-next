@@ -266,7 +266,16 @@ alignItems: "stretch",
                   WebkitBackdropFilter: "blur(6px)",
                 }}
               >
-                {product.image}
+                <img
+                src={product.image}
+                alt={product.name}
+                style={{
+                width: "100%",
+                height: "120px",
+                objectFit: "contain",
+                borderRadius: "12px"
+              }}
+            />
               </div>
             </div>
 
