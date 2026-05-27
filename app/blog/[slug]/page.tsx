@@ -231,7 +231,16 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
             {relatedProducts.map((product) => (
               <div key={product.id} className="product-card">
                 <div style={{ fontSize: "48px", textAlign: "center", marginBottom: "12px" }}>
-                  {product.image || "🌿"}
+                  <img
+  src={product.image}
+  alt={product.name}
+  style={{
+    width: "100%",
+    height: "220px",
+    objectFit: "contain",
+    borderRadius: "12px"
+  }}
+/>
                 </div>
                 <h3 style={{ fontSize: "15px", fontWeight: 700, marginBottom: "8px", lineHeight: 1.3 }}>
                   {product.name}

@@ -227,9 +227,13 @@ async function searchContent(query: string) {
                   key={product.id}
                   className="bg-white rounded-2xl shadow overflow-hidden"
                 >
-                  <div className="w-full h-28 md:h-36 flex items-center justify-center bg-gray-100 text-4xl md:text-5xl">
-                    {product.image || '🌿'}
-                  </div>
+                  <div className="w-full h-52 bg-white rounded-2xl overflow-hidden flex items-center justify-center p-4">
+  <img
+    src={product.image}
+    alt={product.name}
+    className="w-full h-full object-contain"
+  />
+</div>
                   <div className="p-3 md:p-4">
                     <h3 className="font-bold text-sm md:text-base">{product.name}</h3>
                     <p className="text-green-600 font-bold text-sm md:text-base">₹{product.price}</p>
