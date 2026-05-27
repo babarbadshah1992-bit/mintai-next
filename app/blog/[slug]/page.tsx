@@ -62,19 +62,9 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
     
     const { data: products } = await supabase
       .from('products')
-      .select('*')
-      .or(tagConditions)
-      .limit(4)
-    
-    relatedProducts = products || []
-  }
-
-  if (relatedProducts.length === 0) {
-    const { data: products } = await supabase
-      .from('products')
-      .select('*')
-      .limit(4)
-    
+.select('*')
+.ilike('category', `%${blog.tags?.[0] || ''}%`)
+.limit(4)
     relatedProducts = products || []
   }
 
