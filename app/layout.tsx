@@ -1,5 +1,6 @@
 ﻿import './globals.css';
 import Link from 'next/link';
+import Script from "next/script";
 import { Inter, Poppins } from 'next/font/google';
 
 const inter = Inter({
@@ -276,6 +277,19 @@ export default function RootLayout({
             </div>
           </div>
         </footer>
+        <Script
+  src="https://www.googletagmanager.com/gtag/js?id=G-PY29ZCEGB1"
+  strategy="afterInteractive"
+/>
+
+<Script id="google-analytics" strategy="afterInteractive">
+  {`
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-PY29ZCEGB1');
+  `}
+</Script>
       </body>
     </html>
   );
