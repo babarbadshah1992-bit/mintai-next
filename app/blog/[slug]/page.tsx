@@ -56,16 +56,18 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
 
   let relatedProducts: Product[] = []
   if (blog.tags && blog.tags.length > 0) {
-    const tagConditions = blog.tags.map((tag: string) => 
-      `keywords.cs.{${tag.toLowerCase()}}`
-    ).join(',')
-    
     const { data: products } = await supabase
-      .from('products')
-.select('*')
-.ilike('category', `%${blog.tags?.[0] || ''}%`)
-.limit(4)
-    relatedProducts = products || []
+  .from('products')
+  .select('*')
+
+relatedProducts = (products || []).filter((product) =>
+  product.keywords?.some((keyword: string) =>
+    blog.tags.some((tag: string) =>
+      tag.toLowerCase().includes(keyword.toLowerCase()) ||
+      keyword.toLowerCase().includes(tag.toLowerCase())
+    )
+  )
+).slice(0, 4)
   }
 
   let relatedBlogs: RelatedBlog[] = []
