@@ -250,10 +250,10 @@ alignItems: "stretch",
               />
               <div
                 style={{
-                  width: "70px",
-                  height: "70px",
+                  width: "220px",
+                  height: "280px",
                   margin: "auto",
-                  borderRadius: "999px",
+                  borderRadius: "12px",
                   background: "rgba(255,255,255,0.45)",
                   display: "flex",
                   justifyContent: "center",
@@ -266,16 +266,16 @@ alignItems: "stretch",
                   WebkitBackdropFilter: "blur(6px)",
                 }}
               >
-                <img
-                src={product.image}
-                alt={product.name}
-                style={{
-                width: "100%",
-                height: "220px",
-                objectFit: "contain",
-                borderRadius: "12px"
-              }}
-            />
+               <img
+  src={product.image}
+  alt={product.name}
+  style={{
+    width: "100%",
+    height: "100px",
+    objectFit: "contain",
+    borderRadius: "12px"
+  }}
+/>
               </div>
             </div>
 
