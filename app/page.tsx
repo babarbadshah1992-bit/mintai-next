@@ -149,21 +149,40 @@ useEffect(() => {
     }
     
     // Match products
-    const matchedProducts = allProducts.filter((product) =>
-      product.keywords?.some((keyword: string) =>
-        query.includes(keyword.toLowerCase())
-      )
-    );
+    const matchedProducts = allProducts.filter((product) => {
+  const searchableText = `
+    ${product.name || ""}
+    ${product.description || ""}
+    ${product.category || ""}
+    ${Array.isArray(product.keywords)
+      ? product.keywords.join(" ")
+      : product.keywords || ""}
+    ${Array.isArray(product.tags)
+      ? product.tags.join(" ")
+      : product.tags || ""}
+    ${product.brand || ""}
+  `.toLowerCase();
+
+  return searchableText.includes(query);
+});
     
     setRelatedProducts(matchedProducts.length > 0 ? matchedProducts : []);
     setRelatedBlogs(matchedBlogs);
     setLastAiIndex(messages.length + 1);
     
     setTimeout(() => {
-      const aiResponse: Message = { 
-        role: 'ai', 
-        content: `Thanks for asking about "${input}". Here's some wellness guidance for you! 🌿` 
-      };
+      const aiResponse: Message = {
+  role: 'ai',
+  content: `Thanks for asking about "${input}"
+
+💡 Browse the related blogs and products below.
+
+🚀 MintAI Pro is launching soon with:
+🧠 AI Health & Beauty Assistant
+📄 Report Scanner
+🧪 Ingredient Checker
+⚠️ Side Effect Alerts`
+};
       setMessages(prev => [...prev, aiResponse]);
       setLoading(false);
     }, 500);

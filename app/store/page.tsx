@@ -17,9 +17,24 @@ export default function StorePage() {
       });
   }, []);
 
-  const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredProducts = products.filter((product) => {
+  const query = search.toLowerCase().trim();
+
+  const searchableText = `
+    ${product.name || ""}
+    ${product.description || ""}
+    ${product.category || ""}
+    ${Array.isArray(product.keywords)
+      ? product.keywords.join(" ")
+      : product.keywords || ""}
+    ${Array.isArray(product.tags)
+      ? product.tags.join(" ")
+      : product.tags || ""}
+    ${product.brand || ""}
+  `.toLowerCase();
+
+  return searchableText.includes(query);
+});
 
   const handleAddToCart = (e: React.MouseEvent, productId: number, productName: string) => {
     e.stopPropagation();
@@ -116,7 +131,7 @@ export default function StorePage() {
             marginBottom: "16px",
           }}
         >
-          🌿 Natural & Certified
+          🌿 AMAZON • FLIPKART • MEESHO
         </div>
 
         <h1
@@ -129,7 +144,7 @@ export default function StorePage() {
             lineHeight: 1.1,
           }}
         >
-          MintAI <span style={{ color: "#18a23d" }}>Herbal</span> Store
+          MintAI <span style={{ color: "#18a23d" }}>Product</span> Finder
         </h1>
 
         <div
@@ -151,7 +166,7 @@ export default function StorePage() {
             fontWeight: 400,
           }}
         >
-          Premium herbal formulations crafted for modern wellness — clean ingredients, real results.
+          Compare products from Amazon, Flipkart & Meesho before you buy. Read blogs, reviews and recommendations in one place.
         </p>
       </div>
 
@@ -165,7 +180,7 @@ export default function StorePage() {
       >
         <input
           type="text"
-          placeholder="Search herbal products..."
+          placeholder="Search products, brands, hair fall, acne, vitamin c..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           style={{

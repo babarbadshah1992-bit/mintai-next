@@ -153,7 +153,9 @@ const remainingBlogs = blogs && blogs.length > 1 ? blogs.slice(1) : []
             maxWidth: '560px',
             margin: '0 auto',
             lineHeight: 1.6,
-          }}>Evidence-based health insights • Natural remedies • Holistic living</p>
+          }}>Know Before You Buy
+
+            Read ingredients, benefits, side effects and wellness guides before choosing any product.</p>
         </div>
 
         {/* Featured Article */}
