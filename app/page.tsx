@@ -616,7 +616,7 @@ useEffect(() => {
   <img
     src={p.image}
     alt={p.name}
-    style={{ width: "100%", height: "140px", objectFit: "cover", borderRadius: "14px" }}
+    style={{ width: "100%", height: "140px", objectFit: "contain", borderRadius: "14px" }}
   />
 ) : (
   <div style={{ width: "100%", height: "140px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "60px", background: "#f0f7f2", borderRadius: "14px" }}>
