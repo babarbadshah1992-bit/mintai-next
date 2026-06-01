@@ -22,14 +22,16 @@ export const metadata: Metadata = {
   title: "MintAI - Health & Beauty Assistant",
 
   description: "AI-powered health and beauty recommendations",
+  manifest: "/manifest.json",
+
 
   alternates: {
     canonical: "/",
   },
 
-  icons: {
-    icon: "data:image/svg+xml,...",
-  },
+ icons: {
+  icon: "/icon-192.png",
+},
 };
 export default function RootLayout({
   children,
