@@ -208,7 +208,48 @@ relatedProducts = (products || []).filter((product) =>
           style={{ lineHeight: 1.8, fontSize: "16px", color: "#333" }}
         />
       </article>
+{blog.affiliate_link && (
+  <div
+    style={{
+      marginTop: "30px",
+      marginBottom: "30px",
+      textAlign: "center",
+      background: "#fff",
+      padding: "20px",
+      borderRadius: "12px"
+    }}
+  >
+    {blog.product_image && (
+      <img
+        src={blog.product_image}
+        alt={blog.title}
+        style={{
+          width: "220px",
+          maxWidth: "100%",
+          borderRadius: "12px",
+          marginBottom: "15px"
+        }}
+      />
+    )}
 
+    <a
+      href={blog.affiliate_link}
+      target="_blank"
+      rel="noopener noreferrer"
+      style={{
+        display: "inline-block",
+        background: "#2e7d32",
+        color: "#fff",
+        padding: "12px 24px",
+        borderRadius: "8px",
+        textDecoration: "none",
+        fontWeight: "bold"
+      }}
+    >
+      🛒 Buy This Product
+    </a>
+  </div>
+)}
 
       {relatedProducts.length > 0 && (
         <div style={{ marginTop: "48px", marginBottom: "48px" }}>
