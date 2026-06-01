@@ -237,16 +237,18 @@ relatedProducts = (products || []).filter((product) =>
       target="_blank"
       rel="noopener noreferrer"
       style={{
-        display: "inline-block",
-        background: "#2e7d32",
-        color: "#fff",
-        padding: "12px 24px",
-        borderRadius: "8px",
-        textDecoration: "none",
-        fontWeight: "bold"
-      }}
+  display: "inline-block",
+  background: "#2e7d32",
+  color: "#fff",
+  padding: "14px 28px",
+  borderRadius: "10px",
+  textDecoration: "none",
+  fontWeight: "bold",
+  transition: "all 0.3s ease",
+  cursor: "pointer"
+}}
     >
-      🛒 Buy This Product
+      🛒 Buy on Amazon
     </a>
   </div>
 )}
