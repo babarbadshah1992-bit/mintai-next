@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 export default function StorePage() {
   const [products, setProducts] = useState<any[]>([]);
   const [search, setSearch] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
   const [cartItems, setCartItems] = useState<number[]>([]);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -33,7 +34,13 @@ export default function StorePage() {
     ${product.brand || ""}
   `.toLowerCase();
 
-  return searchableText.includes(query);
+  const matchesSearch = searchableText.includes(query);
+
+  const matchesCategory =
+    selectedCategory === "All" ||
+    product.category === selectedCategory;
+
+  return matchesSearch && matchesCategory;
 });
 
   const handleAddToCart = (e: React.MouseEvent, productId: number, productName: string) => {
@@ -198,6 +205,41 @@ export default function StorePage() {
           }}
         />
       </div>
+      <div
+  style={{
+    display: "flex",
+    gap: "10px",
+    flexWrap: "wrap",
+    marginBottom: "20px",
+  }}
+>
+  {[
+    "All",
+    "Hair Care",
+    "Skin Care",
+    "Women's Health",
+    "Ayurvedic Products",
+    "Trending Products",
+  ].map((cat) => (
+    <button
+      key={cat}
+      onClick={() => setSelectedCategory(cat)}
+      style={{
+        padding: "8px 14px",
+        borderRadius: "999px",
+        border: "none",
+        cursor: "pointer",
+        background:
+          selectedCategory === cat ? "#18a23d" : "#f2f2f2",
+        color:
+          selectedCategory === cat ? "#fff" : "#333",
+        fontWeight: 600,
+      }}
+    >
+      {cat}
+    </button>
+  ))}
+</div>
 
       {/* PRODUCT GRID */}
       <div
