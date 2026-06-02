@@ -215,11 +215,11 @@ export default function StorePage() {
 >
   {[
     "All",
-    "Hair Care",
+    "Trending",
     "Skin Care",
+    "Heir Care",
     "Health",
     "Ayurvedic",
-    "Trending",
   ].map((cat) => (
     <button
       key={cat}
