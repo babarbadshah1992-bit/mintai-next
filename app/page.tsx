@@ -293,7 +293,7 @@ useEffect(() => {
         background: "linear-gradient(160deg, #f0f7f2 0%, #e8f4ec 50%, #f4f9f5 100%)",
         minHeight: "100vh",
         position: "relative",
-        overflowX: "hidden",
+        overflowX: "auto",
       }}
     >
       {/* BG GLOWS */}
@@ -389,6 +389,11 @@ useEffect(() => {
 
 <div
  style={{
+  display: "flex",
+  gap: "8px",
+  overflowX: "auto",
+  scrollSnapType: "x mandatory",
+
   border: "none",
   borderRadius: "999px",
   padding: "10px 16px",
@@ -422,13 +427,16 @@ useEffect(() => {
   }, 100);
 }}
       style={{
-        border: "none",
-        borderRadius: "20px",
-        padding: "10px 14px",
-        background: "#f3f7f3",
-        cursor: "pointer",
-        fontWeight: 600
-      }}
+  border: "none",
+  borderRadius: "20px",
+  padding: "10px 14px",
+  background: "#f3f7f3",
+  cursor: "pointer",
+  fontWeight: 600,
+
+  scrollSnapAlign: "start",
+  flexShrink: 0,
+}}
     >
       {item}
     </button>
