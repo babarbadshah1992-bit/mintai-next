@@ -187,22 +187,22 @@ export default function StorePage() {
       >
         <input
           type="text"
-          placeholder="Search products, brands, hair fall, acne, vitamin c..."
+          placeholder="Search products..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           style={{
-            width: "100%",
-            padding: "14px 18px",
-            borderRadius: "16px",
-            border: "1px solid rgba(24,162,61,0.12)",
-            outline: "none",
-            fontSize: "15px",
-            background: "rgba(255,255,255,0.75)",
-            backdropFilter: "blur(18px)",
-            boxShadow: "0 4px 20px rgba(0,0,0,0.04)",
-            color: "#1a2e1e",
-            WebkitBackdropFilter: "blur(18px)",
-          }}
+  width: "100%",
+  height: "52px",
+  boxSizing: "border-box",
+  padding: "12px 16px",
+  borderRadius: "26px",
+  border: "1px solid rgba(24,162,61,0.12)",
+  outline: "none",
+  fontSize: "15px",
+  background: "#ffffff",
+  boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+  color: "#1a2e1e"
+}}
         />
       </div>
       <div
