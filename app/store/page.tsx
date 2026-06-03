@@ -208,16 +208,19 @@ export default function StorePage() {
       <div
   style={{
     display: "flex",
-    gap: "10px",
-    flexWrap: "wrap",
-    marginBottom: "20px",
+gap: "10px",
+overflowX: "auto",
+whiteSpace: "nowrap",
+paddingBottom: "8px",
+marginBottom: "20px",
+scrollbarWidth: "none",
   }}
 >
   {[
     "All",
     "Trending",
     "Skin Care",
-    "Heir Care",
+    "Hair Care",
     "Health",
     "Ayurvedic",
   ].map((cat) => (
@@ -225,6 +228,7 @@ export default function StorePage() {
       key={cat}
       onClick={() => setSelectedCategory(cat)}
       style={{
+        flexShrink: 0,
         padding: "8px 14px",
         borderRadius: "999px",
         border: "none",
