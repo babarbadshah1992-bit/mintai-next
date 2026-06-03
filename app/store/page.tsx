@@ -178,23 +178,38 @@ export default function StorePage() {
       </div>
 
       {/* SEARCH */}
-      <div
-        style={{
-          position: "relative",
-          zIndex: 1,
-          marginBottom: "28px",
-        }}
-      >
-        <input
-          type="text"
-          placeholder="Search products..."
+      {/* SEARCH */}
+<div
+  style={{
+    position: "relative",
+    zIndex: 1,
+    marginBottom: "28px",
+  }}
+>
+
+  <span
+    style={{
+      position: "absolute",
+      left: "18px",
+      top: "50%",
+      transform: "translateY(-50%)",
+      fontSize: "18px",
+      zIndex: 2,
+    }}
+  >
+    🔍
+  </span>
+
+  <input
+    type="text"
+    placeholder="Search products..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           style={{
   width: "100%",
   height: "52px",
   boxSizing: "border-box",
-  padding: "12px 16px",
+  padding: "12px 16px 12px 48px",
   borderRadius: "26px",
   border: "1px solid rgba(24,162,61,0.12)",
   outline: "none",
