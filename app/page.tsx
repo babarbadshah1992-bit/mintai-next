@@ -360,10 +360,80 @@ useEffect(() => {
             {!messages.length && (
               <div style={{ textAlign: "center", marginTop: "60px" }}>
                 <div style={{ fontSize: "52px", marginBottom: "16px" }}>💚🌿</div>
-                <p style={{ fontSize: "18px", fontWeight: 700, color: "#1a2e1e", marginBottom: "8px" }}>How can I help you today?</p>
-                <p style={{ color: "#5a7060", fontSize: "14px", lineHeight: "1.6" }}>
-                  Ask about skincare, health, beauty, or natural remedies...
-                </p>
+                <p style={{
+  fontSize: "22px",
+  fontWeight: 800,
+  color: "#1a2e1e",
+  marginBottom: "10px"
+}}>
+  👋 Welcome to MintAI
+</p>
+
+<p style={{
+  color: "#5a7060",
+  fontSize: "15px",
+  lineHeight: "1.7",
+  marginBottom: "12px"
+}}>
+  Ask about health, beauty, ingredients, side effects, or find the best product before you buy.
+</p>
+
+<p style={{
+  color: "#16a34a",
+  fontSize: "13px",
+  fontWeight: 600,
+  marginBottom: "16px"
+}}>
+  🛒 Compare Products • 📖 Read Blogs • 🤖 AI Recommendations
+</p>
+
+<div
+ style={{
+  border: "none",
+  borderRadius: "999px",
+  padding: "10px 16px",
+  background: "#f3f7f3",
+  cursor: "pointer",
+  fontWeight: 600,
+  whiteSpace: "nowrap",
+  flexShrink: 0,
+  transition: "all 0.2s ease",
+  color: "#1a2e1e"
+}}
+>
+  {[
+  "🔥 Hair Fall",
+  "✨ Glowing Skin",
+  "⚖️ Weight Loss",
+  "🌿 Ayurveda",
+  "🤧 Cold & Cough",
+  "🧘 Yoga",
+  "🏋️ Gym"
+].map((item) => (
+    <button
+      key={item}
+      onClick={() => {
+  const query = item.replace(/^[^\w\s]+\s*/, "");
+  setInput(query);
+
+  setTimeout(() => {
+    setInput(query);
+    sendMessage();
+  }, 100);
+}}
+      style={{
+        border: "none",
+        borderRadius: "20px",
+        padding: "10px 14px",
+        background: "#f3f7f3",
+        cursor: "pointer",
+        fontWeight: 600
+      }}
+    >
+      {item}
+    </button>
+  ))}
+</div>
               </div>
             )}
 
