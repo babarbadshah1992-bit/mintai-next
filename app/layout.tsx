@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import Script from "next/script";
 import { Inter, Poppins } from 'next/font/google';
+import InstallButton from "@/components/InstallButton";
 
 const inter = Inter({
   subsets: ['latin'],
@@ -292,6 +293,7 @@ export default function RootLayout({
     gtag('config', 'G-PY29ZCEGB1');
   `}
 </Script>
+<InstallButton />
       </body>
     </html>
   );
