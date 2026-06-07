@@ -30,11 +30,17 @@ export default function InstallPopup() {
     }
   };
 
-  if (!promptEvent) return null;
+  const handleClick = async () => {
+  if (promptEvent) {
+    await install();
+  } else {
+    alert("✅ MintAI App is already installed or install is not available");
+  }
+};
 
   return (
     <button
-      onClick={install}
+      onClick={handleClick}
       style={{
         position: "fixed",
         bottom: "20px",
