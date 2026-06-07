@@ -4,63 +4,53 @@ import { useEffect, useState } from "react";
 
 export default function InstallPopup() {
   const [promptEvent, setPromptEvent] = useState<any>(null);
-  const [show, setShow] = useState(false);
 
   useEffect(() => {
     const handler = (e: any) => {
       e.preventDefault();
       setPromptEvent(e);
-      setShow(true);
     };
 
     window.addEventListener("beforeinstallprompt", handler);
-    return () =>
+
+    return () => {
       window.removeEventListener("beforeinstallprompt", handler);
+    };
   }, []);
 
   const install = async () => {
     if (!promptEvent) return;
+
     promptEvent.prompt();
-    await promptEvent.userChoice;
-    setShow(false);
+
+    const result = await promptEvent.userChoice;
+
+    if (result.outcome === "accepted") {
+      setPromptEvent(null);
+    }
   };
 
-  if (!show) return null;
+  if (!promptEvent) return null;
 
   return (
-    <div style={{
-      position:"fixed",
-      inset:0,
-      background:"rgba(0,0,0,.45)",
-      display:"flex",
-      justifyContent:"center",
-      alignItems:"center",
-      zIndex:9999
-    }}>
-      <div style={{
-        background:"#fff",
-        padding:"20px",
-        borderRadius:"20px",
-        maxWidth:"320px",
-        textAlign:"center"
-      }}>
-        <h3>📲 Install MintAI</h3>
-        <p>Install MintAI for faster access and a better experience.</p>
-
-        <button
-          onClick={install}
-          style={{
-            background:"#16a34a",
-            color:"#fff",
-            border:"none",
-            padding:"10px 20px",
-            borderRadius:"10px",
-            marginTop:"10px"
-          }}
-        >
-          Install Now
-        </button>
-      </div>
-    </div>
+    <button
+      onClick={install}
+      style={{
+        position: "fixed",
+        bottom: "20px",
+        right: "20px",
+        background: "#16a34a",
+        color: "#fff",
+        border: "none",
+        borderRadius: "50px",
+        padding: "12px 18px",
+        fontWeight: "bold",
+        zIndex: 9999,
+        cursor: "pointer",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
+      }}
+    >
+      📲 Install App
+    </button>
   );
 }
