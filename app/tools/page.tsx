@@ -149,15 +149,16 @@ export default function ToolsPage() {
               </p>
 
               {/* Button */}
-              <button
-  onClick={() => {
-    window.location.href = `/tools/${tool.slug}`;
-  }}
-  className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-emerald-600"
->
-  Open Calculator
-  <ArrowRight size={16} />
-</button>
+              <Link
+                href={`/tools/${tool.slug}`}
+                className="inline-flex items-center gap-2 text-emerald-600 font-semibold hover:text-emerald-700"
+              >
+                Open Calculator
+                <ArrowRight
+                  size={18}
+                  className="group-hover:translate-x-1 transition-transform"
+                />
+              </Link>
             </motion.div>
           ))}
         </motion.section>
