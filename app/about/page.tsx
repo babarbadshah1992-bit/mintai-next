@@ -94,8 +94,8 @@ export default function AboutPage() {
         }}>
           {[
             { icon: "🤖", value: "24/7", label: "AI Support" },
-            { icon: "🌿", value: "20+", label: "Herbal Products" },
-            { icon: "✍️", value: "10+", label: "Blog Posts" },
+            { icon: "🌿", value: "30+", label: "Herbal Products" },
+            { icon: "✍️", value: "30+", label: "Blog Posts" },
             { icon: "💚", value: "100%", label: "Free Access" },
           ].map((stat) => (
             <div
