@@ -8,8 +8,13 @@ import {
   Heart,
   Beef,
   Droplet,
-  ArrowRight,
   Sparkles,
+  ArrowRight,
+  Weight,
+  Ruler,
+  Droplets,
+  Footprints,
+  Baby,
 } from "lucide-react";
 
 const tools = [
@@ -53,6 +58,47 @@ const tools = [
     icon: Droplet,
     gradient: "from-blue-500 to-indigo-500",
   },
+  // NEW CALCULATORS
+  {
+    slug: "ideal-weight",
+    title: "⚖️ Ideal Weight Calculator",
+    description:
+      "Find your ideal body weight based on height, gender, and frame size using proven formulas.",
+    icon: Weight,
+    gradient: "from-teal-500 to-cyan-500",
+  },
+  {
+    slug: "body-fat",
+    title: "📏 Body Fat Calculator",
+    description:
+      "Estimate your body fat percentage using simple measurements and get personalized health insights.",
+    icon: Ruler,
+    gradient: "from-violet-500 to-purple-500",
+  },
+  {
+    slug: "skin-type",
+    title: "🧴 Skin Type Checker",
+    description:
+      "Answer a few questions to identify your skin type – Oily, Dry, Combination, Normal, or Sensitive.",
+    icon: Droplets,
+    gradient: "from-rose-400 to-pink-500",
+  },
+  {
+    slug: "daily-steps",
+    title: "👣 Daily Steps Calculator",
+    description:
+      "Get your recommended daily step count based on your age and activity level for better health.",
+    icon: Footprints,
+    gradient: "from-green-400 to-emerald-500",
+  },
+  {
+    slug: "pregnancy-due-date",
+    title: "👶 Pregnancy Due Date",
+    description:
+      "Calculate your estimated due date and current gestational age based on your last menstrual period.",
+    icon: Baby,
+    gradient: "from-pink-400 to-rose-500",
+  },
 ];
 
 const container = {
@@ -60,7 +106,7 @@ const container = {
   show: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.12,
+      staggerChildren: 0.1,
     },
   },
 };
@@ -73,15 +119,13 @@ const item = {
 export default function ToolsPage() {
   return (
     <main className="relative min-h-screen overflow-hidden bg-gradient-to-br from-emerald-50 via-white to-green-50">
-
-      {/* Background Blobs - behind everything */}
+      {/* Background Blobs */}
       <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
         <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-emerald-300/20 rounded-full blur-3xl" />
         <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-blue-300/20 rounded-full blur-3xl" />
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
-
         {/* Hero Section */}
         <section className="text-center mb-20">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-100 text-emerald-700 font-medium text-sm mb-6">
@@ -94,9 +138,7 @@ export default function ToolsPage() {
               Health & Beauty
             </span>
             <br />
-            <span className="text-gray-900">
-              Calculators
-            </span>
+            <span className="text-gray-900">Calculators</span>
           </h1>
 
           <p className="mt-6 max-w-3xl mx-auto text-lg md:text-xl text-gray-600">
@@ -105,7 +147,7 @@ export default function ToolsPage() {
           </p>
         </section>
 
-        {/* Cards Grid - each card is a clickable Link */}
+        {/* Cards Grid */}
         <motion.section
           variants={container}
           initial="hidden"
@@ -132,30 +174,25 @@ export default function ToolsPage() {
                 }}
                 className="group relative h-full rounded-3xl border border-white/50 bg-white/80 backdrop-blur-xl p-8 shadow-xl hover:shadow-2xl hover:shadow-emerald-200/30 transition-shadow duration-500 cursor-pointer"
               >
-                {/* Glow effect on hover */}
                 <div
                   className={`absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-500 bg-gradient-to-br ${tool.gradient} rounded-3xl`}
                   style={{ pointerEvents: "none" }}
                 />
 
-                {/* Icon */}
                 <div
                   className={`relative w-16 h-16 rounded-2xl bg-gradient-to-br ${tool.gradient} flex items-center justify-center text-white shadow-lg mb-6`}
                 >
                   <tool.icon size={32} />
                 </div>
 
-                {/* Title */}
                 <h2 className="text-2xl font-bold text-gray-900 mb-3">
                   {tool.title}
                 </h2>
 
-                {/* Description */}
                 <p className="text-gray-600 leading-relaxed mb-6">
                   {tool.description}
                 </p>
 
-                {/* CTA - visually indicates clickability */}
                 <div className="inline-flex items-center gap-2 text-emerald-600 font-semibold group-hover:text-emerald-700 transition-colors">
                   Open Calculator
                   <ArrowRight
@@ -169,7 +206,6 @@ export default function ToolsPage() {
         </motion.section>
       </div>
 
-      {/* Add custom animation for gradient if not in global.css */}
       <style jsx>{`
         @keyframes gradient {
           0% { background-position: 0% 50%; }
@@ -179,10 +215,6 @@ export default function ToolsPage() {
         .animate-gradient {
           animation: gradient 6s ease infinite;
           background-size: 200% 200%;
-        }
-        /* Ensure touch actions work on mobile */
-        .cursor-pointer {
-          touch-action: manipulation;
         }
       `}</style>
     </main>
