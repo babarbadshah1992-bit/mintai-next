@@ -36,6 +36,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${inter.variable} ${poppins.variable}`}>
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2363313291013618"
+     crossOrigin="anonymous"></script>
       <body
         style={{
           margin: 0,
