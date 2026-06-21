@@ -1,6 +1,5 @@
-// components/QuickHealthCheck.tsx - POORA REPLACE KARO
+"use client";
 
-'use client';
 import { useState } from 'react';
 
 export default function QuickHealthCheck() {

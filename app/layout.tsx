@@ -1,8 +1,9 @@
 ﻿import './globals.css';
 import Link from 'next/link';
-import Script from "next/script";
+import Script from 'next/script';
 import { Inter, Poppins } from 'next/font/google';
-import InstallButton from "@/components/InstallButton";
+import type { Metadata } from 'next';
+import InstallButton from '@/components/InstallButton';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -15,46 +16,36 @@ const poppins = Poppins({
   variable: '--font-poppins',
 });
 
-import type { Metadata } from "next";
-
 export const metadata: Metadata = {
-  metadataBase: new URL("https://mintai.in"),
-
-  title: "MintAI - Health & Beauty Assistant",
-
-  description: "AI-powered health and beauty recommendations",
-  manifest: "/manifest.json",
-
-
+  metadataBase: new URL('https://mintai.in'),
+  title: 'MintAI - Health & Beauty Assistant',
+  description: 'AI-powered health and beauty recommendations',
+  manifest: '/manifest.json',
   alternates: {
-    canonical: "/",
+    canonical: '/',
   },
-
- icons: {
-  icon: "/icon-192.png",
-},
+  icons: {
+    icon: '/icon-192.png',
+  },
 };
+
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html
-      lang="en"
-      className={`${inter.variable} ${poppins.variable}`}
-    >
+    <html lang="en" className={`${inter.variable} ${poppins.variable}`}>
       <body
         style={{
           margin: 0,
           padding: 0,
-          background:
-            'linear-gradient(180deg, #f8fcf9 0%, #eef8f1 100%)',
+          background: 'linear-gradient(180deg, #f8fcf9 0%, #eef8f1 100%)',
           fontFamily: 'var(--font-inter)',
           color: '#1a2e1e',
         }}
       >
-        {/* HEADER */}
+        {/* ===== HEADER (Your original design) ===== */}
         <header className="header">
           <div className="container">
             <div className="header-inner">
@@ -62,23 +53,23 @@ export default function RootLayout({
                 <h1>MintAI</h1>
                 <p>Powered by AI</p>
               </div>
-
               <nav className="nav">
                 <Link href="/">Home</Link>
                 <Link href="/blog">Blog</Link>
                 <Link href="/store">Store</Link>
+                <Link href="/tools">Tools</Link>
                 <Link href="/about">About</Link>
               </nav>
             </div>
           </div>
         </header>
 
-        {/* MAIN */}
+        {/* ===== MAIN CONTENT ===== */}
         <main className="main">
           <div className="container">{children}</div>
         </main>
 
-        {/* FOOTER */}
+        {/* ===== FOOTER (Your original design, pixel perfect) ===== */}
         <footer
           style={{
             position: 'relative',
@@ -87,7 +78,7 @@ export default function RootLayout({
             overflow: 'hidden',
           }}
         >
-          {/* Glow */}
+          {/* Glow blobs */}
           <div
             style={{
               position: 'absolute',
@@ -102,7 +93,6 @@ export default function RootLayout({
               pointerEvents: 'none',
             }}
           />
-
           <div
             style={{
               position: 'absolute',
@@ -133,8 +123,7 @@ export default function RootLayout({
                 border: '1px solid rgba(255,255,255,0.8)',
                 borderRadius: '24px',
                 padding: '22px 18px',
-                boxShadow:
-                  '0 8px 30px rgba(24,80,40,0.06)',
+                boxShadow: '0 8px 30px rgba(24,80,40,0.06)',
               }}
             >
               {/* TOP */}
@@ -161,7 +150,6 @@ export default function RootLayout({
                   >
                     MintAI
                   </h2>
-
                   <p
                     style={{
                       margin: '8px 0 0',
@@ -174,7 +162,7 @@ export default function RootLayout({
                   </p>
                 </div>
 
-                {/* NAVIGATION */}
+                {/* NAVIGATION LINKS */}
                 <div
                   style={{
                     display: 'flex',
@@ -184,12 +172,10 @@ export default function RootLayout({
                   }}
                 >
                   {[
-                   
-                 { label: 'Privacy Policy', href: '/privacy-policy' },
-                 { label: 'Affiliate Disclosure', href: '/affiliate-disclosure' },
-                 { label: 'Contact Us', href: '/contact' },
-                 { label: 'Terms & Conditions', href: '/terms' },
-
+                    { label: 'Privacy Policy', href: '/privacy-policy' },
+                    { label: 'Affiliate Disclosure', href: '/affiliate-disclosure' },
+                    { label: 'Contact Us', href: '/contact' },
+                    { label: 'Terms & Conditions', href: '/terms' },
                   ].map((item) => (
                     <Link
                       key={item.label}
@@ -209,7 +195,7 @@ export default function RootLayout({
 
                 {/* EMAIL */}
                 <a
-                  href="mailto:mintai@support.in"
+                  href="mailto:suport@mintai.in"
                   style={{
                     textDecoration: 'none',
                     color: '#18a23d',
@@ -219,6 +205,7 @@ export default function RootLayout({
                     wordBreak: 'break-word',
                   }}
                 >
+                  mintai@support.in
                 </a>
               </div>
 
@@ -252,48 +239,45 @@ export default function RootLayout({
                     lineHeight: 1.6,
                   }}
                 >
-                  © {new Date().getFullYear()} MintAI. All rights
-                  reserved.
+                  © {new Date().getFullYear()} MintAI. All rights reserved.
                 </p>
 
                 <div
                   style={{
                     padding: '10px 18px',
                     borderRadius: '999px',
-                    background:
-                      'rgba(24,162,61,0.08)',
-                    border:
-                      '1px solid rgba(24,162,61,0.12)',
+                    background: 'rgba(24,162,61,0.08)',
+                    border: '1px solid rgba(24,162,61,0.12)',
                     color: '#14892f',
                     fontSize: '13px',
                     fontWeight: 600,
                     transition: '0.25s ease',
-                    boxShadow:
-                      '0 4px 14px rgba(24,162,61,0.08)',
+                    boxShadow: '0 4px 14px rgba(24,162,61,0.08)',
                   }}
                 >
-                  <p style={{ fontSize: '11px', color: '#777', textAlign: 'center', marginTop: '15px' }}>
-  ⚠️ MintAI AI-powered wellness estimates deta hai. Yeh medical diagnosis ya professional medical advice nahi hai.
-</p>
+                  ⚠️ MintAI AI-powered wellness estimates deta hai. Yeh medical diagnosis nahi hai.
                 </div>
               </div>
             </div>
           </div>
         </footer>
-        <Script
-  src="https://www.googletagmanager.com/gtag/js?id=G-PY29ZCEGB1"
-  strategy="afterInteractive"
-/>
 
-<Script id="google-analytics" strategy="afterInteractive">
-  {`
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-PY29ZCEGB1');
-  `}
-</Script>
-<InstallButton />
+        {/* Install Button (Client Component) */}
+        <InstallButton />
+
+        {/* Google Analytics */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-PY29ZCEGB1"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-PY29ZCEGB1');
+          `}
+        </Script>
       </body>
     </html>
   );
