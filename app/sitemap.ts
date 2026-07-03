@@ -43,14 +43,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })) || [];
 
   const { data: products } = await supabase
-    .from("products")
-    .select("slug, created_at");
+  .from("products")
+  .select("link_slug, created_at")
+  .not("link_slug", "is", null);
 
   const productUrls =
-    products?.map((product) => ({
-      url: `${baseUrl}/store/${product.slug}`,
-      lastModified: new Date(product.created_at),
-    })) || [];
+  products?.map((product) => ({
+    url: `${baseUrl}/store/${product.link_slug}`,
+    lastModified: new Date(product.created_at),
+  })) || [];
 
   return [...staticPages, ...blogUrls, ...productUrls];
 }
