@@ -2,6 +2,7 @@ import { supabase } from '../../../lib/supabase'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Comments from './Comments'
+import Image from "next/image";
 
 interface Product {
   id: number;
@@ -189,6 +190,21 @@ relatedProducts = (products || []).filter((product) =>
         <h1 style={{ fontSize: "clamp(32px, 5vw, 48px)", fontWeight: 800, color: "#1a2e1e", marginBottom: "16px" }}>
           {blog.title}
         </h1>
+
+        {blog.featured_image && (
+      <img
+    src={blog.featured_image}
+    alt={blog.title}
+    width={1200}
+    height={675}
+    style={{
+      width: "100%",
+      height: "auto",
+      borderRadius: "12px",
+      marginBottom: "25px"
+    }}
+  />
+)}
         
         <div style={{ margin: "1rem 0", display: "flex", gap: "8px", flexWrap: "wrap" }}>
           {(blog.tags || []).map((tag: string) => (
