@@ -1,0 +1,6 @@
+<Image
+  src="/founder-babar.jpg"
+  alt="Md Babar"
+  width={300}
+  height={300}
+/>
