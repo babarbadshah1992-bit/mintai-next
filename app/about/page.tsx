@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 export default function AboutPage() {
   return (
@@ -245,11 +246,13 @@ export default function AboutPage() {
   <div className="max-w-4xl mx-auto px-4">
     <h2 className="text-3xl font-bold text-center mb-12">Meet The Founder</h2>
     <div className="flex flex-col md:flex-row items-center gap-8">
-      <img 
-        src="/founder-babar.jpg" 
-        alt="Md Babar, Founder of MintAI" 
-        className="w-48 h-48 rounded-full object-cover shadow-lg"
-      />
+      <Image
+  src="/founder-babar.jpg"
+  alt="Md Babar, Founder of MintAI"
+  width={192}
+  height={192}
+  className="rounded-full object-cover shadow-lg"
+/>
       <div>
         <h3 className="text-2xl font-semibold mb-2">Md Babar</h3>
         <p className="text-green-600 font-medium mb-4">Founder, MintAI.in | AI Health & Wellness Enthusiast</p>
