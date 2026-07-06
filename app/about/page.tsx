@@ -93,10 +93,10 @@ export default function AboutPage() {
           marginBottom: "56px",
         }}>
           {[
-            { icon: "🤖", value: "24/7", label: "AI Support" },
-            { icon: "🌿", value: "30+", label: "Herbal Products" },
-            { icon: "✍️", value: "30+", label: "Blog Posts" },
-            { icon: "💚", value: "100%", label: "Free Access" },
+           { icon: "🤖", value: "24/7", label: "AI Support" },
+{ icon: "🧮", value: "10+", label: "Wellness Calculators" },
+{ icon: "📝", value: "30+", label: "Blog Posts" },
+{ icon: "💚", value: "100%", label: "Free Access" },
           ].map((stat) => (
             <div
               key={stat.label}
@@ -240,6 +240,37 @@ export default function AboutPage() {
             marginBottom: "18px",
             letterSpacing: "-0.02em",
           }}>From a Small Dream to MintAI</h2>
+          {/* Founder Section - AdSense E-E-A-T ke liye ZARURI */}
+<section className="py-16 bg-white">
+  <div className="max-w-4xl mx-auto px-4">
+    <h2 className="text-3xl font-bold text-center mb-12">Meet The Founder</h2>
+    <div className="flex flex-col md:flex-row items-center gap-8">
+      <img 
+        src="/founder-babar.jpg" 
+        alt="Md Babar, Founder of MintAI" 
+        className="w-48 h-48 rounded-full object-cover shadow-lg"
+      />
+      <div>
+        <h3 className="text-2xl font-semibold mb-2">Md Babar</h3>
+        <p className="text-green-600 font-medium mb-4">Founder, MintAI.in | AI Health & Wellness Enthusiast</p>
+        <p className="text-gray-700 mb-4">
+          Housekeeping supervisor se self-taught AI developer tak ka safar. Surat, Gujarat se hoon. 
+          Mera goal hai AI ko use karke har Indian family ko simple, affordable wellness guidance dena 
+          unki apni language me.
+        </p>
+        <p className="text-gray-700">
+          <strong>Note:</strong> Main doctor nahi hoon. MintAI AI-powered wellness estimates deta hai. 
+          Kisi bhi health concern ke liye hamesha qualified doctor se salah lein.
+        </p>
+        <div className="mt-4">
+          <a href="mailto:support@mintai.in" className="text-green-600 font-semibold">support@mintai.in</a>
+          <span className="mx-2">|</span>
+          <span className="text-gray-600">Surat, Gujarat, India</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
           <div style={{ width: "40px", height: "2px", background: "#18a23d", borderRadius: "999px", marginBottom: "20px" }} />
           <p style={{
             color: "#3d5c42",
