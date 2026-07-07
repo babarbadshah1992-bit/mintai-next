@@ -43,7 +43,7 @@ export default function AboutPage() {
               >
                 {!imgError ? (
                   <Image
-                    src="/founder-babar.jpg"
+                    src="/founder-babar.png"
                     alt="Md Babar"
                     width={192}
                     height={192}
