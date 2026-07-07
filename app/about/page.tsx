@@ -240,12 +240,16 @@ export default function AboutPage() {
   href="https://youtube.com/@mintaiofficial?si=J_wadJrQLBd6V_1O"
   target="_blank"
   rel="noopener noreferrer"
-  style={{
-  display: "inline-flex",
+ style={{
+  display: "flex",
   alignItems: "center",
   justifyContent: "center",
+  width: "100%",
+  maxWidth: "100%",
+  boxSizing: "border-box",
   gap: "8px",
-  padding: "10px 16px",
+  marginTop: "12px",
+  padding: "10px 14px",
   background: "#FF0000",
   color: "#fff",
   borderRadius: "999px",
@@ -253,10 +257,9 @@ export default function AboutPage() {
   fontWeight: "700",
   fontSize: "14px",
   whiteSpace: "nowrap",
-  flexShrink: 0,
 }}
 >
-  ▶📺 Watch MintAI on YouTube
+  ▶YouTube
 </a>
             </div>
           
