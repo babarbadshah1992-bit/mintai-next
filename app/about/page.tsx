@@ -203,11 +203,12 @@ export default function AboutPage() {
 
           {/* Founder Info with Avatar placeholder */}
           <div style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "18px",
-            marginBottom: "24px",
-          }}>
+  display: "flex",
+  alignItems: "center",
+  gap: "18px",
+  flexWrap: "wrap",
+  marginBottom: "24px",
+}}>
           {/* ----- YEH PURA BLOCK COPY KARO ----- */}
 <div style={{
   width: "64px",
@@ -235,6 +236,28 @@ export default function AboutPage() {
 }}>
   Md Babar / Founder, MintAI
 </p>
+<a
+  href="https://youtube.com/@mintaiofficial?si=J_wadJrQLBd6V_1O"
+  target="_blank"
+  rel="noopener noreferrer"
+  style={{
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: "8px",
+  padding: "10px 16px",
+  background: "#FF0000",
+  color: "#fff",
+  borderRadius: "999px",
+  textDecoration: "none",
+  fontWeight: "700",
+  fontSize: "14px",
+  whiteSpace: "nowrap",
+  flexShrink: 0,
+}}
+>
+  ▶📺 Watch MintAI on YouTube
+</a>
             </div>
           
 
