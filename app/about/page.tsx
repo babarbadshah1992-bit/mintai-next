@@ -93,7 +93,7 @@ export default function AboutPage() {
           marginBottom: "56px",
         }}>
           {[
-           { icon: "🤖", value: "24/7", label: "AI Support" },
+           { icon: "🛒", value: "30+", label: "Herbal Products" },
            { icon: "🧮", value: "10+", label: "Wellness Calculators" },
            { icon: "📝", value: "30+", label: "Blog Posts" },
            { icon: "💚", value: "100%", label: "Free Access" },
@@ -209,24 +209,6 @@ export default function AboutPage() {
   flexWrap: "wrap",
   marginBottom: "24px",
 }}>
-          {/* ----- YEH PURA BLOCK COPY KARO ----- */}
-<div style={{
-  width: "64px",
-  height: "64px",
-  borderRadius: "999px",
-  background: "linear-gradient(135deg, #18a23d, #6fcf97)",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  boxShadow: "0 4px 16px rgba(24,162,61,0.25)",
-  overflow: "hidden"
-}}>
-  <svg viewBox="0 0 64 64" width="64" height="64">
-    <text x="32" y="27" fontFamily="'Segoe UI', Arial, sans-serif" fontSize="12" fontWeight="700" fill="#ffffff" textAnchor="middle">Mint</text>
-    <text x="32" y="44" fontFamily="'Segoe UI', Arial, sans-serif" fontSize="15" fontWeight="900" fill="#ffffff" textAnchor="middle">AI</text>
-  </svg>
-</div>
-
 {/* ----- AUR YEH P TAG KA BLOCK ----- */}
 <p style={{
   fontWeight: "700",
