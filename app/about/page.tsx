@@ -360,7 +360,7 @@ export default function AboutPage() {
             marginBottom: "16px",
           }}>
             <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-              📍 Surat, Gujarat, India
+              📍 Vapi, Gujarat, India
             </span>
             {/* Separator — now always visible, but it wraps nicely */}
             <span style={{ color: "#d0dcd0" }}>|</span>
