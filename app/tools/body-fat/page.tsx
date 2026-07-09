@@ -2,199 +2,274 @@
 
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Ruler, Copy, Check, Weight } from 'lucide-react';
-import Link from 'next/link';
+import { Activity, Ruler, Weight, Calendar, Sparkles, User } from 'lucide-react';
 
+import {
+  CalculatorLayout,
+  CalculatorNumberInput,
+  CalculatorSelectInput,
+  CalculatorRadioInput,
+  CalculatorResultCard,
+  Disclaimer,
+  FAQAccordion,
+  RelatedTools,
+} from '@/components/calculator';
+
+// -----------------------------------------------------------------------------
+// Calculation logic – Deurenberg formula
+// -----------------------------------------------------------------------------
+function calculateBodyFat(
+  age: number,
+  gender: string,
+  heightCm: number,
+  weightKg: number
+): number {
+  if (heightCm <= 0 || weightKg <= 0 || age < 1) return 0;
+  const bmi = weightKg / ((heightCm / 100) ** 2);
+  // Deurenberg formula: 1.20 * BMI + 0.23 * Age - 10.8 * gender - 5.4
+  // gender: male = 1, female = 0
+  const genderFactor = gender === 'male' ? 1 : 0;
+  let bf = 1.20 * bmi + 0.23 * age - 10.8 * genderFactor - 5.4;
+  // Clamp to reasonable range
+  if (bf < 2) bf = 2;
+  if (bf > 70) bf = 70;
+  return parseFloat(bf.toFixed(1));
+}
+
+function getBodyFatCategory(bf: number, gender: string): string {
+  if (gender === 'male') {
+    if (bf < 6) return 'Essential fat';
+    if (bf < 14) return 'Athletic';
+    if (bf < 18) return 'Fitness';
+    if (bf < 25) return 'Average';
+    return 'Obese';
+  } else {
+    if (bf < 14) return 'Essential fat';
+    if (bf < 21) return 'Athletic';
+    if (bf < 25) return 'Fitness';
+    if (bf < 32) return 'Average';
+    return 'Obese';
+  }
+}
+
+function getBodyFatColor(bf: number, gender: string): string {
+  const category = getBodyFatCategory(bf, gender);
+  switch (category) {
+    case 'Essential fat': return 'text-purple-600 dark:text-purple-400';
+    case 'Athletic': return 'text-blue-600 dark:text-blue-400';
+    case 'Fitness': return 'text-green-600 dark:text-green-400';
+    case 'Average': return 'text-orange-600 dark:text-orange-400';
+    case 'Obese': return 'text-red-600 dark:text-red-400';
+    default: return 'text-gray-600 dark:text-gray-400';
+  }
+}
+
+const DEFAULTS = {
+  age: 30,
+  gender: 'male',
+  height: 170,
+  weight: 70,
+};
+
+// -----------------------------------------------------------------------------
+// Page Component
+// -----------------------------------------------------------------------------
 export default function BodyFatCalculatorClient() {
-  const [gender, setGender] = useState('male');
-  const [height, setHeight] = useState(170);
-  const [weight, setWeight] = useState(70);
-  const [age, setAge] = useState(30);
-  const [waist, setWaist] = useState(80);
-  const [neck, setNeck] = useState(35);
-  const [hip, setHip] = useState(95);
-  const [copied, setCopied] = useState(false);
+  const [age, setAge] = useState(DEFAULTS.age);
+  const [gender, setGender] = useState(DEFAULTS.gender);
+  const [height, setHeight] = useState(DEFAULTS.height);
+  const [weight, setWeight] = useState(DEFAULTS.weight);
 
-  const results = useMemo(() => {
-    // Simple BMI-based estimate (not Navy method)
-    const bmi = weight / ((height/100) ** 2);
-    let bodyFat = 0;
-    if (gender === 'male') {
-      bodyFat = 1.20 * bmi + 0.23 * age - 16.2;
-    } else {
-      bodyFat = 1.20 * bmi + 0.23 * age - 5.4;
-    }
-    bodyFat = Math.max(3, Math.min(50, bodyFat));
-    const category = bodyFat < 10 ? 'Essential Fat' : bodyFat < 20 ? 'Athletic' : bodyFat < 25 ? 'Fitness' : bodyFat < 30 ? 'Acceptable' : 'Overfat';
-    return {
-      bodyFat: Math.round(bodyFat * 10) / 10,
-      category,
-      bmi: Math.round(bmi * 10) / 10,
-    };
-  }, [gender, height, weight, age]);
+  const bodyFat = useMemo(
+    () => calculateBodyFat(age, gender, height, weight),
+    [age, gender, height, weight]
+  );
 
-  const handleCopy = () => {
-    const text = `Body Fat: ${results.bodyFat}% (${results.category})\nBMI: ${results.bmi}`;
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+  const category = getBodyFatCategory(bodyFat, gender);
+  const colorClass = getBodyFatColor(bodyFat, gender);
+
+  const breadcrumb = [
+    { label: 'Tools', href: '/tools' },
+    { label: 'Body Fat Calculator', href: '/tools/body-fat' },
+  ];
+
+  const genderOptions = [
+    { value: 'male', label: 'Male' },
+    { value: 'female', label: 'Female' },
+  ];
+
+  const faqItems = [
+    {
+      question: 'What is body fat percentage?',
+      answer:
+        'Body fat percentage is the proportion of fat mass to total body weight. It is a better indicator of health than BMI alone.',
+    },
+    {
+      question: 'How is body fat percentage calculated?',
+      answer:
+        'We use the Deurenberg formula, which estimates body fat based on BMI, age, and gender. It is a validated population‑based equation.',
+    },
+    {
+      question: 'What is a healthy body fat percentage?',
+      answer:
+        'For men, 18‑24% is average; for women, 25‑31% is average. Athletes have lower percentages, while essential fat is the minimum required for health.',
+    },
+    {
+      question: 'Why does age affect body fat?',
+      answer:
+        'As we age, muscle mass tends to decrease and fat mass tends to increase, so the formula accounts for age to give a more accurate estimate.',
+    },
+    {
+      question: 'How accurate is this calculator?',
+      answer:
+        'The Deurenberg formula provides a reasonable estimate for populations, but individual variations (e.g., muscle mass, bone density) can affect accuracy. For precise measurement, consult a professional.',
+    },
+    {
+      question: 'Can I use this if I am an athlete?',
+      answer:
+        'Athletes with high muscle mass may get overestimated body fat percentages. This tool is best used as a general guide, not a diagnostic tool.',
+    },
+  ];
+
+  const relatedTools = [
+    { label: 'BMI Calculator', href: '/tools/bmi', description: 'Body Mass Index' },
+    { label: 'BMR Calculator', href: '/tools/bmr', description: 'Basal Metabolic Rate' },
+    { label: 'Calories Calculator', href: '/tools/calories', description: 'Daily calorie needs' },
+    { label: 'Protein Calculator', href: '/tools/protein', description: 'Daily protein needs' },
+  ];
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-emerald-50/30 via-white to-green-50/30 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-5xl mx-auto">
-        <nav className="text-sm text-gray-500 dark:text-gray-400 mb-6" aria-label="Breadcrumb">
-          <ol className="flex flex-wrap items-center gap-1">
-            <li><Link href="/tools" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Tools</Link></li>
-            <li>/</li>
-            <li className="text-gray-700 dark:text-gray-300 font-medium">Body Fat Calculator</li>
-          </ol>
-        </nav>
-
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-          <div className="flex items-center gap-3 mb-2">
-            <div className="p-3 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-500 shadow-lg shadow-violet-200/40">
-              <Ruler className="w-6 h-6 text-white" />
-            </div>
-            <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">
-              Body Fat Calculator
-            </h1>
-          </div>
-          <p className="text-gray-600 dark:text-gray-300 mb-8 ml-14">
-            Estimate your body fat percentage using simple measurements.
-          </p>
-        </motion.div>
+    <CalculatorLayout
+      breadcrumb={breadcrumb}
+      title="Body Fat Calculator"
+      description="Estimate your body fat percentage using the Deurenberg formula."
+      icon={<User className="w-6 h-6 text-white" />}
+    >
+      <div className="relative">
+        <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
+          <div className="absolute -top-20 -right-20 w-72 h-72 bg-pink-300/20 rounded-full blur-3xl" />
+          <div className="absolute -bottom-20 -left-20 w-72 h-72 bg-rose-300/20 rounded-full blur-3xl" />
+        </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
+          {/* Left: Inputs */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="relative bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl border border-white/30 dark:border-gray-700/30 rounded-3xl shadow-2xl shadow-emerald-100/20 dark:shadow-gray-900/50 p-6 overflow-hidden"
+            className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-2xl border border-white/40 dark:border-gray-700/40 rounded-3xl shadow-2xl shadow-pink-100/30 dark:shadow-gray-900/60 p-6 sm:p-8 overflow-hidden"
           >
-            <div className="absolute top-0 right-0 w-32 h-32 bg-violet-500/10 rounded-full blur-2xl -mr-10 -mt-10" />
-            <div className="absolute bottom-0 left-0 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl -ml-10 -mb-10" />
+            <div className="absolute -top-24 -right-24 w-64 h-64 bg-gradient-to-br from-pink-400/10 to-rose-400/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-gradient-to-tr from-rose-400/10 to-pink-400/10 rounded-full blur-3xl pointer-events-none" />
 
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2 relative z-10">
-              <span className="w-1 h-6 bg-gradient-to-b from-violet-500 to-purple-500 rounded-full"></span>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2 relative z-10">
+              <span className="w-1.5 h-7 bg-gradient-to-b from-pink-500 to-rose-500 rounded-full" />
               Your Measurements
+              <Sparkles className="w-4 h-4 text-pink-400 ml-2" />
             </h2>
-            <div className="space-y-4 relative z-10 mt-4">
-              <div>
-                <span className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Gender</span>
-                <div className="flex gap-4">
-                  {['male', 'female'].map((g) => (
-                    <label key={g} className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="radio"
-                        name="gender"
-                        value={g}
-                        checked={gender === g}
-                        onChange={(e) => setGender(e.target.value)}
-                        className="w-4 h-4 text-violet-600 focus:ring-violet-500"
-                      />
-                      <span className="text-gray-700 dark:text-gray-300 capitalize">{g}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 flex items-center gap-2">
-                  <Weight size={16} className="text-violet-500" />
-                  Height (cm)
-                </label>
-                <input
-                  type="number"
-                  min="100"
-                  max="250"
-                  value={height}
-                  onChange={(e) => setHeight(Number(e.target.value))}
-                  className="w-full px-4 py-3 rounded-2xl border border-gray-200/60 dark:border-gray-700/60 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition-all shadow-sm hover:shadow-md"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 flex items-center gap-2">
-                  <Weight size={16} className="text-violet-500" />
-                  Weight (kg)
-                </label>
-                <input
-                  type="number"
-                  min="20"
-                  max="300"
-                  value={weight}
-                  onChange={(e) => setWeight(Number(e.target.value))}
-                  className="w-full px-4 py-3 rounded-2xl border border-gray-200/60 dark:border-gray-700/60 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition-all shadow-sm hover:shadow-md"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 flex items-center gap-2">
-                  <Ruler size={16} className="text-violet-500" />
-                  Age (years)
-                </label>
-                <input
-                  type="number"
-                  min="10"
-                  max="100"
-                  value={age}
-                  onChange={(e) => setAge(Number(e.target.value))}
-                  className="w-full px-4 py-3 rounded-2xl border border-gray-200/60 dark:border-gray-700/60 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition-all shadow-sm hover:shadow-md"
-                />
-              </div>
+
+            <div className="space-y-5 relative z-10 mt-5">
+              <CalculatorNumberInput
+                id="age"
+                label="Age (years)"
+                value={age}
+                onChange={setAge}
+                min={1}
+                max={120}
+                icon={<Calendar size={18} />}
+              />
+              <CalculatorRadioInput
+                name="gender"
+                label="Gender"
+                selectedValue={gender}
+                onChange={setGender}
+                options={genderOptions}
+              />
+              <CalculatorNumberInput
+                id="height"
+                label="Height (cm)"
+                value={height}
+                onChange={setHeight}
+                min={50}
+                max={300}
+                icon={<Ruler size={18} />}
+              />
+              <CalculatorNumberInput
+                id="weight"
+                label="Weight (kg)"
+                value={weight}
+                onChange={setWeight}
+                min={10}
+                max={500}
+                icon={<Weight size={18} />}
+              />
             </div>
           </motion.div>
 
+          {/* Right: Results */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="relative bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl border border-white/30 dark:border-gray-700/30 rounded-3xl shadow-2xl shadow-emerald-100/20 dark:shadow-gray-900/50 p-6 overflow-hidden flex flex-col"
+            className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-2xl border border-white/40 dark:border-gray-700/40 rounded-3xl shadow-2xl shadow-pink-100/30 dark:shadow-gray-900/60 p-6 sm:p-8 overflow-hidden flex flex-col"
           >
-            <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl -mr-10 -mt-10" />
-            <div className="absolute bottom-0 left-0 w-32 h-32 bg-violet-500/10 rounded-full blur-2xl -ml-10 -mb-10" />
+            <div className="absolute -top-24 -right-24 w-64 h-64 bg-gradient-to-br from-rose-400/10 to-pink-400/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-gradient-to-tr from-pink-400/10 to-rose-400/10 rounded-full blur-3xl pointer-events-none" />
 
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2 relative z-10">
-              <span className="w-1 h-6 bg-gradient-to-b from-purple-500 to-violet-500 rounded-full"></span>
-              Your Results
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2 relative z-10">
+              <span className="w-1.5 h-7 bg-gradient-to-b from-rose-500 to-pink-500 rounded-full" />
+              Your Body Fat
+              <Sparkles className="w-4 h-4 text-rose-400 ml-2" />
             </h2>
-            <div className="space-y-4 flex-1 relative z-10 mt-4">
-              <motion.div whileHover={{ scale: 1.02 }} className="p-4 rounded-2xl bg-gradient-to-br from-violet-50 to-purple-50 dark:from-gray-700/40 dark:to-gray-700/20 border border-violet-100/50 dark:border-gray-600/30 shadow-inner">
-                <p className="text-sm text-gray-500 dark:text-gray-400">Body Fat Percentage</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">{results.bodyFat}%</p>
-                <p className="text-sm font-medium text-purple-600 dark:text-purple-400">{results.category}</p>
-              </motion.div>
-              <motion.div whileHover={{ scale: 1.02 }} className="p-4 rounded-2xl bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/20 border border-emerald-100/50 dark:border-emerald-800/30 shadow-inner">
-                <p className="text-sm text-gray-500 dark:text-gray-400">BMI</p>
-                <p className="text-lg font-bold text-gray-900 dark:text-white">{results.bmi}</p>
-              </motion.div>
+
+            <div className="space-y-4 flex-1 relative z-10 mt-5">
+              <div className="p-5 rounded-2xl bg-gradient-to-br from-pink-50/80 to-rose-50/80 dark:from-gray-700/40 dark:to-gray-600/20 border border-pink-200/50 dark:border-pink-800/30 shadow-inner">
+                <p className="text-sm text-gray-500 dark:text-gray-400">Estimated Body Fat</p>
+                <p className="text-4xl font-extrabold text-pink-600 dark:text-pink-400 tabular-nums">
+                  {bodyFat}%
+                </p>
+                <p className={`text-lg font-semibold mt-1 ${colorClass}`}>
+                  {category}
+                </p>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-white/60 dark:bg-gray-800/60 border border-gray-200/50 dark:border-gray-700/50">
+                <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                  {category === 'Essential fat' &&
+                    'Your body fat is at the essential level. This is the minimum needed for health, but may be too low for some.'}
+                  {category === 'Athletic' &&
+                    'You are in the athletic range, typical for fit individuals. Maintain a balanced lifestyle.'}
+                  {category === 'Fitness' &&
+                    'You are in the fitness range, which is healthy and sustainable.'}
+                  {category === 'Average' &&
+                    'You are in the average range. Consider physical activity and balanced nutrition to maintain or improve.'}
+                  {category === 'Obese' &&
+                    'Your body fat is in the obese range. Consult a healthcare professional for personalized advice.'}
+                </p>
+              </div>
             </div>
-            <button
-              onClick={handleCopy}
-              className="mt-6 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 text-white font-semibold transition-all shadow-lg shadow-violet-200/40 dark:shadow-violet-900/30 focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 hover:scale-[1.02] active:scale-[0.98]"
-            >
-              {copied ? <Check size={18} /> : <Copy size={18} />}
-              {copied ? 'Copied!' : 'Copy Results'}
-            </button>
           </motion.div>
         </div>
-
-        <section className="mt-12 prose prose-emerald dark:prose-invert max-w-none">
-          <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-3xl border border-white/20 dark:border-gray-700/30 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Medical Disclaimer</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-300">This is an estimate, not a substitute for professional body composition analysis.</p>
-          </div>
-          <div className="mt-8 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-3xl border border-white/20 dark:border-gray-700/30 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Frequently Asked Questions</h3>
-            <div className="space-y-4">
-              <div><h4 className="font-medium text-gray-800 dark:text-gray-200">What's a healthy body fat percentage?</h4><p className="text-sm text-gray-600 dark:text-gray-300">Men: 10-20% (fitness), 21-24% (acceptable). Women: 18-28% (fitness), 29-34% (acceptable).</p></div>
-              <div><h4 className="font-medium text-gray-800 dark:text-gray-200">Is this method accurate?</h4><p className="text-sm text-gray-600 dark:text-gray-300">This is a rough estimate. For precision, use calipers or DEXA scan.</p></div>
-            </div>
-          </div>
-          <div className="mt-8 flex flex-wrap gap-4 justify-center">
-            <Link href="/tools/bmi" className="text-sm text-emerald-600 dark:text-emerald-400 hover:underline">BMI Calculator</Link>
-            <Link href="/tools/ideal-weight" className="text-sm text-emerald-600 dark:text-emerald-400 hover:underline">Ideal Weight</Link>
-          </div>
-        </section>
       </div>
-    </main>
+
+      {/* Footer sections */}
+      <section className="mt-12 space-y-8">
+        <Disclaimer />
+        <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-2xl rounded-3xl border border-white/30 dark:border-gray-700/30 p-6 sm:p-8 shadow-xl">
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+            <span className="w-1 h-6 bg-gradient-to-b from-pink-500 to-rose-500 rounded-full" />
+            Frequently Asked Questions
+          </h3>
+          <FAQAccordion items={faqItems} />
+        </div>
+        <div>
+          <h4 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
+            <span className="w-1 h-5 bg-gradient-to-b from-rose-500 to-pink-500 rounded-full" />
+            Related Tools
+          </h4>
+          <RelatedTools tools={relatedTools} />
+        </div>
+      </section>
+    </CalculatorLayout>
   );
 }

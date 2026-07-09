@@ -2,121 +2,255 @@
 
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Beef, Copy, Check, Weight } from 'lucide-react';
-import Link from 'next/link';
+import { Dumbbell, Weight, Sparkles, Target, Flame } from 'lucide-react';
 
+import {
+  CalculatorLayout,
+  CalculatorNumberInput,
+  CalculatorSelectInput,
+  CalculatorResultCard,
+  CalculatorActions,
+  Disclaimer,
+  FAQAccordion,
+  RelatedTools,
+} from '@/components/calculator';
+
+// -----------------------------------------------------------------------------
+// Calculation logic
+// -----------------------------------------------------------------------------
+const proteinMap: Record<string, { min: number; max: number; label: string }> = {
+  sedentary: { min: 0.8, max: 0.8, label: 'Sedentary' },
+  light: { min: 1.0, max: 1.2, label: 'Lightly active' },
+  moderate: { min: 1.2, max: 1.5, label: 'Moderately active' },
+  active: { min: 1.6, max: 2.0, label: 'Active' },
+  athlete: { min: 2.0, max: 2.4, label: 'Athlete' },
+};
+
+function getProteinRange(weightKg: number, activity: string): { min: number; max: number } {
+  const range = proteinMap[activity] || proteinMap.moderate;
+  return {
+    min: parseFloat((weightKg * range.min).toFixed(1)),
+    max: parseFloat((weightKg * range.max).toFixed(1)),
+  };
+}
+
+const DEFAULTS = {
+  weight: 70,
+  activity: 'moderate',
+};
+
+// -----------------------------------------------------------------------------
+// Page Component
+// -----------------------------------------------------------------------------
 export default function ProteinCalculatorClient() {
-  const [weight, setWeight] = useState(70);
-  const [goal, setGoal] = useState('maintain');
+  const [weight, setWeight] = useState(DEFAULTS.weight);
+  const [activity, setActivity] = useState(DEFAULTS.activity);
   const [copied, setCopied] = useState(false);
 
-  const proteinIntake = useMemo(() => {
-    const factors = { maintain: 0.8, muscle: 1.6, weightloss: 1.2 };
-    return Math.round(weight * (factors[goal as keyof typeof factors] || 0.8));
-  }, [weight, goal]);
+  const protein = useMemo(
+    () => getProteinRange(weight, activity),
+    [weight, activity]
+  );
+
+  const breadcrumb = [
+    { label: 'Tools', href: '/tools' },
+    { label: 'Protein Calculator', href: '/tools/protein' },
+  ];
+
+  const activityOptions = [
+    { value: 'sedentary', label: 'Sedentary (little or no exercise)' },
+    { value: 'light', label: 'Lightly active (1-3 days/week)' },
+    { value: 'moderate', label: 'Moderately active (3-5 days/week)' },
+    { value: 'active', label: 'Active (6-7 days/week)' },
+    { value: 'athlete', label: 'Athlete (intense daily training)' },
+  ];
 
   const handleCopy = () => {
-    const text = `Daily protein intake: ${proteinIntake} g (${goal} goal)`;
+    const text =
+      `Recommended daily protein intake: ${protein.min} – ${protein.max} g/day (based on ${weight} kg, ${activityOptions.find(o => o.value === activity)?.label})`;
     navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
-  return (
-    <main className="min-h-screen bg-gradient-to-br from-emerald-50/30 via-white to-green-50/30 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-5xl mx-auto">
-        <nav className="text-sm text-gray-500 dark:text-gray-400 mb-6" aria-label="Breadcrumb">
-          <ol className="flex flex-wrap items-center gap-1">
-            <li><Link href="/tools" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Tools</Link></li>
-            <li>/</li>
-            <li className="text-gray-700 dark:text-gray-300 font-medium">Protein Calculator</li>
-          </ol>
-        </nav>
+  const handleReset = () => {
+    setWeight(DEFAULTS.weight);
+    setActivity(DEFAULTS.activity);
+  };
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-          <div className="flex items-center gap-3 mb-2">
-            <Beef className="w-8 h-8 text-emerald-500" />
-            <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-              Protein Calculator
-            </h1>
-          </div>
-          <p className="text-gray-600 dark:text-gray-300 mb-8">Determine your daily protein needs based on your weight and fitness goal.</p>
-        </motion.div>
+  const handleWhatsAppShare = () => {
+    const text =
+      `💪 My daily protein target: ${protein.min} – ${protein.max} g/day. Calculate yours at MintAI!`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+  };
+
+  const handleWebShare = () => {
+    const text =
+      `Recommended daily protein: ${protein.min} – ${protein.max} g/day.`;
+    if (navigator.share) {
+      navigator.share({ title: 'Protein Calculator Results', text }).catch(() => {});
+    } else {
+      handleCopy();
+    }
+  };
+
+  const faqItems = [
+    {
+      question: 'How much protein do I need daily?',
+      answer:
+        'Protein needs vary based on activity level. Sedentary individuals need ~0.8g/kg, active people need 1.2–2.0g/kg, and athletes may need 2.0–2.4g/kg.',
+    },
+    {
+      question: 'What is the best source of protein?',
+      answer:
+        'High‑quality sources include lean meats, fish, eggs, dairy, legumes, tofu, and quinoa. A balanced diet with varied sources is recommended.',
+    },
+    {
+      question: 'Can I eat too much protein?',
+      answer:
+        'Excessive protein intake may strain kidneys in some individuals. It is best to stay within recommended ranges and consult a healthcare professional.',
+    },
+    {
+      question: 'Why does activity level affect protein needs?',
+      answer:
+        'Physical activity increases muscle protein turnover. Active individuals need more protein to repair and build muscle tissue.',
+    },
+    {
+      question: 'Is this calculator suitable for athletes?',
+      answer:
+        'Yes, we provide a range for athletes (2.0–2.4 g/kg). However, individual needs may vary based on sport, intensity, and goals.',
+    },
+    {
+      question: 'How often should I adjust my protein intake?',
+      answer:
+        'Recalculate whenever your weight or activity level changes significantly. It is also good to review your diet periodically.',
+    },
+  ];
+
+  const relatedTools = [
+    { label: 'Calories Calculator', href: '/tools/calories', description: 'Daily calorie needs' },
+    { label: 'BMI Calculator', href: '/tools/bmi', description: 'Body Mass Index' },
+    { label: 'BMR Calculator', href: '/tools/bmr', description: 'Basal Metabolic Rate' },
+    { label: 'Ideal Weight Calculator', href: '/tools/ideal-weight', description: 'Ideal weight' },
+  ];
+
+  return (
+    <CalculatorLayout
+      breadcrumb={breadcrumb}
+      title="Protein Calculator"
+      description="Estimate your daily protein intake based on weight and activity level."
+      icon={<Dumbbell className="w-6 h-6 text-white" />}
+    >
+      <div className="relative">
+        <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
+          <div className="absolute -top-20 -right-20 w-72 h-72 bg-blue-300/20 rounded-full blur-3xl" />
+          <div className="absolute -bottom-20 -left-20 w-72 h-72 bg-indigo-300/20 rounded-full blur-3xl" />
+        </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
+          {/* Left: Inputs */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-white/30 dark:border-gray-700/30 rounded-3xl shadow-xl shadow-emerald-100/20 dark:shadow-gray-900/50 p-6 space-y-5"
+            className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-2xl border border-white/40 dark:border-gray-700/40 rounded-3xl shadow-2xl shadow-blue-100/30 dark:shadow-gray-900/60 p-6 sm:p-8 overflow-hidden"
           >
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-              <span className="w-1 h-6 bg-emerald-500 rounded-full"></span>
+            <div className="absolute -top-24 -right-24 w-64 h-64 bg-gradient-to-br from-blue-400/10 to-indigo-400/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-gradient-to-tr from-indigo-400/10 to-blue-400/10 rounded-full blur-3xl pointer-events-none" />
+
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2 relative z-10">
+              <span className="w-1.5 h-7 bg-gradient-to-b from-blue-500 to-indigo-500 rounded-full" />
               Your Details
+              <Sparkles className="w-4 h-4 text-blue-400 ml-2" />
             </h2>
-            <div className="space-y-4">
-              <div>
-                <label htmlFor="weight" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 flex items-center gap-2">
-                  <Weight size={16} className="text-emerald-500" />
-                  Weight (kg)
-                </label>
-                <input id="weight" type="number" min="10" max="500" value={weight} onChange={(e) => setWeight(Number(e.target.value))} className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all" />
-              </div>
-              <div>
-                <label htmlFor="goal" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Goal</label>
-                <select id="goal" value={goal} onChange={(e) => setGoal(e.target.value)} className="w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all">
-                  <option value="maintain">Maintain weight (0.8 g/kg)</option>
-                  <option value="muscle">Build muscle (1.6 g/kg)</option>
-                  <option value="weightloss">Lose weight (1.2 g/kg)</option>
-                </select>
-              </div>
+
+            <div className="space-y-5 relative z-10 mt-5">
+              <CalculatorNumberInput
+                id="weight"
+                label="Weight (kg)"
+                value={weight}
+                onChange={setWeight}
+                min={10}
+                max={500}
+                icon={<Weight size={18} />}
+              />
+              <CalculatorSelectInput
+                id="activity"
+                label="Activity Level"
+                value={activity}
+                onChange={setActivity}
+                options={activityOptions}
+                icon={<Dumbbell size={18} />}
+              />
             </div>
           </motion.div>
 
+          {/* Right: Results */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-white/30 dark:border-gray-700/30 rounded-3xl shadow-xl shadow-emerald-100/20 dark:shadow-gray-900/50 p-6 flex flex-col"
+            className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-2xl border border-white/40 dark:border-gray-700/40 rounded-3xl shadow-2xl shadow-blue-100/30 dark:shadow-gray-900/60 p-6 sm:p-8 overflow-hidden flex flex-col"
           >
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2 mb-4">
-              <span className="w-1 h-6 bg-teal-500 rounded-full"></span>
-              Your Result
+            <div className="absolute -top-24 -right-24 w-64 h-64 bg-gradient-to-br from-indigo-400/10 to-blue-400/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-gradient-to-tr from-blue-400/10 to-indigo-400/10 rounded-full blur-3xl pointer-events-none" />
+
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2 relative z-10">
+              <span className="w-1.5 h-7 bg-gradient-to-b from-indigo-500 to-blue-500 rounded-full" />
+              Your Protein Target
+              <Sparkles className="w-4 h-4 text-indigo-400 ml-2" />
             </h2>
-            <div className="flex-1 flex items-center justify-center p-6 rounded-2xl bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 border border-emerald-100/50 dark:border-emerald-800/30">
-              <div className="text-center">
-                <p className="text-sm text-gray-500 dark:text-gray-400">Daily Protein Intake</p>
-                <p className="text-4xl font-bold text-emerald-600 dark:text-emerald-400">{proteinIntake} <span className="text-xl font-normal text-gray-500">g</span></p>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">(based on {goal} goal)</p>
+
+            <div className="space-y-4 flex-1 relative z-10 mt-5">
+              <div className="p-5 rounded-2xl bg-gradient-to-br from-blue-50/80 to-indigo-50/80 dark:from-gray-700/40 dark:to-gray-600/20 border border-blue-200/50 dark:border-blue-800/30 shadow-inner">
+                <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2">
+                  <Target size={14} className="text-blue-500" />
+                  Recommended Daily Protein
+                </p>
+                <p className="text-4xl font-extrabold text-blue-600 dark:text-blue-400 tabular-nums">
+                  {protein.min} – {protein.max} <span className="text-base font-normal text-gray-500">g/day</span>
+                </p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                  Based on {weight} kg, {activityOptions.find(o => o.value === activity)?.label}
+                </p>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-white/60 dark:bg-gray-800/60 border border-gray-200/50 dark:border-gray-700/50">
+                <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                  This range supports muscle maintenance and overall health. For muscle gain, aim for the higher end; for weight loss, ensure adequate protein to preserve lean mass.
+                </p>
               </div>
             </div>
-            <button onClick={handleCopy} className="mt-6 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-semibold transition-all shadow-lg shadow-emerald-200/40 dark:shadow-emerald-900/30 focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2">
-              {copied ? <Check size={18} /> : <Copy size={18} />}
-              {copied ? 'Copied!' : 'Copy Result'}
-            </button>
+
+            <CalculatorActions
+              onCopy={handleCopy}
+              copied={copied}
+              onReset={handleReset}
+              onWhatsAppShare={handleWhatsAppShare}
+              onWebShare={handleWebShare}
+            />
           </motion.div>
         </div>
-
-        <section className="mt-12 prose prose-emerald dark:prose-invert max-w-none">
-          <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-3xl border border-white/20 dark:border-gray-700/30 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Medical Disclaimer</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-300">Protein needs vary based on activity level, health status, and individual factors. Consult a dietitian for personalized advice.</p>
-          </div>
-          <div className="mt-8 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-3xl border border-white/20 dark:border-gray-700/30 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Frequently Asked Questions</h3>
-            <div className="space-y-4">
-              <div><h4 className="font-medium text-gray-800 dark:text-gray-200">How much protein do I need?</h4><p className="text-sm text-gray-600 dark:text-gray-300">The RDA is 0.8 g/kg for sedentary adults, but athletes may need up to 2.0 g/kg.</p></div>
-              <div><h4 className="font-medium text-gray-800 dark:text-gray-200">Can I eat too much protein?</h4><p className="text-sm text-gray-600 dark:text-gray-300">Excessive protein may strain kidneys in susceptible individuals; moderation is key.</p></div>
-            </div>
-          </div>
-          <div className="mt-8 flex flex-wrap gap-4 justify-center">
-            <Link href="/tools/calories" className="text-sm text-emerald-600 dark:text-emerald-400 hover:underline">Calories Calculator</Link>
-            <Link href="/tools/bmi" className="text-sm text-emerald-600 dark:text-emerald-400 hover:underline">BMI Calculator</Link>
-            <Link href="/tools/bmr" className="text-sm text-emerald-600 dark:text-emerald-400 hover:underline">BMR Calculator</Link>
-            <Link href="/tools/water" className="text-sm text-emerald-600 dark:text-emerald-400 hover:underline">Water Intake Calculator</Link>
-          </div>
-        </section>
       </div>
-    </main>
+
+      {/* Footer sections */}
+      <section className="mt-12 space-y-8">
+        <Disclaimer />
+        <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-2xl rounded-3xl border border-white/30 dark:border-gray-700/30 p-6 sm:p-8 shadow-xl">
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+            <span className="w-1 h-6 bg-gradient-to-b from-blue-500 to-indigo-500 rounded-full" />
+            Frequently Asked Questions
+          </h3>
+          <FAQAccordion items={faqItems} />
+        </div>
+        <div>
+          <h4 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
+            <span className="w-1 h-5 bg-gradient-to-b from-indigo-500 to-blue-500 rounded-full" />
+            Related Tools
+          </h4>
+          <RelatedTools tools={relatedTools} />
+        </div>
+      </section>
+    </CalculatorLayout>
   );
 }

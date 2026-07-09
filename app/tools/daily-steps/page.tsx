@@ -2,143 +2,277 @@
 
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Footprints, Copy, Check, Calendar, Activity } from 'lucide-react';
-import Link from 'next/link';
+import { Activity, Ruler, Weight, Calendar, Sparkles, Footprints, Flame } from 'lucide-react';
 
-export default function DailyStepsCalculatorClient() {
-  const [age, setAge] = useState(30);
-  const [activity, setActivity] = useState('moderate');
-  const [copied, setCopied] = useState(false);
+import {
+  CalculatorLayout,
+  CalculatorNumberInput,
+  CalculatorSelectInput,
+  CalculatorRadioInput,
+  CalculatorResultCard,
+  Disclaimer,
+  FAQAccordion,
+  RelatedTools,
+} from '@/components/calculator';
 
-  const steps = useMemo(() => {
-    let base = 10000;
-    if (age < 18) base = 12000;
-    else if (age < 40) base = 10000;
-    else if (age < 60) base = 8000;
-    else base = 6000;
-    const multipliers = { sedentary: 0.7, light: 0.85, moderate: 1, active: 1.15, veryActive: 1.3 };
-    const mult = multipliers[activity as keyof typeof multipliers] || 1;
-    return Math.round(base * mult);
-  }, [age, activity]);
+// -----------------------------------------------------------------------------
+// Calculation logic
+// -----------------------------------------------------------------------------
+function getStepGoal(activity: string): number {
+  switch (activity) {
+    case 'sedentary': return 3000;
+    case 'light': return 5000;
+    case 'moderate': return 7500;
+    case 'active': return 10000;
+    case 'veryActive': return 15000;
+    default: return 7500;
+  }
+}
 
-  const handleCopy = () => {
-    const text = `Recommended daily steps: ${steps}`;
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+function getStrideLength(gender: string, heightCm: number): number {
+  // Stride length in cm: 0.413 * height for men, 0.395 * height for women
+  const factor = gender === 'male' ? 0.413 : 0.395;
+  return heightCm * factor;
+}
+
+function getCaloriesPerStep(weightKg: number, strideCm: number): number {
+  // Estimate: 0.0005 * weight * stride? Actually simple: ~0.04 per kg per step? Let's use a common estimate: 0.04 * weight (kg) per 1000 steps? 
+  // Actually, a common estimate is 0.04 kcal per step per kg? That's too high. Use: 0.0005 * weight (kg) * stride (cm) / 100? Let's simplify.
+  // Use MET: walking 3 mph ~ 3.5 METs. Steps per km ~ 1300. Calorie per step = 3.5 * 3.5 * weight / 200? Too complicated.
+  // Simpler: average 0.05 kcal per step per kg? Actually, walking burns ~ 0.5 kcal per kg per km, and ~1300 steps per km, so 0.5/1300 ~ 0.00038 per kg per step.
+  // So per step per kg: 0.00038. Then per step for weight: weight * 0.00038.
+  return weightKg * 0.00038;
+}
+
+const DEFAULTS = {
+  age: 30,
+  gender: 'male',
+  height: 170,
+  weight: 70,
+  activity: 'moderate',
+};
+
+// -----------------------------------------------------------------------------
+// Page Component
+// -----------------------------------------------------------------------------
+export default function DailyStepCalculatorClient() {
+  const [age, setAge] = useState(DEFAULTS.age);
+  const [gender, setGender] = useState(DEFAULTS.gender);
+  const [height, setHeight] = useState(DEFAULTS.height);
+  const [weight, setWeight] = useState(DEFAULTS.weight);
+  const [activity, setActivity] = useState(DEFAULTS.activity);
+
+  const results = useMemo(() => {
+    const steps = getStepGoal(activity);
+    const stride = getStrideLength(gender, height);
+    const calPerStep = getCaloriesPerStep(weight, stride);
+    const calories = Math.round(steps * calPerStep);
+    const distanceKm = (steps * stride) / 100000; // cm to km
+    return { steps, calories, distanceKm: distanceKm.toFixed(2) };
+  }, [activity, gender, height, weight]);
+
+  const breadcrumb = [
+    { label: 'Tools', href: '/tools' },
+    { label: 'Daily Step Calculator', href: '/tools/daily-step' },
+  ];
+
+  const activityOptions = [
+    { value: 'sedentary', label: 'Sedentary (little or no exercise)' },
+    { value: 'light', label: 'Lightly active (1-3 days/week)' },
+    { value: 'moderate', label: 'Moderately active (3-5 days/week)' },
+    { value: 'active', label: 'Active (6-7 days/week)' },
+    { value: 'veryActive', label: 'Very active (hard exercise daily)' },
+  ];
+
+  const genderOptions = [
+    { value: 'male', label: 'Male' },
+    { value: 'female', label: 'Female' },
+  ];
+
+  const faqItems = [
+    {
+      question: 'Why are 10,000 steps recommended?',
+      answer:
+        'The 10,000 steps goal originated from Japan in the 1960s and has been widely adopted as a target for daily physical activity. It roughly equates to 8 km (5 miles) and burns about 300-500 calories.',
+    },
+    {
+      question: 'How does stride length affect steps?',
+      answer:
+        'Stride length determines how far you walk per step. Taller people generally have longer strides, so they cover more distance with fewer steps. We use your height and gender to estimate stride length.',
+    },
+    {
+      question: 'How accurate is the calorie estimate?',
+      answer:
+        'Calorie burn depends on weight, walking speed, terrain, and individual metabolism. Our estimate provides a general guide. For more precise tracking, consider using a fitness tracker.',
+    },
+    {
+      question: 'What is a healthy step goal for me?',
+      answer:
+        'The CDC recommends at least 150 minutes of moderate-intensity activity per week, which translates to roughly 7,000-10,000 steps per day. Start with a goal that fits your current fitness level and gradually increase.',
+    },
+    {
+      question: 'Can I use this for running?',
+      answer:
+        'This calculator is designed for walking. Running steps are longer and burn more calories. For running, you might want to adjust the step count or use a different calculator.',
+    },
+    {
+      question: 'Why does weight matter for calorie burn?',
+      answer:
+        'Heavier individuals burn more calories per step because they require more energy to move their body mass. That is why we include weight in the calorie estimation.',
+    },
+  ];
+
+  const relatedTools = [
+    { label: 'Calories Calculator', href: '/tools/calories', description: 'Daily calorie needs' },
+    { label: 'BMI Calculator', href: '/tools/bmi', description: 'Body Mass Index' },
+    { label: 'BMR Calculator', href: '/tools/bmr', description: 'Basal Metabolic Rate' },
+    { label: 'Body Fat Calculator', href: '/tools/body-fat', description: 'Body fat percentage' },
+  ];
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-emerald-50/30 via-white to-green-50/30 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-5xl mx-auto">
-        <nav className="text-sm text-gray-500 dark:text-gray-400 mb-6" aria-label="Breadcrumb">
-          <ol className="flex flex-wrap items-center gap-1">
-            <li><Link href="/tools" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Tools</Link></li>
-            <li>/</li>
-            <li className="text-gray-700 dark:text-gray-300 font-medium">Daily Steps Calculator</li>
-          </ol>
-        </nav>
-
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-          <div className="flex items-center gap-3 mb-2">
-            <div className="p-3 rounded-2xl bg-gradient-to-br from-green-400 to-emerald-500 shadow-lg shadow-green-200/40">
-              <Footprints className="w-6 h-6 text-white" />
-            </div>
-            <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-green-500 to-emerald-600 bg-clip-text text-transparent">
-              Daily Steps Calculator
-            </h1>
-          </div>
-          <p className="text-gray-600 dark:text-gray-300 mb-8 ml-14">
-            Get your recommended daily step count based on age and activity level.
-          </p>
-        </motion.div>
+    <CalculatorLayout
+      breadcrumb={breadcrumb}
+      title="Daily Step Calculator"
+      description="Estimate your recommended daily steps and calories burned based on activity level."
+      icon={<Footprints className="w-6 h-6 text-white" />}
+    >
+      <div className="relative">
+        <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
+          <div className="absolute -top-20 -right-20 w-72 h-72 bg-green-300/20 rounded-full blur-3xl" />
+          <div className="absolute -bottom-20 -left-20 w-72 h-72 bg-emerald-300/20 rounded-full blur-3xl" />
+        </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
+          {/* Left: Inputs */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="relative bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl border border-white/30 dark:border-gray-700/30 rounded-3xl shadow-2xl shadow-emerald-100/20 dark:shadow-gray-900/50 p-6 overflow-hidden"
+            className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-2xl border border-white/40 dark:border-gray-700/40 rounded-3xl shadow-2xl shadow-green-100/30 dark:shadow-gray-900/60 p-6 sm:p-8 overflow-hidden"
           >
-            <div className="absolute top-0 right-0 w-32 h-32 bg-green-400/10 rounded-full blur-2xl -mr-10 -mt-10" />
-            <div className="absolute bottom-0 left-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl -ml-10 -mb-10" />
+            <div className="absolute -top-24 -right-24 w-64 h-64 bg-gradient-to-br from-green-400/10 to-emerald-400/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-gradient-to-tr from-emerald-400/10 to-green-400/10 rounded-full blur-3xl pointer-events-none" />
 
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2 relative z-10">
-              <span className="w-1 h-6 bg-gradient-to-b from-green-400 to-emerald-500 rounded-full"></span>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2 relative z-10">
+              <span className="w-1.5 h-7 bg-gradient-to-b from-green-500 to-emerald-500 rounded-full" />
               Your Details
+              <Sparkles className="w-4 h-4 text-green-400 ml-2" />
             </h2>
-            <div className="space-y-4 relative z-10 mt-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 flex items-center gap-2">
-                  <Calendar size={16} className="text-green-500" />
-                  Age (years)
-                </label>
-                <input
-                  type="number"
-                  min="5"
-                  max="100"
-                  value={age}
-                  onChange={(e) => setAge(Number(e.target.value))}
-                  className="w-full px-4 py-3 rounded-2xl border border-gray-200/60 dark:border-gray-700/60 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all shadow-sm hover:shadow-md"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 flex items-center gap-2">
-                  <Activity size={16} className="text-green-500" />
-                  Activity Level
-                </label>
-                <select
-                  value={activity}
-                  onChange={(e) => setActivity(e.target.value)}
-                  className="w-full px-4 py-3 rounded-2xl border border-gray-200/60 dark:border-gray-700/60 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all shadow-sm hover:shadow-md"
-                >
-                  <option value="sedentary">Sedentary (desk job)</option>
-                  <option value="light">Lightly active (walking)</option>
-                  <option value="moderate">Moderately active (exercise 1-3 days)</option>
-                  <option value="active">Active (exercise 4-6 days)</option>
-                  <option value="veryActive">Very active (daily intense)</option>
-                </select>
-              </div>
+
+            <div className="space-y-5 relative z-10 mt-5">
+              <CalculatorNumberInput
+                id="age"
+                label="Age (years)"
+                value={age}
+                onChange={setAge}
+                min={1}
+                max={120}
+                icon={<Calendar size={18} />}
+              />
+              <CalculatorRadioInput
+                name="gender"
+                label="Gender"
+                selectedValue={gender}
+                onChange={setGender}
+                options={genderOptions}
+              />
+              <CalculatorNumberInput
+                id="height"
+                label="Height (cm)"
+                value={height}
+                onChange={setHeight}
+                min={50}
+                max={300}
+                icon={<Ruler size={18} />}
+              />
+              <CalculatorNumberInput
+                id="weight"
+                label="Weight (kg)"
+                value={weight}
+                onChange={setWeight}
+                min={10}
+                max={500}
+                icon={<Weight size={18} />}
+              />
+              <CalculatorSelectInput
+                id="activity"
+                label="Activity Level"
+                value={activity}
+                onChange={setActivity}
+                options={activityOptions}
+                icon={<Activity size={18} />}
+              />
             </div>
           </motion.div>
 
+          {/* Right: Results */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="relative bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl border border-white/30 dark:border-gray-700/30 rounded-3xl shadow-2xl shadow-emerald-100/20 dark:shadow-gray-900/50 p-6 overflow-hidden flex flex-col"
+            className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-2xl border border-white/40 dark:border-gray-700/40 rounded-3xl shadow-2xl shadow-green-100/30 dark:shadow-gray-900/60 p-6 sm:p-8 overflow-hidden flex flex-col"
           >
-            <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl -mr-10 -mt-10" />
-            <div className="absolute bottom-0 left-0 w-32 h-32 bg-green-400/10 rounded-full blur-2xl -ml-10 -mb-10" />
+            <div className="absolute -top-24 -right-24 w-64 h-64 bg-gradient-to-br from-emerald-400/10 to-green-400/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-gradient-to-tr from-green-400/10 to-emerald-400/10 rounded-full blur-3xl pointer-events-none" />
 
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2 relative z-10">
-              <span className="w-1 h-6 bg-gradient-to-b from-emerald-500 to-green-400 rounded-full"></span>
-              Your Result
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2 relative z-10">
+              <span className="w-1.5 h-7 bg-gradient-to-b from-emerald-500 to-green-500 rounded-full" />
+              Your Step Goals
+              <Sparkles className="w-4 h-4 text-emerald-400 ml-2" />
             </h2>
-            <div className="flex-1 flex items-center justify-center p-6 rounded-2xl bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border border-green-100/50 dark:border-green-800/30 shadow-inner relative z-10">
-              <div className="text-center">
-                <p className="text-sm text-gray-500 dark:text-gray-400">Recommended Steps Per Day</p>
-                <p className="text-5xl font-bold text-green-600 dark:text-green-400">{steps.toLocaleString()}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">~ {Math.round(steps * 0.8 / 1000)} km</p>
+
+            <div className="space-y-4 flex-1 relative z-10 mt-5">
+              <div className="p-5 rounded-2xl bg-gradient-to-br from-green-50/80 to-emerald-50/80 dark:from-gray-700/40 dark:to-gray-600/20 border border-green-200/50 dark:border-green-800/30 shadow-inner">
+                <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2">
+                  <Footprints size={14} className="text-green-500" />
+                  Recommended Daily Steps
+                </p>
+                <p className="text-3xl sm:text-4xl font-extrabold text-green-600 dark:text-green-400 tabular-nums">
+                  {results.steps.toLocaleString()}
+                </p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">steps/day</p>
+              </div>
+
+              <div className="p-5 rounded-2xl bg-gradient-to-br from-emerald-50/80 to-green-50/80 dark:from-gray-700/40 dark:to-gray-600/20 border border-emerald-200/50 dark:border-emerald-800/30 shadow-inner">
+                <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2">
+                  <Flame size={14} className="text-emerald-500" />
+                  Estimated Calories Burned
+                </p>
+                <p className="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 tabular-nums">
+                  {results.calories} <span className="text-sm font-normal text-gray-500">kcal</span>
+                </p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">per day</p>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-white/60 dark:bg-gray-800/60 border border-gray-200/50 dark:border-gray-700/50">
+                <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                  Distance walked: <strong>~{results.distanceKm} km</strong> (based on your stride length).
+                  Start with this goal and gradually increase for better health benefits.
+                </p>
               </div>
             </div>
-            <button
-              onClick={handleCopy}
-              className="mt-6 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-green-400 to-emerald-500 hover:from-green-500 hover:to-emerald-600 text-white font-semibold transition-all shadow-lg shadow-green-200/40 dark:shadow-green-900/30 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 hover:scale-[1.02] active:scale-[0.98]"
-            >
-              {copied ? <Check size={18} /> : <Copy size={18} />}
-              {copied ? 'Copied!' : 'Copy Result'}
-            </button>
           </motion.div>
         </div>
-
-        <section className="mt-12 prose prose-emerald dark:prose-invert max-w-none">
-          <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-3xl border border-white/20 dark:border-gray-700/30 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Disclaimer</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-300">This is a general recommendation. Consult a doctor for personalized advice.</p>
-          </div>
-        </section>
       </div>
-    </main>
+
+      {/* Footer sections */}
+      <section className="mt-12 space-y-8">
+        <Disclaimer />
+        <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-2xl rounded-3xl border border-white/30 dark:border-gray-700/30 p-6 sm:p-8 shadow-xl">
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+            <span className="w-1 h-6 bg-gradient-to-b from-green-500 to-emerald-500 rounded-full" />
+            Frequently Asked Questions
+          </h3>
+          <FAQAccordion items={faqItems} />
+        </div>
+        <div>
+          <h4 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
+            <span className="w-1 h-5 bg-gradient-to-b from-emerald-500 to-green-500 rounded-full" />
+            Related Tools
+          </h4>
+          <RelatedTools tools={relatedTools} />
+        </div>
+      </section>
+    </CalculatorLayout>
   );
 }
