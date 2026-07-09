@@ -19,7 +19,16 @@ export default function InstallButton() {
   const [isTypingDone, setIsTypingDone] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Install prompt listeners
+  // Check if already installed
+  const checkIfInstalled = () => {
+    if (typeof window === "undefined") return false;
+    const isStandalone =
+      window.matchMedia("(display-mode: standalone)").matches ||
+      (window.navigator as any).standalone === true;
+    return isStandalone;
+  };
+
+  // Install prompt listeners + initial installation check
   useEffect(() => {
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
@@ -29,16 +38,25 @@ export default function InstallButton() {
     const handleAppInstalled = () => {
       setIsInstalled(true);
       setDeferredPrompt(null);
-      // Installed ho gaya – typewriter effect ko immediately complete karein
       setDisplayText("✅ Installed");
       setIsTypingDone(true);
     };
+
+    // Check on mount if already installed
+    if (checkIfInstalled()) {
+      setIsInstalled(true);
+      setDisplayText("✅ Installed");
+      setIsTypingDone(true);
+    }
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
     window.addEventListener("appinstalled", handleAppInstalled);
 
     return () => {
-      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+      window.removeEventListener(
+        "beforeinstallprompt",
+        handleBeforeInstallPrompt
+      );
       window.removeEventListener("appinstalled", handleAppInstalled);
     };
   }, []);
@@ -71,8 +89,13 @@ export default function InstallButton() {
   }, [isInstalled]);
 
   const handleInstallClick = async () => {
-    if (isInstalled) return; // already installed
+    // If already installed, show alert and return
+    if (isInstalled) {
+      alert("✅ MintAI is already installed.");
+      return;
+    }
 
+    // If we have a deferred prompt, use it
     if (deferredPrompt) {
       try {
         await deferredPrompt.prompt();
@@ -82,13 +105,15 @@ export default function InstallButton() {
           setDisplayText("✅ Installed");
           setIsTypingDone(true);
           setDeferredPrompt(null);
+        } else {
+          console.log("User dismissed the install prompt");
         }
       } catch (error) {
         console.error("Install prompt error:", error);
       }
     } else {
-      // No prompt available – just log
-      console.log("Install prompt not available");
+      // No deferred prompt and not installed – show alert
+      alert("Install prompt is not available on this device or browser.");
     }
   };
 
