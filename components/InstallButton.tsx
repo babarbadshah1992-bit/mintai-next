@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -10,75 +10,87 @@ interface BeforeInstallPromptEvent extends Event {
 export default function InstallButton() {
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
-  const [isInstallable, setIsInstallable] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
 
-  // 🔥 Development flag – production mein false kardein
-  const isDevelopment = process.env.NODE_ENV === "development";
+  // Typewriter state
+  const fullText = "Install MintAI";
+  const [displayText, setDisplayText] = useState("");
+  const [index, setIndex] = useState(0);
+  const [isTypingDone, setIsTypingDone] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Install prompt listeners
   useEffect(() => {
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
-      const promptEvent = e as BeforeInstallPromptEvent;
-      setDeferredPrompt(promptEvent);
-      setIsInstallable(true);
+      setDeferredPrompt(e as BeforeInstallPromptEvent);
     };
 
     const handleAppInstalled = () => {
-      setIsInstallable(false);
       setIsInstalled(true);
       setDeferredPrompt(null);
+      // Installed ho gaya – typewriter effect ko immediately complete karein
+      setDisplayText("✅ Installed");
+      setIsTypingDone(true);
     };
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
     window.addEventListener("appinstalled", handleAppInstalled);
 
-    // Agar development mode hai toh installable true kar do (demo ke liye)
-    if (isDevelopment) {
-      setIsInstallable(true);
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+      window.removeEventListener("appinstalled", handleAppInstalled);
+    };
+  }, []);
+
+  // Typewriter effect (only runs once on mount and if not installed)
+  useEffect(() => {
+    if (isInstalled) return; // installed hai toh typing nahi karein
+
+    if (index < fullText.length) {
+      timeoutRef.current = setTimeout(() => {
+        setDisplayText((prev) => prev + fullText[index]);
+        setIndex((prev) => prev + 1);
+      }, 80); // typing speed
+    } else {
+      setIsTypingDone(true);
     }
 
     return () => {
-      window.removeEventListener(
-        "beforeinstallprompt",
-        handleBeforeInstallPrompt
-      );
-      window.removeEventListener("appinstalled", handleAppInstalled);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
-  }, [isDevelopment]);
+  }, [index, fullText, isInstalled]);
+
+  // Reset typing when component mounts (if not installed)
+  useEffect(() => {
+    if (!isInstalled) {
+      setDisplayText("");
+      setIndex(0);
+      setIsTypingDone(false);
+    }
+  }, [isInstalled]);
 
   const handleInstallClick = async () => {
-    if (!deferredPrompt) {
-      // Agar development mode mein prompt nahi hai toh alert dikhao
-      if (isDevelopment) {
-        alert("Development mode: Install prompt not available. Simulating install.");
-        // Simulate install success
-        setIsInstallable(false);
-        setIsInstalled(true);
-      }
-      return;
-    }
+    if (isInstalled) return; // already installed
 
-    try {
-      await deferredPrompt.prompt();
-      const result = await deferredPrompt.userChoice;
-
-      if (result.outcome === "accepted") {
-        setIsInstallable(false);
-        setIsInstalled(true);
-        setDeferredPrompt(null);
-      } else {
-        console.log("User dismissed the install prompt");
+    if (deferredPrompt) {
+      try {
+        await deferredPrompt.prompt();
+        const result = await deferredPrompt.userChoice;
+        if (result.outcome === "accepted") {
+          setIsInstalled(true);
+          setDisplayText("✅ Installed");
+          setIsTypingDone(true);
+          setDeferredPrompt(null);
+        }
+      } catch (error) {
+        console.error("Install prompt error:", error);
       }
-    } catch (error) {
-      console.error("Error showing install prompt:", error);
+    } else {
+      // No prompt available – just log
+      console.log("Install prompt not available");
     }
   };
-
-  // Hide button if not installable and not development
-  if (!isInstallable && !isDevelopment) return null;
-  // Agar installed ho toh hatao
-  if (isInstalled) return null;
 
   return (
     <button
@@ -91,8 +103,8 @@ export default function InstallButton() {
         zIndex: 99999,
         display: "flex",
         alignItems: "center",
-        gap: "10px",
-        padding: "14px 20px",
+        gap: "12px",
+        padding: "14px 24px",
         background: "linear-gradient(135deg, #16a34a, #22c55e)",
         border: "none",
         borderRadius: "999px",
@@ -128,16 +140,20 @@ export default function InstallButton() {
         e.currentTarget.style.transform = "scale(1.06)";
       }}
     >
+      {/* Robot Icon with slight bounce animation */}
       <span
         style={{
-          fontSize: "20px",
+          fontSize: "24px",
           lineHeight: 1,
           display: "flex",
           alignItems: "center",
+          animation: "bounce 2s infinite ease-in-out",
         }}
       >
-        📲
+        🤖
       </span>
+
+      {/* Text container */}
       <span
         style={{
           display: "flex",
@@ -146,7 +162,28 @@ export default function InstallButton() {
           lineHeight: 1.2,
         }}
       >
-        <span>Install MintAI</span>
+        <span style={{ display: "flex", alignItems: "center", gap: "2px" }}>
+          {isInstalled ? (
+            "✅ Installed"
+          ) : (
+            <>
+              {displayText}
+              {/* Blinking cursor – only when typing not done */}
+              {!isTypingDone && (
+                <span
+                  style={{
+                    display: "inline-block",
+                    width: "2px",
+                    height: "1em",
+                    backgroundColor: "#ffffff",
+                    animation: "blink 0.7s step-end infinite",
+                    marginLeft: "2px",
+                  }}
+                />
+              )}
+            </>
+          )}
+        </span>
         <span
           style={{
             fontSize: "11px",
@@ -155,9 +192,11 @@ export default function InstallButton() {
             letterSpacing: "0.3px",
           }}
         >
-          Fast • Offline • Free
+          {isInstalled ? "Thank you! 🎉" : "Fast • Offline • Free"}
         </span>
       </span>
+
+      {/* Keyframes for animations */}
       <style>{`
         @keyframes fadeInUp {
           0% {
@@ -169,12 +208,24 @@ export default function InstallButton() {
             transform: translateY(0) scale(1);
           }
         }
+
+        @keyframes blink {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0; }
+        }
+
+        @keyframes bounce {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-4px); }
+        }
+
         @media (min-width: 768px) {
           button {
             bottom: 24px !important;
             right: 24px !important;
           }
         }
+
         @media (max-width: 480px) {
           button {
             padding: 12px 16px !important;
