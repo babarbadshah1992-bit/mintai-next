@@ -9,7 +9,6 @@ import ProgressBar from './ProgressBar';
 import ResultModal from './ResultModal';
 import { fadeInUp } from './animations';
 
-// Scoring: each question contributes equally
 const SCORE_PER_QUESTION = 100 / questions.length;
 
 export default function HealthSwipeChallenge() {
@@ -21,7 +20,6 @@ export default function HealthSwipeChallenge() {
   const totalQuestions = questions.length;
   const isComplete = currentIndex === totalQuestions;
 
-  // Compute result when all questions are answered
   const computeResult = useCallback(() => {
     let score = 0;
     const strengths: string[] = [];
@@ -40,17 +38,14 @@ export default function HealthSwipeChallenge() {
       }
     });
 
-    // Rating
     let rating: Result['lifestyleRating'] = 'Poor';
     if (score >= 80) rating = 'Excellent';
     else if (score >= 60) rating = 'Good';
     else if (score >= 40) rating = 'Average';
     else rating = 'Poor';
 
-    // Health age (simplified model)
     const healthAge = Math.max(18, Math.round(30 + (50 - score) * 0.15));
 
-    // AI tips based on risk areas
     const tipMap: Record<string, string> = {
       sleep: 'Establish a consistent sleep schedule and avoid screens before bed.',
       water: 'Carry a water bottle and set hourly reminders to drink.',
@@ -71,9 +66,7 @@ export default function HealthSwipeChallenge() {
     riskAreas.forEach(cat => {
       if (tipMap[cat]) tips.push(tipMap[cat]);
     });
-    if (tips.length === 0) {
-      tips.push('Keep up the great work! Continue your healthy habits.');
-    }
+    if (tips.length === 0) tips.push('Keep up the great work! Continue your healthy habits.');
 
     setResult({
       score: Math.round(score),
@@ -85,7 +78,6 @@ export default function HealthSwipeChallenge() {
     });
   }, [answers]);
 
-  // Handle swipe direction -> answer
   const handleAnswer = useCallback(
     (direction: 'left' | 'right' | 'up') => {
       if (isComplete) return;
@@ -100,7 +92,6 @@ export default function HealthSwipeChallenge() {
     [isComplete]
   );
 
-  // When all answered, compute result
   if (isComplete && !result && answers.length === totalQuestions) {
     computeResult();
   }
@@ -113,7 +104,6 @@ export default function HealthSwipeChallenge() {
   };
 
   const handleClose = () => {
-    // Dismiss result and reset to start screen
     setResult(null);
     setStarted(false);
     setCurrentIndex(0);
@@ -123,18 +113,18 @@ export default function HealthSwipeChallenge() {
   const currentQuestion = questions[currentIndex];
 
   return (
-    <section className="py-8 px-4 bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <section className="py-6 px-4 md:py-10 bg-gradient-to-br from-blue-50 via-white to-emerald-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <div className="max-w-lg mx-auto relative">
         {!started ? (
-          // ---------- START SCREEN ----------
+          // START SCREEN
           <motion.div
-            className="text-center p-6 bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-3xl shadow-xl border border-white/20 dark:border-gray-700/30"
+            className="text-center p-8 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/30 dark:border-gray-700/30"
             variants={fadeInUp}
             initial="hidden"
             animate="visible"
           >
-            <div className="text-6xl mb-4">🩺</div>
-            <h2 className="text-3xl font-extrabold text-gray-800 dark:text-white">
+            <div className="text-7xl mb-4">🩺</div>
+            <h2 className="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent">
               30 Second AI Health Challenge
             </h2>
             <p className="text-gray-600 dark:text-gray-300 mt-2">
@@ -143,14 +133,14 @@ export default function HealthSwipeChallenge() {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="mt-6 px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white text-lg font-semibold rounded-full shadow-lg hover:shadow-xl transition"
+              className="mt-6 px-8 py-3 bg-gradient-to-r from-emerald-500 to-blue-500 text-white text-lg font-semibold rounded-full shadow-xl hover:shadow-2xl transition"
               onClick={() => setStarted(true)}
             >
               Start Challenge
             </motion.button>
           </motion.div>
         ) : (
-          // ---------- CHALLENGE MODE ----------
+          // CHALLENGE MODE
           <div className="relative">
             <div className="flex items-center justify-between mb-4">
               <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
@@ -159,7 +149,7 @@ export default function HealthSwipeChallenge() {
               <ProgressBar current={currentIndex} total={totalQuestions} />
             </div>
 
-            <div className="relative h-[420px] w-full">
+            <div className="relative h-[460px] md:h-[500px] w-full">
               <AnimatePresence mode="wait">
                 {!isComplete && currentQuestion ? (
                   <SwipeCard
@@ -171,40 +161,38 @@ export default function HealthSwipeChallenge() {
                   />
                 ) : null}
               </AnimatePresence>
-              {/* Next card preview (optional) */}
               {!isComplete && currentIndex < totalQuestions - 1 && (
-                <div className="absolute inset-0 -z-10 scale-[0.96] translate-y-2 opacity-60 bg-white/50 dark:bg-gray-800/50 rounded-3xl border border-white/10 dark:border-gray-700/20" />
+                <div className="absolute inset-0 -z-10 scale-[0.96] translate-y-4 opacity-40 bg-white/40 dark:bg-gray-800/40 rounded-3xl border border-white/10 dark:border-gray-700/20" />
               )}
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex justify-center gap-4 mt-6">
+            {/* Action Buttons – larger, more tappable */}
+            <div className="flex justify-center gap-6 mt-6">
               <button
                 onClick={() => handleAnswer('left')}
-                className="p-4 bg-red-100 dark:bg-red-900/30 rounded-full shadow-md hover:scale-110 transition"
+                className="p-4 bg-red-100 dark:bg-red-900/30 rounded-full shadow-md hover:scale-110 transition active:scale-95"
                 aria-label="No"
               >
-                ❌
+                <span className="text-2xl">❌</span>
               </button>
               <button
                 onClick={() => handleAnswer('up')}
-                className="p-4 bg-yellow-100 dark:bg-yellow-900/30 rounded-full shadow-md hover:scale-110 transition"
+                className="p-4 bg-yellow-100 dark:bg-yellow-900/30 rounded-full shadow-md hover:scale-110 transition active:scale-95"
                 aria-label="Skip"
               >
-                ⏭️
+                <span className="text-2xl">⏭️</span>
               </button>
               <button
                 onClick={() => handleAnswer('right')}
-                className="p-4 bg-green-100 dark:bg-green-900/30 rounded-full shadow-md hover:scale-110 transition"
+                className="p-4 bg-green-100 dark:bg-green-900/30 rounded-full shadow-md hover:scale-110 transition active:scale-95"
                 aria-label="Yes"
               >
-                ❤️
+                <span className="text-2xl">❤️</span>
               </button>
             </div>
           </div>
         )}
 
-        {/* Result Modal */}
         <AnimatePresence>
           {result && (
             <ResultModal
