@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
+import HealthSwipeChallenge from '@/components/health-challenge';
 
 // Types
 interface Message {
@@ -311,6 +312,7 @@ useEffect(() => {
       }} />
 
       <div style={{ maxWidth: "960px", margin: "0 auto", padding: "40px 20px" }}>
+        <HealthSwipeChallenge />
         {/* ── CHAT SECTION ── */}
         <div 
           style={{
@@ -331,6 +333,7 @@ useEffect(() => {
             background: "linear-gradient(135deg, rgba(24,162,61,0.06) 0%, rgba(255,255,255,0.0) 100%)",
             display: "flex", alignItems: "center", gap: "12px",
           }}>
+            
             <div style={{
               width: "42px", height: "42px", borderRadius: "13px",
               background: "linear-gradient(135deg, #18a23d, #1db84c)",
@@ -342,7 +345,6 @@ useEffect(() => {
               <div style={{ fontSize: "12px", color: "#18a23d", fontWeight: 600 }}>● Online · AI-Powered</div>
             </div>
           </div>
-
           {/* Messages */}
           <div
             ref={containerRef}
