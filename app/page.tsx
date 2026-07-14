@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
-import HealthSwipeChallenge from '@/components/health-challenge';
 
 // Types
 interface Message {
@@ -312,7 +311,7 @@ useEffect(() => {
       }} />
 
       <div style={{ maxWidth: "960px", margin: "0 auto", padding: "40px 20px" }}>
-        <HealthSwipeChallenge />
+
         {/* ── CHAT SECTION ── */}
         <div 
           style={{
