@@ -69,7 +69,7 @@ export default async function BlogPage() {
   }
 
   const featuredBlog = blogs && blogs.length > 0 ? blogs[0] : null
-const remainingBlogs = blogs && blogs.length > 1 ? blogs.slice(1) : []
+  const remainingBlogs = blogs && blogs.length > 1 ? blogs.slice(1) : []
 
   return (
     <div style={{
@@ -181,7 +181,8 @@ const remainingBlogs = blogs && blogs.length > 1 ? blogs.slice(1) : []
                 transition: 'all 0.3s ease',
                 cursor: 'pointer',
               }}>
-                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '20px' }}>
+                {/* Yahan tags hide kar diye gaye hain */}
+                <div style={{ display: 'none', gap: '10px', flexWrap: 'wrap', marginBottom: '20px' }}>
                   {(featuredBlog.tags || []).slice(0, 3).map((tag: string) => (
                     <span key={tag} style={{
                       fontSize: '11px',
@@ -261,7 +262,8 @@ const remainingBlogs = blogs && blogs.length > 1 ? blogs.slice(1) : []
                     flexDirection: 'column',
                     cursor: 'pointer',
                   }}>
-                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '20px' }}>
+                    {/* Yahan bhi tags hide kar diye gaye hain (display none) */}
+                    <div style={{ display: 'none', gap: '8px', flexWrap: 'wrap', marginBottom: '20px' }}>
                       {(blog.tags || []).slice(0, 2).map((tag: string) => (
                         <span key={tag} style={{
                           fontSize: '10px',

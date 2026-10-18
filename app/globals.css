@@ -463,3 +463,7 @@ h1, h2, h3, .font-heading { font-family: var(--font-poppins), sans-serif; }
   background-size: 200% 200%;
   animation: gradient 6s ease infinite;
 }
+/* Saare tags ko 100% hide karne ke liye */
+div[style*="flex-wrap: wrap"] > span {
+    display: none !important;
+}
